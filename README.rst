@@ -1,4 +1,4 @@
-The gluejax meta-package
+The glue-jax meta-package
 ========================
 
 This package does not contain any code, but instead is a meta-package that 
