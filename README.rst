@@ -2,12 +2,14 @@ The glue-jax meta-package
 ========================
 
 This package does not contain any code, but instead is a meta-package that 
-depends on the core glue code as well as plugins for genomic analysis to be 
-installed by default.
+installs all the packages necessary to use glue with genomics data. 
 
-This currently installs:
+Due to some complicated binary dependencies, the recommended procedure for 
+installing this package into a new conda environment is as follows:
 
-* `glue-core <https://github.com/glue-viz/glue>`_, the main glue package
-* `glue-vispy-viewers <https://github.com/glue-viz/glue-vispy-viewers>`_,
-  which adds 3D viewers
-
+conda create -n glue-jax python==3.8
+conda activate glue-jax
+conda install -c glueviz glueviz
+conda install -c bioconda pairix
+conda install -c bioconda tabix
+pip install glue-jax@git+https://github.com/gluesolutions/glue-jax.git
