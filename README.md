@@ -17,5 +17,5 @@ conda activate glue-genes
 conda install -c glueviz glueviz
 conda install -c bioconda pairix
 conda install -c bioconda tabix
-pip install glue-genes@git+https://github.com/gluesolutions/glue-jax.git
+pip install glue-genes@git+https://github.com/gluesolutions/glue-genes.git
 ```
