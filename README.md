@@ -1,5 +1,9 @@
+
 The glue-genes meta-package
 =========================
+
+
+![glue-genes](https://user-images.githubusercontent.com/3639698/135114413-8fde24e2-715a-4c66-a8c3-585508266298.png)
 
 This package does not contain any code, but instead is a meta-package that 
 installs all the packages necessary to use glue with genomics data. 
