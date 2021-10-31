@@ -38,6 +38,10 @@ conda install -c bioconda tabix
 pip install glue-genes@git+https://github.com/gluesolutions/glue-genes.git
 ```
 
+### Documention
+
+The documentation for glue genes currently lives at https://docs.google.com/document/d/13rQj2H5ZOq5-6dIJf2My9Lkbvov9xwHMrwMXWNZqA94/edit# and a PDF version is available with this repository. 
+
 ### Development
 
 glue genes is currently under active development towards a 1.0 release. Please file all bug reports as github issues. 
