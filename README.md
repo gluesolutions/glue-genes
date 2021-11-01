@@ -35,8 +35,10 @@ conda activate glue-genes
 conda install -c glueviz glueviz
 conda install -c bioconda pairix
 conda install -c bioconda tabix
+pip install cython
 pip install glue-genes@git+https://github.com/gluesolutions/glue-genes.git
 ```
+
 
 ### Documention
 
