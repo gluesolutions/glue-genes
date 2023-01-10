@@ -2,4 +2,4 @@ prune build
 prune dist
 
 include LICENSE
-include README.rst
+include README.md

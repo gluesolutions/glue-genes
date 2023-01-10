@@ -5,7 +5,7 @@ The glue-genes meta-package
 ===========================
 
 [glue genes](https://github.com/gluesolutions/glue-genes) is a custom version of the [glue software](https://glueviz.org) for the 
-visual exploration of genomics data.
+visual exploration of genomics data, developed in partnership with [The Jackson Laboratory](https://jax.org).
 
 ### Features
 
@@ -17,9 +17,9 @@ glue genes provides all the core features of glue:
 
 In addition, glue genes provides:
 
-* Data loaders for genomics data file formats such as .bed, .bedgraph, .bedpe, .bigwig, and .hic
-* Viewers including: Genome Track Viewer, 2D Heatmaps, Dendrogram/Tree Viewer, Network Viewer
-* Changes to core-glue to enable easy exploration of genetics data
+* Data loaders for genomics data file formats such as .bed, .bigwig, .h5ad, and .loom
+* Viewers including: 2D Heatmap, Small Multiples, QTL Viewer
+* Menubar plug-ins to facilitate analysis of single-cell transcriptomics data
 
 ### Install
 
@@ -27,16 +27,21 @@ This package does not contain any code, but instead is a meta-package that
 installs all the packages necessary to use glue with genomics data. 
 
 Due to some complicated binary dependencies, the recommended procedure for 
-installing this package is to use [conda](https://www.anaconda.com) and intall into a new environment as follows:
+installing this package is to use [conda](https://www.anaconda.com) and install into a new environment as follows:
 
 ```
-conda create -n glue-genes python==3.8
+conda create -n glue-genes python==3.9
 conda activate glue-genes
-conda install -c glueviz glueviz
-conda install -c bioconda pairix
-conda install -c bioconda tabix
+conda install glue-core
 pip install glue-genes@git+https://github.com/gluesolutions/glue-genes.git
 ```
+
+### Usage
+
+The Scanpy differential gene expression plugin requires some custom actions to run at startup, which can be achieved by starting glue using this command:
+
+`glue --startup=setup_anndata`
+
 
 ### Development
 
