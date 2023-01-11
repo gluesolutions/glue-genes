@@ -212,7 +212,7 @@ def read_anndata(
         var_data.meta["join_on_var"] = True
         XData.meta["var_data"] = var_data
         list_of_data_objs.append(var_data)
-    except:
+    except:  # noqa E722
         pass
 
     for key in adata.varm_keys():
@@ -236,7 +236,7 @@ def read_anndata(
         obs_data.meta["join_on_var"] = False
         XData.meta["obs_data"] = obs_data
         list_of_data_objs.append(obs_data)
-    except:
+    except:  # noqa E722
         pass
 
     for key in adata.obsm_keys():

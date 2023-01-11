@@ -65,7 +65,7 @@ def setup():
     # Add some categorical colormaps
 
     colormaps.add("d3_dozen", ListedColormap(d3_dozen, name="d3_dozen"))
-    colormaps.add("d3_twenty", ListedColormap(d3_dozen, name="d3_twenty"))
+    colormaps.add("d3_twenty", ListedColormap(d3_twenty, name="d3_twenty"))
 
     colormaps.add("Pastel1", cm.Pastel1)
     colormaps.add("Paired", cm.Paired)

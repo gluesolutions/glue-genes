@@ -1,10 +1,3 @@
-import numpy as np
-import pandas as pd
-from scipy import sparse
-
-from glue.core.component_id import ComponentID
-from glue.core.data import BaseCartesianData
-from glue.utils import view_shape
 from .data import DataAnnData
 
 # We now create a data object using the above class,

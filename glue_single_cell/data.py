@@ -52,11 +52,7 @@ from fast_histogram import histogram1d
 
 from glue.core import DataCollection
 
-from glue.core.state import (
-    saver,
-    loader,
-    GlueSerializeError
-)
+from glue.core.state import saver, loader, GlueSerializeError
 from glue.core.state import _load_data_collection_4, _save_data_collection_4
 
 from glue.config import session_patch, data_translator
@@ -125,7 +121,7 @@ class DataAnnData(Data):
         comp = self.get_component(cid)
 
         try:
-            dtype = comp.dtype
+            dtype = comp.dtype  # noqa F841
         except AttributeError:  # This might happen on the X array
             return "numeric"
 
@@ -446,8 +442,9 @@ def _load_anndata(rec, context):
 
     if getattr(result, "coords") is not None:
         assert len(coord) == result.ndim * 2
+        # Might black formatting break this?
         result._world_component_ids = coord[: len(coord) // 2]
-        result._pixel_component_ids = coord[len(coord) // 2 :]
+        result._pixel_component_ids = coord[len(coord) // 2 :]  # noqa E203
     else:
         assert len(coord) == result.ndim
         result._pixel_component_ids = coord
@@ -484,8 +481,8 @@ def _load_anndata(rec, context):
     result.backed = context.object(rec["backed"])
     yield result
 
-    for l in rec["listeners"]:
-        result.listeners.append(context.object(l))
+    for v in rec["listeners"]:
+        result.listeners.append(context.object(v))
 
 
 @saver(DataCollection, version=5)

@@ -5,10 +5,8 @@ import numpy as np
 from qtpy import QtWidgets, QtGui
 from qtpy.QtCore import Qt
 
-from glue.core import BaseData
 from echo.qt import autoconnect_callbacks_to_qt, connect_value
 from glue.utils.qt import load_ui, fix_tab_widget_fontsize
-from glue.core.exceptions import IncompatibleAttribute
 
 
 class QTLLayerStyleEditor(QtWidgets.QWidget):
@@ -139,11 +137,7 @@ class QTLLayerStyleEditor(QtWidgets.QWidget):
         self.ui.value_density_contrast.setEnabled(self.layer_state.markers_visible)
 
     def _update_checkboxes(self, *args):
-
-        if isinstance(self.layer_state.layer, BaseData):
-            layer = self.layer_state.layer
-        else:
-            layer = self.layer_state.layer.data
+        pass
 
     def _update_cmap_mode(self, cmap_mode=None):
 

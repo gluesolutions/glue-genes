@@ -128,7 +128,7 @@ class DiffGeneExpDialog(QtWidgets.QDialog):
 
         self.state.data_collection.new_subset_group(new_name, gene_state)
 
-        confirm = dialog(
+        confirm = dialog(  # noqa F841
             "New subset created",
             f"The subset:\n" f"{new_name}\n" f"has been created.",
             "info",

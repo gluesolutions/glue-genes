@@ -116,7 +116,7 @@ class DiffGeneExpState(State):
             self.gene_att_helper.set_multiple_data(
                 [] if self.data is None else [self.data.meta["var_data"]]
             )
-        except:
+        except:  # noqa E722
             pass
 
 

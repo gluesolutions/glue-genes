@@ -15,6 +15,7 @@ from glue.viewers.scatter.layer_artist import (
     MARKER_PROPERTIES,
     VISUAL_PROPERTIES,
     DATA_PROPERTIES,
+    STRETCHES,
 )
 import numpy as np
 

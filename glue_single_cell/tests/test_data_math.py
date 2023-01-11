@@ -3,19 +3,16 @@ import os
 import pytest
 
 import numpy as np
-from numpy.random import default_rng
 from numpy.random import RandomState
 from numpy.testing import assert_almost_equal, assert_equal
-from scipy.sparse import csr_matrix, csc_matrix
 from scipy.sparse import find
+from scipy.sparse import csc_matrix
 
-from glue.core.component_id import ComponentID
 from glue.core import data_factories as df
 
 import anndata
 
-import context
-from glue_single_cell.data import DataAnnData
+import context  # noqa F401
 from glue_single_cell.anndata_factory import read_anndata
 
 SPARSE_BACKED_OBS_NUM = 500
@@ -55,8 +52,8 @@ def data_sparse_inmemory(tmpdir):
 def test_data_setup_sparse_backed(data_sparse_backed):
     C, d = data_sparse_backed
     assert len(d[0]._components) == 3
-    assert d[0].sparse == True
-    assert d[0].backed == True
+    assert d[0].sparse is True
+    assert d[0].backed is True
     assert (
         type(d[0].Xdata) == anndata.AnnData
     )  # As a reference to the full AnnData object
@@ -65,8 +62,8 @@ def test_data_setup_sparse_backed(data_sparse_backed):
 def test_data_setup_sparse_inmemory(data_sparse_inmemory):
     C, d = data_sparse_inmemory
     assert len(d[0]._components) == 3
-    assert d[0].sparse == True
-    assert d[0].backed == False
+    assert d[0].sparse is True
+    assert d[0].backed is False
     assert type(d[0].Xdata) == anndata.AnnData
 
 
