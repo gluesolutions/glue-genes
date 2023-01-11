@@ -1,7 +1,6 @@
 import os
 from qtpy import QtWidgets
 from echo.qt import autoconnect_callbacks_to_qt
-import pandas as pd
 
 from glue.utils.qt import load_ui
 
@@ -16,8 +15,8 @@ __all__ = ["EnrichpyDialog"]
 
 def convert_genes_to_list(row):
     arr = row.split(";")
-    l = [x for x in arr]
-    return l
+    lg = [x for x in arr]
+    return lg
 
 
 def convert_to_mouse_ids(row):
@@ -80,7 +79,7 @@ class EnrichpyDialog(QtWidgets.QDialog):
         self._collect.append(results_data)
 
         if do_dialog:
-            confirm = dialog(
+            confirm = dialog(  # noqa: F841
                 "New dataset created",
                 f"The Dataset:\n" f"{new_name}\n" f"has been created.",
                 "info",

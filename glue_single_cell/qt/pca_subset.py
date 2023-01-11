@@ -4,24 +4,18 @@ from qtpy import QtWidgets
 from echo.qt import autoconnect_callbacks_to_qt
 
 
-from glue.core.subset import MultiOrState
 from glue.utils.qt import load_ui
-from glue.core import Data, Hub, HubListener
+from glue.core import Data, HubListener
 from glue.core.message import (
-    SubsetMessage,
-    SubsetCreateMessage,
     SubsetUpdateMessage,
     SubsetDeleteMessage,
 )
 from glue.core.exceptions import IncompatibleAttribute
 
 from ..state import PCASubsetState
-from ..anndata_factory import df_to_data
 from qtpy.QtWidgets import QMessageBox
 
 import scanpy as sc
-from scipy.sparse import issparse
-import time
 
 __all__ = ["PCASubsetDialog", "GeneSummaryListener"]
 
@@ -36,7 +30,7 @@ def dialog(title, text, icon):
     info.setText(title)
     info.setInformativeText(text)
     info.setStandardButtons(info.Ok)
-    result = info.exec_()
+    result = info.exec_()  # noqa: F841
     return True
 
 
@@ -87,7 +81,7 @@ def do_calculation_over_gene_subset(data_with_Xarray, genesubset, calculation="M
             adata_sel = adata.raw.X[
                 :, mask
             ]  # This will fail if genesubset is not actually over genes
-            if data_with_Xarray.sparse == True:
+            if data_with_Xarray.sparse is True:
                 data_arr = np.expand_dims(
                     adata_sel.mean(axis=1).A1, axis=1
                 )  # Expand to make same dimensionality as PCA
@@ -96,7 +90,7 @@ def do_calculation_over_gene_subset(data_with_Xarray, genesubset, calculation="M
 
         else:
             adata_sel = adata.X[:, mask]
-            if data_with_Xarray.sparse == True:
+            if data_with_Xarray.sparse is True:
                 data_arr = np.expand_dims(
                     adata_sel.mean(axis=1).A1, axis=1
                 )  # Expand to make same dimensionality as PCA
@@ -254,12 +248,11 @@ class PCASubsetDialog(QtWidgets.QDialog):
         for subset in self.state.genesubset.subsets:
             if (
                 subset.data == data_with_Xarray.meta["var_data"]
-            ):  #  Find the subset on the genes, assuming we are adding to cell data
+            ):  # Find the subset on the genes, assuming we are adding to cell data
                 genesubset = subset
-                genesubset_attributes = subset.attributes
         if not genesubset:
             print(
-                f"Selected subset {self.state.genesubset.label} does not seem to define genes in for {self.state.data.label}"
+                f"Selected subset {self.state.genesubset.label} does not define genes in {self.state.data.label}"
             )
 
         basename = genesubset.label
@@ -282,7 +275,7 @@ class PCASubsetDialog(QtWidgets.QDialog):
             gene_summary_listener.register_to_hub()
             data_with_Xarray.listeners.append(gene_summary_listener)
 
-        confirm = dialog(
+        confirm = dialog(  # noqa: F841
             "Adding a new component",
             f"The component:\n"
             f"{new_comp_name}\n"

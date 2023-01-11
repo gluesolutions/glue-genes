@@ -37,7 +37,7 @@ reduce its size. We recommend the \
 which will reduce the dataset down to a small number of metacells carefully \
 chosen to represent the full dataset. Running metacells properly is an \
 interactive process and may require significant computational resources. See \
-<a href=\"https://metacells.readthedocs.io/en/latest/Metacells_Vignette.html"\>\
+<a href=\"https://metacells.readthedocs.io/en/latest/Metacells_Vignette.html\">\
 this tutorial</a> for additional information."""
 
 
@@ -83,11 +83,11 @@ class LoadDataDialog(QDialog):
         try:
             with h5py.File(filename) as h5f:
                 compression = h5f["X/data"].compression
-        except (AttributeError, KeyError) as e:
+        except (AttributeError, KeyError):
             try:
                 with h5py.File(filename) as h5f:
                     compression = h5f["X"].compression
-            except (AttributeError, KeyError) as e:
+            except (AttributeError, KeyError):
                 compression = None
 
         if compression:

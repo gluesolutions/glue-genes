@@ -1,11 +1,5 @@
 import os
-import pytest
-import numpy as np
-from numpy.testing import assert_array_equal
-from glue.core.data_collection import DataCollection
 from glue.core import data_factories as df
-from glue.core import Data
-from glue.core.link_helpers import JoinLink
 from glue.app.qt import GlueApplication
 
 from glue_single_cell.anndata_factory import read_anndata

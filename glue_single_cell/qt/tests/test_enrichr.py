@@ -1,15 +1,8 @@
-import os
-import pytest
-import numpy as np
-from numpy.testing import assert_array_equal
-from glue.core.data_collection import DataCollection
 from glue.core import Data
 from glue.app.qt import GlueApplication
-from unittest.mock import patch
 from glue.core.state import GlueUnSerializer
 
 from ..enrichr import EnrichpyDialog
-from ..pca_subset import dialog, PCASubsetDialog
 
 
 class TestEnrichr(object):

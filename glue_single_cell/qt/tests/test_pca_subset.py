@@ -1,6 +1,6 @@
 """
 To test this properly we need a way to read in some test files
-since otherwise we have to duplicate or abstract out all the 
+since otherwise we have to duplicate or abstract out all the
 linking codes
 
 Which implies we need some (small) test AnnData files
@@ -15,16 +15,13 @@ and that produces an IncompatibleAttribute exception
 
 """
 import os
-import pytest
 import numpy as np
-from numpy.testing import assert_array_equal
 from glue.core.data_collection import DataCollection
 from glue.core import data_factories as df
 from glue.core import Data
 from glue.core.link_helpers import JoinLink
 from glue.app.qt import GlueApplication
 from glue.core.state import GlueUnSerializer
-from glue.utils.qt import process_events
 from unittest.mock import patch
 
 from glue_single_cell.anndata_factory import read_anndata
@@ -64,7 +61,6 @@ class TestCellSummarySession(object):
 
         assert len(self.dc[2].components) == 5
 
-        d1_adata = self.dc[0]
         d1_var = self.dc[1]
 
         s = self.dc.new_subset_group()
@@ -79,7 +75,7 @@ class TestCellSummarySession(object):
         sumdiag.state.do_pca = False
         sumdiag.state.do_module = False
 
-        with patch("glue_single_cell.qt.pca_subset.dialog") as fakedialog:
+        with patch("glue_single_cell.qt.pca_subset.dialog") as fakedialog:  # noqa: F841
             sumdiag._apply()
 
         assert len(self.dc[0].listeners) == 1
@@ -233,7 +229,6 @@ class TestCellSummary(object):
         Test that defining a subset on a linked third dataset works
         """
         d1_adata = self.dc[0]
-        d1_var = self.dc[1]
         qtl = self.dc[6]
 
         state = qtl.id["qtl"] > 2
@@ -250,7 +245,6 @@ class TestCellSummary(object):
 
         # Now use the same subset on the other dataset
         d2_adata = self.dc[3]
-        d2_var = self.dc[4]
 
         for subset in subset_group.subsets:
             if subset.data == self.dc[3].meta["var_data"]:
@@ -277,8 +271,7 @@ class TestCellSummary(object):
         for subset in subset_group.subsets:
             if subset.data == self.dc[0].meta["var_data"]:
                 genesubset = subset
-                genesubset_attributes = subset.attributes
-        with patch("glue_single_cell.qt.pca_subset.dialog") as fakedialog:
+        with patch("glue_single_cell.qt.pca_subset.dialog") as fakedialog:  # noqa: F841
             data_arr = do_calculation_over_gene_subset(
                 d1_adata, genesubset, calculation="Means"
             )

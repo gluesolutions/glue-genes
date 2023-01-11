@@ -1,12 +1,8 @@
 import os
-import pytest
-import numpy as np
 from numpy.testing import assert_array_equal
-from glue.core import Data
 from glue.app.qt import GlueApplication
 from glue.core.state import GlueUnSerializer
 from glue_single_cell.anndata_factory import read_anndata
-from glue_single_cell.data import DataAnnData
 from glue.core import data_factories as df
 
 import anndata as ad
