@@ -26,6 +26,7 @@ class AnnDataListener(HubListener):
     data collection object, and, if one is, setup the
     correct join_on_key joins in a way that they will
     show up in the GUI.
+
     """
 
     def __init__(self, hub):
@@ -62,9 +63,17 @@ def setup_gui_joins(dc, data):
     This allows the user to see and remove links in the GUI.
 
     We cannot do this at data load because these links are defined
-    at the level of a data_collection, which does not exist at
+    at the level of a data_collection, which may not exist at
     data load time. Instead we call this through a listener
     when a DataAnnData object is added to a data collection.
+
+    Parameters
+    ----------
+    dc : :class:`~glue.core.data_collection.DataCollection`
+        The DataCollection object associated with this glue session
+    data : :class:`~glue-genes.data.DataAnnData`
+        The DataAnnData object that defines join_on_key links
+        to the associate obs and var Data objects
     """
     try:  # If we are using a version of glue that supports links in the GUI
         from glue.core.link_helpers import JoinLink

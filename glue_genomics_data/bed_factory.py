@@ -8,12 +8,20 @@ __all__ = ["is_bed", "read_bed"]
 
 
 def is_bed(filename, **kwargs):
+    """
+    Check if a file is a BED file.
+    """
     return filename.endswith(".bed")
 
 
 def remap_columns(x):
     """
-    Custom logic to try and remap columns from a BED file
+    Rename the first three columns in a BED
+    file to be: chr, start, end.
+
+    Remaining columns are named ucol (for
+    unknown column) to make sure they show
+    up as later components in all viewers
     """
     if x == 0:
         return "chr"
@@ -28,7 +36,12 @@ def remap_columns(x):
 @data_factory("BED data loader", is_bed, priority=999)
 def read_bed(file_name):
     """
-    Read a bed file into glue.
+    Read a BED file.
+
+    Parameters
+    ----------
+    file_name: str
+        The pathname to the BED file.
     """
     bed_data = pd.read_csv(file_name, sep="\t", header=None)
     bed_data.rename(
