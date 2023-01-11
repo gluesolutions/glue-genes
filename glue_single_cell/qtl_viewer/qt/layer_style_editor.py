@@ -1,12 +1,10 @@
 import os
 
 import numpy as np
-
-from qtpy import QtWidgets, QtGui
-from qtpy.QtCore import Qt
-
 from echo.qt import autoconnect_callbacks_to_qt, connect_value
-from glue.utils.qt import load_ui, fix_tab_widget_fontsize
+from glue.utils.qt import fix_tab_widget_fontsize, load_ui
+from qtpy import QtGui, QtWidgets
+from qtpy.QtCore import Qt
 
 
 class QTLLayerStyleEditor(QtWidgets.QWidget):

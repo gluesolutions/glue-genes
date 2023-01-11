@@ -1,11 +1,12 @@
 import os
-from qtpy import QtWidgets
+
 from echo import keep_in_sync
 from echo.qt import autoconnect_callbacks_to_qt
-from glue.utils.qt import load_ui, fix_tab_widget_fontsize
-from glue.core.state_objects import State, CallbackProperty
+from glue.core.state_objects import CallbackProperty, State
 from glue.utils import nonpartial
 from glue.utils.decorators import avoid_circular
+from glue.utils.qt import fix_tab_widget_fontsize, load_ui
+from qtpy import QtWidgets
 
 __all__ = ["SliderState", "SliderLabelWidget", "QTLOptionsWidget"]
 

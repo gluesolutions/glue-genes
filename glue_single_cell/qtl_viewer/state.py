@@ -1,10 +1,9 @@
-from glue.viewers.matplotlib.state import (
-    DeferredDrawCallbackProperty as DDCProperty,
-    DeferredDrawSelectionCallbackProperty as DDSCProperty,
-)
-from glue.core.data_combo_helper import ComponentIDComboHelper, ComboHelper
+from glue.core.data_combo_helper import ComboHelper, ComponentIDComboHelper
 from glue.core.state_objects import StateAttributeLimitsHelper
-
+from glue.viewers.matplotlib.state import \
+    DeferredDrawCallbackProperty as DDCProperty
+from glue.viewers.matplotlib.state import \
+    DeferredDrawSelectionCallbackProperty as DDSCProperty
 from glue.viewers.scatter.state import ScatterViewerState
 
 __all__ = ["QTLViewerState"]

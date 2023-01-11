@@ -1,17 +1,16 @@
 import os
-import numpy as np
-from qtpy import QtWidgets
-from echo.qt import autoconnect_callbacks_to_qt
 
+import numpy as np
+import scanpy as sc
+from echo.qt import autoconnect_callbacks_to_qt
+from glue.core.data import Data
+from glue.core.link_helpers import JoinLink
 from glue.core.subset import CategorySubsetState
 from glue.utils.qt import load_ui
-from glue.core.link_helpers import JoinLink
-from glue.core.data import Data
+from qtpy import QtWidgets
 
 from ..state import DiffGeneExpState
 from .pca_subset import dialog
-
-import scanpy as sc
 
 __all__ = ["DiffGeneExpDialog"]
 

@@ -1,24 +1,16 @@
-from glue.viewers.scatter.layer_artist import ScatterLayerArtist
-from glue.viewers.scatter.state import ScatterLayerState
-from glue.viewers.scatter.python_export import python_export_scatter_layer
-from glue.utils import defer_draw, broadcast_to, ensure_numerical
-from glue.core.exceptions import IncompatibleAttribute
-
-
-from glue.viewers.scatter.layer_artist import (
-    set_mpl_artist_cmap,
-    DensityMapLimits,
-    ImageNormalize,
-)
-from glue.viewers.scatter.layer_artist import (
-    CMAP_PROPERTIES,
-    MARKER_PROPERTIES,
-    VISUAL_PROPERTIES,
-    DATA_PROPERTIES,
-    STRETCHES,
-)
 import numpy as np
-
+from glue.core.exceptions import IncompatibleAttribute
+from glue.utils import broadcast_to, defer_draw, ensure_numerical
+from glue.viewers.scatter.layer_artist import (CMAP_PROPERTIES,
+                                               DATA_PROPERTIES,
+                                               MARKER_PROPERTIES, STRETCHES,
+                                               VISUAL_PROPERTIES,
+                                               DensityMapLimits,
+                                               ImageNormalize,
+                                               ScatterLayerArtist,
+                                               set_mpl_artist_cmap)
+from glue.viewers.scatter.python_export import python_export_scatter_layer
+from glue.viewers.scatter.state import ScatterLayerState
 
 DATA_PROPERTIES.update(["lod_att", "lod_thresh"])
 

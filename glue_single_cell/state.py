@@ -1,11 +1,9 @@
+from echo import CallbackProperty, SelectionCallbackProperty
+from glue.core.data_combo_helper import (ComboHelper, ComponentIDComboHelper,
+                                         DataCollectionComboHelper,
+                                         ManualDataComboHelper)
 from glue.core.state_objects import State
-from echo import SelectionCallbackProperty, CallbackProperty
-from glue.core.data_combo_helper import (
-    DataCollectionComboHelper,
-    ComponentIDComboHelper,
-    ComboHelper,
-    ManualDataComboHelper,
-)
+
 from .data import DataAnnData
 
 __all__ = ["DiffGeneExpState", "PCASubsetState", "EnrichpyState"]

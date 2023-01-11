@@ -32,36 +32,24 @@ https://scanpy.readthedocs.io/en/stable/
 """
 
 import uuid
-
-import pandas as pd
-import numpy as np
-from scipy.sparse import isspmatrix
 from collections import OrderedDict
-
-from glue.core.component import Component, CoordinateComponent
-from glue.core.data import Data, Subset
-from glue.core.component_id import (
-    ComponentID,
-    PixelComponentID,
-)
-
-from glue.core.component_link import ComponentLink
-from glue.core.exceptions import IncompatibleAttribute
-
-from fast_histogram import histogram1d
-
-from glue.core import DataCollection
-
-from glue.core.state import saver, loader, GlueSerializeError
-from glue.core.state import _load_data_collection_4, _save_data_collection_4
-
-from glue.config import session_patch, data_translator
-
-import anndata
-import scanpy
-
 from pathlib import Path
 
+import anndata
+import numpy as np
+import pandas as pd
+import scanpy
+from fast_histogram import histogram1d
+from glue.config import data_translator, session_patch
+from glue.core import DataCollection
+from glue.core.component import Component, CoordinateComponent
+from glue.core.component_id import ComponentID, PixelComponentID
+from glue.core.component_link import ComponentLink
+from glue.core.data import Data, Subset
+from glue.core.exceptions import IncompatibleAttribute
+from glue.core.state import (GlueSerializeError, _load_data_collection_4,
+                             _save_data_collection_4, loader, saver)
+from scipy.sparse import isspmatrix
 
 __all__ = ["DataAnnData", "DataAnnDataTranslator"]
 

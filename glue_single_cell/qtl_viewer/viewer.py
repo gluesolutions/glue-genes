@@ -1,19 +1,14 @@
-from glue.viewers.scatter.viewer import MatplotlibScatterMixin
-from glue.viewers.matplotlib.qt.data_viewer import MatplotlibDataViewer
-
-from glue.utils import defer_draw, decorate_all_methods
-from glue.utils import mpl_to_datetime64
-
-from .layer_artist import QTLLayerArtist
-from .qt.options_widget import QTLOptionsWidget
-from .qt.layer_style_editor import QTLLayerStyleEditor
-
-from .state import QTLViewerState
-from glue.core.subset import roi_to_subset_state, RangeSubsetState
-
 # Probably not needed
 from glue.core.roi_pretransforms import ProjectionMplTransform
+from glue.core.subset import RangeSubsetState, roi_to_subset_state
+from glue.utils import decorate_all_methods, defer_draw, mpl_to_datetime64
+from glue.viewers.matplotlib.qt.data_viewer import MatplotlibDataViewer
+from glue.viewers.scatter.viewer import MatplotlibScatterMixin
 
+from .layer_artist import QTLLayerArtist
+from .qt.layer_style_editor import QTLLayerStyleEditor
+from .qt.options_widget import QTLOptionsWidget
+from .state import QTLViewerState
 
 __all__ = ["QTLViewer"]
 

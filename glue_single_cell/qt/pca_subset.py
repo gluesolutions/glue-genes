@@ -1,21 +1,16 @@
 import os
+
 import numpy as np
-from qtpy import QtWidgets
+import scanpy as sc
 from echo.qt import autoconnect_callbacks_to_qt
-
-
-from glue.utils.qt import load_ui
 from glue.core import Data, HubListener
-from glue.core.message import (
-    SubsetUpdateMessage,
-    SubsetDeleteMessage,
-)
 from glue.core.exceptions import IncompatibleAttribute
-
-from ..state import PCASubsetState
+from glue.core.message import SubsetDeleteMessage, SubsetUpdateMessage
+from glue.utils.qt import load_ui
+from qtpy import QtWidgets
 from qtpy.QtWidgets import QMessageBox
 
-import scanpy as sc
+from ..state import PCASubsetState
 
 __all__ = ["PCASubsetDialog", "GeneSummaryListener"]
 

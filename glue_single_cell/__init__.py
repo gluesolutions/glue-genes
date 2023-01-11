@@ -1,12 +1,12 @@
 def setup():
+    from glue.config import qt_client
+
     from .anndata_factory import read_anndata  # noqa
     from .anndata_factory import setup_anndata  # noqa
     from .menubar_plugin import diff_gene_exp_plugin  # noqa
-    from .menubar_plugin import pca_subset_exp_plugin  # noqa
     from .menubar_plugin import enrichrpy_plugin  # noqa
+    from .menubar_plugin import pca_subset_exp_plugin  # noqa
     from .qtl_viewer.viewer import QTLViewer  # noqa
-
-    from glue.config import qt_client
 
     qt_client.add(QTLViewer)
 
@@ -53,8 +53,8 @@ def setup():
         "#6027FE",
     ]
 
-    from glue.config import colormaps
     import matplotlib.cm as cm
+    from glue.config import colormaps
     from matplotlib.colors import ListedColormap
 
     colormaps.add("Reds", cm.Reds)

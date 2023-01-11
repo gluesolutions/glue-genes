@@ -1,11 +1,12 @@
 import os
-from numpy.testing import assert_array_equal
-from glue.app.qt import GlueApplication
-from glue.core.state import GlueUnSerializer
-from glue_single_cell.anndata_factory import read_anndata
-from glue.core import data_factories as df
 
 import anndata as ad
+from glue.app.qt import GlueApplication
+from glue.core import data_factories as df
+from glue.core.state import GlueUnSerializer
+from numpy.testing import assert_array_equal
+
+from glue_single_cell.anndata_factory import read_anndata
 
 DATA = os.path.join(os.path.dirname(__file__), "data")
 

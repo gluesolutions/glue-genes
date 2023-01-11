@@ -1,14 +1,13 @@
 import os
-from qtpy import QtWidgets
-from echo.qt import autoconnect_callbacks_to_qt
 
+import enrichrpy.enrichr
+from echo.qt import autoconnect_callbacks_to_qt
 from glue.utils.qt import load_ui
+from qtpy import QtWidgets
 
 from ..anndata_factory import df_to_data
 from ..state import EnrichpyState
 from .pca_subset import dialog
-
-import enrichrpy.enrichr
 
 __all__ = ["EnrichpyDialog"]
 

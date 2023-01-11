@@ -1,19 +1,13 @@
-from glue.config import data_factory
-from glue.config import startup_action
+from pathlib import Path
 
-from glue.core import Data
-
+import scanpy as sc
+from glue.config import data_factory, startup_action
+from glue.core import Data, HubListener
 from glue.core.message import DataCollectionAddMessage
-from glue.core import HubListener
 from glue.utils.qt import set_cursor_cm
-
 from qtpy.QtCore import Qt
 
-from pathlib import Path
-import scanpy as sc
-
 from .data import DataAnnData
-
 from .qt.load_data import LoadDataDialog
 
 __all__ = [

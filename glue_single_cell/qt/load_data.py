@@ -1,14 +1,12 @@
 import os
 
-from qtpy.QtWidgets import QDialog, QListWidgetItem
-from qtpy.QtCore import Qt
-from glue.utils.qt import load_ui
-
+import anndata as ad
 import h5py
+from glue.utils.qt import load_ui
 from psutil import virtual_memory
 from psutil._common import bytes2human
-
-import anndata as ad
+from qtpy.QtCore import Qt
+from qtpy.QtWidgets import QDialog, QListWidgetItem
 
 __all__ = ["LoadDataDialog"]
 

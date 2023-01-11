@@ -15,21 +15,20 @@ and that produces an IncompatibleAttribute exception
 
 """
 import os
-import numpy as np
-from glue.core.data_collection import DataCollection
-from glue.core import data_factories as df
-from glue.core import Data
-from glue.core.link_helpers import JoinLink
-from glue.app.qt import GlueApplication
-from glue.core.state import GlueUnSerializer
 from unittest.mock import patch
 
+import numpy as np
+from glue.app.qt import GlueApplication
+from glue.core import Data
+from glue.core import data_factories as df
+from glue.core.data_collection import DataCollection
+from glue.core.link_helpers import JoinLink
+from glue.core.state import GlueUnSerializer
+
 from glue_single_cell.anndata_factory import read_anndata
-from ..pca_subset import (
-    do_calculation_over_gene_subset,
-    apply_data_arr,
-    PCASubsetDialog,
-)
+
+from ..pca_subset import (PCASubsetDialog, apply_data_arr,
+                          do_calculation_over_gene_subset)
 
 DATA = os.path.join(os.path.dirname(__file__), "data")
 

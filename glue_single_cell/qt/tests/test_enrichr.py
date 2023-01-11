@@ -1,5 +1,5 @@
-from glue.core import Data
 from glue.app.qt import GlueApplication
+from glue.core import Data
 from glue.core.state import GlueUnSerializer
 
 from ..enrichr import EnrichpyDialog

@@ -1,8 +1,10 @@
 import os
-from glue.core import data_factories as df
+
 from glue.app.qt import GlueApplication
+from glue.core import data_factories as df
 
 from glue_single_cell.anndata_factory import read_anndata
+
 from ..diff_gene_exp import get_gene_list_diff_exp
 
 DATA = os.path.join(os.path.dirname(__file__), "data")

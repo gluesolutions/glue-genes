@@ -1,12 +1,13 @@
+import anndata
+from glue.app.qt.application import GlueApplication
+from glue.core import DataCollection
+
 from .data import DataAnnData
 
 # We now create a data object using the above class,
 # and launch a a glue session
 
-from glue.core import DataCollection
-from glue.app.qt.application import GlueApplication
 
-import anndata
 
 
 def main(argv):
