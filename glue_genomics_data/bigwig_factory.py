@@ -3,14 +3,14 @@ from glue.core import Data
 import pyranges as pr
 from pathlib import Path
 
-__all__ = ['is_bigwig', 'read_bigwig']
+__all__ = ["is_bigwig", "read_bigwig"]
 
 
 def is_bigwig(filename, **kwargs):
-    return filename.endswith('.bigwig') or filename.endswith('.bw')
+    return filename.endswith(".bigwig") or filename.endswith(".bw")
 
 
-@data_factory('BigWig data loader', is_bigwig, priority=999)
+@data_factory("BigWig data loader", is_bigwig, priority=999)
 def read_bigwig(file_name):
     """
     Read a bigwig file into glue.
@@ -18,7 +18,7 @@ def read_bigwig(file_name):
     Notes
     -----
     The ecosystem around bigwig files supports selective data loading and
-    selection from the on-disk file. This will probably require creating a 
+    selection from the on-disk file. This will probably require creating a
     custom glue data object that supports keeping the data on disk. Currently,
     this loader loads all data into memory.
 
@@ -30,5 +30,4 @@ def read_bigwig(file_name):
     # TODO: pyranges seem slow, switch to pyBigWig?
     bw_data = pr.read_bigwig(file_name).as_df()
 
-    return Data(**{k: bw_data[k] for k in bw_data.columns}, 
-                label=Path(file_name).stem)
+    return Data(**{k: bw_data[k] for k in bw_data.columns}, label=Path(file_name).stem)

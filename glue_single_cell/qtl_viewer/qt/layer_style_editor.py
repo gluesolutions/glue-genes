@@ -12,39 +12,48 @@ from glue.core.exceptions import IncompatibleAttribute
 
 
 class QTLLayerStyleEditor(QtWidgets.QWidget):
-
     def __init__(self, layer, parent=None):
 
         super(QTLLayerStyleEditor, self).__init__(parent=parent)
 
-        self.ui = load_ui('layer_style_editor.ui', self,
-                          directory=os.path.dirname(__file__))
+        self.ui = load_ui(
+            "layer_style_editor.ui", self, directory=os.path.dirname(__file__)
+        )
 
-        connect_kwargs = {'alpha': dict(value_range=(0, 1)),
-                          'size_scaling': dict(value_range=(0.1, 10), log=True),
-                          'density_contrast': dict(value_range=(0, 1))}
-        self._connections = autoconnect_callbacks_to_qt(layer.state, self.ui, connect_kwargs)
+        connect_kwargs = {
+            "alpha": dict(value_range=(0, 1)),
+            "size_scaling": dict(value_range=(0.1, 10), log=True),
+            "density_contrast": dict(value_range=(0, 1)),
+        }
+        self._connections = autoconnect_callbacks_to_qt(
+            layer.state, self.ui, connect_kwargs
+        )
 
-        self._connection_dpi = connect_value(layer.state.viewer_state, 'dpi', self.ui.value_dpi,
-                                             value_range=(12, 144), log=True)
+        self._connection_dpi = connect_value(
+            layer.state.viewer_state,
+            "dpi",
+            self.ui.value_dpi,
+            value_range=(12, 144),
+            log=True,
+        )
 
         fix_tab_widget_fontsize(self.ui.tab_widget)
 
         self.layer_state = layer.state
 
-        self.layer_state.add_callback('markers_visible', self._update_markers_visible)
+        self.layer_state.add_callback("markers_visible", self._update_markers_visible)
 
-        self.layer_state.add_callback('cmap_mode', self._update_cmap_mode)
-        self.layer_state.add_callback('size_mode', self._update_size_mode)
+        self.layer_state.add_callback("cmap_mode", self._update_cmap_mode)
+        self.layer_state.add_callback("size_mode", self._update_size_mode)
 
-        self.layer_state.add_callback('density_map', self._update_size_mode)
-        self.layer_state.add_callback('density_map', self._update_warnings)
-        self.layer_state.add_callback('density_map', self._update_checkboxes)
+        self.layer_state.add_callback("density_map", self._update_size_mode)
+        self.layer_state.add_callback("density_map", self._update_warnings)
+        self.layer_state.add_callback("density_map", self._update_checkboxes)
 
-        self.layer_state.viewer_state.add_callback('x_att', self._update_checkboxes)
-        self.layer_state.viewer_state.add_callback('y_att', self._update_checkboxes)
+        self.layer_state.viewer_state.add_callback("x_att", self._update_checkboxes)
+        self.layer_state.viewer_state.add_callback("y_att", self._update_checkboxes)
 
-        self.layer_state.add_callback('layer', self._update_warnings)
+        self.layer_state.add_callback("layer", self._update_warnings)
 
         self._update_markers_visible()
 
@@ -64,26 +73,31 @@ class QTLLayerStyleEditor(QtWidgets.QWidget):
 
         warning = " (may be slow given data size)"
 
-        for combo, threshold in [(self.ui.combosel_size_mode, 10000),
-                                 (self.ui.combosel_cmap_mode, 50000)]:
+        for combo, threshold in [
+            (self.ui.combosel_size_mode, 10000),
+            (self.ui.combosel_cmap_mode, 50000),
+        ]:
 
             if n_points > threshold and not self.layer_state.density_map:
                 for item in range(combo.count()):
                     text = combo.itemText(item)
-                    if text != 'Fixed':
+                    if text != "Fixed":
                         combo.setItemText(item, text + warning)
                         combo.setItemData(item, QtGui.QBrush(Qt.red), Qt.TextColorRole)
             else:
                 for item in range(combo.count()):
                     text = combo.itemText(item)
-                    if text != 'Fixed':
+                    if text != "Fixed":
                         if warning in text:
-                            combo.setItemText(item, text.replace(warning, ''))
+                            combo.setItemText(item, text.replace(warning, ""))
                             combo.setItemData(item, QtGui.QBrush(), Qt.TextColorRole)
 
     def _update_size_mode(self, size_mode=None):
 
-        visible = not self.layer_state.density_map and not self.layer_state.size_mode == 'Fixed'
+        visible = (
+            not self.layer_state.density_map
+            and not self.layer_state.size_mode == "Fixed"
+        )
         self.ui.label_size_attribute.setVisible(visible)
         self.ui.combosel_size_att.setVisible(visible)
         self.ui.label_size_limits.setVisible(visible)
@@ -91,7 +105,9 @@ class QTLLayerStyleEditor(QtWidgets.QWidget):
         self.ui.valuetext_size_vmax.setVisible(visible)
         self.ui.button_flip_size.setVisible(visible)
 
-        visible = not self.layer_state.density_map and self.layer_state.size_mode == 'Fixed'
+        visible = (
+            not self.layer_state.density_map and self.layer_state.size_mode == "Fixed"
+        )
         self.ui.value_size.setVisible(visible)
 
         density = self.layer_state.density_map
@@ -130,18 +146,22 @@ class QTLLayerStyleEditor(QtWidgets.QWidget):
             layer = self.layer_state.layer.data
 
         try:
-            x_datetime = layer.get_kind(self.layer_state.viewer_state.x_att) == 'datetime'
+            x_datetime = (
+                layer.get_kind(self.layer_state.viewer_state.x_att) == "datetime"
+            )
         except IncompatibleAttribute:
             x_datetime = False
 
         try:
-            y_datetime = layer.get_kind(self.layer_state.viewer_state.y_att) == 'datetime'
+            y_datetime = (
+                layer.get_kind(self.layer_state.viewer_state.y_att) == "datetime"
+            )
         except IncompatibleAttribute:
             y_datetime = False
 
     def _update_cmap_mode(self, cmap_mode=None):
 
-        if self.layer_state.cmap_mode == 'Fixed':
+        if self.layer_state.cmap_mode == "Fixed":
             self.ui.label_cmap_attribute.hide()
             self.ui.combosel_cmap_att.hide()
             self.ui.label_cmap_limits.hide()
