@@ -1,18 +1,14 @@
 import os
 
-import pytest
-
+import anndata
+import context  # noqa F401
 import numpy as np
+import pytest
+from glue.core import data_factories as df
 from numpy.random import RandomState
 from numpy.testing import assert_almost_equal, assert_equal
-from scipy.sparse import find
-from scipy.sparse import csc_matrix
+from scipy.sparse import csc_matrix, find
 
-from glue.core import data_factories as df
-
-import anndata
-
-import context  # noqa F401
 from glue_single_cell.anndata_factory import read_anndata
 
 SPARSE_BACKED_OBS_NUM = 500

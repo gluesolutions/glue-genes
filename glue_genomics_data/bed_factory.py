@@ -1,8 +1,8 @@
-from glue.config import data_factory
-from glue.core import Data
-import pandas as pd
 from pathlib import Path
 
+import pandas as pd
+from glue.config import data_factory
+from glue.core import Data
 
 __all__ = ["is_bed", "read_bed"]
 

@@ -1,7 +1,8 @@
+from pathlib import Path
+
+import pyranges as pr
 from glue.config import data_factory
 from glue.core import Data
-import pyranges as pr
-from pathlib import Path
 
 __all__ = ["is_bigwig", "read_bigwig"]
 
