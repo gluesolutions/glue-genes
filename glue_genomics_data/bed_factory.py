@@ -2,9 +2,6 @@ from glue.config import data_factory
 from glue.core import Data
 import pandas as pd
 from pathlib import Path
-from qtpy.QtWidgets import QDialog
-
-# from .preprocessors.peak_correlations import PeakCorrelationsPreprocessor
 
 
 __all__ = ["is_bed", "read_bed"]

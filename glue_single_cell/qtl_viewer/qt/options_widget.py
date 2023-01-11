@@ -1,7 +1,7 @@
 import os
 from qtpy import QtWidgets
-from echo import keep_in_sync, delay_callback, ignore_callback
-from echo.qt import autoconnect_callbacks_to_qt, connect_value
+from echo import keep_in_sync
+from echo.qt import autoconnect_callbacks_to_qt
 from glue.utils.qt import load_ui, fix_tab_widget_fontsize
 from glue.core.state_objects import State, CallbackProperty
 from glue.utils import nonpartial
@@ -74,10 +74,6 @@ class QTLOptionsWidget(QtWidgets.QWidget):
     def __init__(self, viewer_state, session, parent=None):
 
         super().__init__(parent=parent)
-        # self.ui = load_ui('data_slice_widget.ui', self,
-        #              directory=os.path.dirname(__file__))
-        #
-        #       self._connections = autoconnect_callbacks_to_qt(self.state, self.ui)
 
         self._slider = None  # This should only actually be a single entry, not a list
         self.ui = load_ui(

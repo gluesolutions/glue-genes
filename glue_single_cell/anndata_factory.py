@@ -2,15 +2,11 @@ from glue.config import data_factory
 from glue.config import startup_action
 
 from glue.core import Data
-from glue.core import DataCollection
 
 from glue.core.message import DataCollectionAddMessage
-from glue.core import Hub, HubListener
-from glue.core.qt.dialogs import warn
+from glue.core import HubListener
 from glue.utils.qt import set_cursor_cm
-from glue.core.qt.dialogs import warn
 
-from qtpy import QtCore, QtWidgets
 from qtpy.QtCore import Qt
 
 from pathlib import Path
@@ -25,7 +21,7 @@ __all__ = [
     "is_anndata",
     "join_anndata_on_keys",
     "read_anndata",
-    "DataAnnDataListener",
+    "AnnDataListener",
     "setup_anndata",
 ]
 
@@ -105,8 +101,8 @@ def join_anndata_on_keys(datasets):
     cells (obs) and genes (vars) are standard? in AnnData objects
     so we could join on these, which is more intuitive in the UI.
     """
-    varset = {d for d in datasets if d.meta["join_on_var"] == True}
-    obsset = {d for d in datasets if d.meta["join_on_obs"] == True}
+    varset = {d for d in datasets if d.meta["join_on_var"] is True}
+    obsset = {d for d in datasets if d.meta["join_on_obs"] is True}
 
     for dataset in datasets:
         if dataset.meta["anndatatype"] == "X Array":

@@ -1,8 +1,8 @@
 from glue.viewers.scatter.viewer import MatplotlibScatterMixin
 from glue.viewers.matplotlib.qt.data_viewer import MatplotlibDataViewer
 
-from glue.viewers.scatter.layer_artist import ScatterLayerArtist
 from glue.utils import defer_draw, decorate_all_methods
+from glue.utils import mpl_to_datetime64
 
 from .layer_artist import QTLLayerArtist
 from .qt.options_widget import QTLOptionsWidget
@@ -11,8 +11,8 @@ from .qt.layer_style_editor import QTLLayerStyleEditor
 from .state import QTLViewerState
 from glue.core.subset import roi_to_subset_state, RangeSubsetState
 
-
-from glue.core.roi_pretransforms import ProjectionMplTransform  # Probably not needed
+# Probably not needed
+from glue.core.roi_pretransforms import ProjectionMplTransform
 
 
 __all__ = ["QTLViewer"]
@@ -120,7 +120,8 @@ class QTLViewer(MatplotlibScatterMixin, MatplotlibDataViewer):
         if self.state.lod_att is not None and self.state.lod_thresh is not None:
             lod_roi = RangeSubsetState(
                 self.state.lod_thresh, 999, att=self.state.lod_att
-            )  # hi=999 is a bad hack. We could set this to the max value of self.state.lod_att instead
+            )  # hi=999 is a bad hack.
+            # We could set this to the max value of self.state.lod_att instead
             subset_state = subset_state & lod_roi
 
         self.apply_subset_state(subset_state, override_mode=override_mode)

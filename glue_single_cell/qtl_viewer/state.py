@@ -6,12 +6,12 @@ from glue.core.data_combo_helper import ComponentIDComboHelper, ComboHelper
 from glue.core.state_objects import StateAttributeLimitsHelper
 
 from glue.viewers.scatter.state import ScatterViewerState
-from glue.utils.decorators import avoid_circular
 
 __all__ = ["QTLViewerState"]
 
 CHR_POSITIONS = {
-    "Mouse": {  # http://www.informatics.jax.org/mgihome/other/mouse_facts1.shtml
+    # http://www.informatics.jax.org/mgihome/other/mouse_facts1.shtml
+    "Mouse": {
         "Names": [
             "1",
             "2",
@@ -60,7 +60,8 @@ CHR_POSITIONS = {
             91,
             0.01,
         ],
-        "GridSize": 200_000_000,  # Genome position seems to use a fixed grid so that there is emtpy space in later chromosomes
+        "GridSize": 200_000_000,  # Genome position seems to use a fixed grid
+        # so that there is emtpy space in later chromosomes
     },
     "Human": {  # http://www.insilicase.com/Web/Chromlen.aspx
         "Names": [

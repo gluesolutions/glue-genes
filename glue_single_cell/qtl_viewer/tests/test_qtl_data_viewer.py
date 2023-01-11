@@ -1,6 +1,3 @@
-import os
-import pytest
-import numpy as np
 from glue.core import Data
 from glue.app.qt import GlueApplication
 from glue.core.state import GlueUnSerializer
@@ -8,7 +5,7 @@ from glue.utils.qt import process_events
 
 from glue.core.roi import RectangularROI
 
-from numpy.testing import assert_allclose, assert_equal
+from numpy.testing import assert_equal
 
 from ..viewer import QTLViewer
 
@@ -102,8 +99,8 @@ class TestScatterViewer(object):
         # means things do not update properly.
 
         # This seems like a code of code duplication to get a reduced view
-        # I can see a potential here for a limitedscatterviewer artist/state that
-        # I can use in both QTL viewer and small multiples
+        # I can see a potential here for a limitedscatterviewer artist/state
+        # that I can use in both QTL viewer and small multiples
         viewer_state = self.viewer.state
         self.viewer.add_data(self.data)
         self.viewer.layers[0].state.cmap_mode = "Linear"

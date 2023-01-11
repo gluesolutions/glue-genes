@@ -8,14 +8,11 @@ from glue.core.exceptions import IncompatibleAttribute
 from glue.viewers.scatter.layer_artist import (
     set_mpl_artist_cmap,
     DensityMapLimits,
-    ravel_artists,
-    InvertedNormalize,
+    ImageNormalize,
 )
 from glue.viewers.scatter.layer_artist import (
     CMAP_PROPERTIES,
     MARKER_PROPERTIES,
-    LINE_PROPERTIES,
-    DENSITY_PROPERTIES,
     VISUAL_PROPERTIES,
     DATA_PROPERTIES,
 )
@@ -144,8 +141,8 @@ class QTLLayerArtist(ScatterLayerArtist):
             else:
                 self.density_artist.set_label(None)
                 if self._use_plot_artist():
-                    # In this case we use Matplotlib's plot function because it has much
-                    # better performance than scatter.
+                    # In this case we use Matplotlib's plot function because it
+                    # has much better performance than scatter.
                     self.plot_artist.set_data(masked_x, masked_y)
                 else:
                     offsets = np.vstack((masked_x, masked_y)).transpose()

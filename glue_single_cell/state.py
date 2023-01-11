@@ -20,7 +20,8 @@ class EnrichpyState(State):
     gene_set = (
         SelectionCallbackProperty()
     )  # The Enrichr library to use. Could be linked to organism to get a filtered list.
-    # This is a terrible name, because it is confusing with gene subsets, but this is the Enrichpy parameter name
+    # This is a terrible name, because it is confusing with gene subsets
+    # but this is the Enrichpy parameter name
     gene_att = SelectionCallbackProperty()  # The attribute with gene labels in it
 
     def __init__(self, data_collection):
@@ -158,4 +159,3 @@ class PCASubsetState(State):
 
     def _on_data_change(self, *args, **kwargs):
         pass
-        # self.gene_att_helper.set_multiple_data([] if self.data is None else [self.data.meta['var_data']])

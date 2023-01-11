@@ -21,8 +21,8 @@ a dedicated data class. We do not deal with these yet.
 TODO: The anndata/scanpy convention of updating the data
 structure when new calculations are performed only works
 with glue if we know how to add components to the appropriate
-glue datasets (which currently are only linked-by-key) in a 
-loose way, and should probably be more tightly coupled. 
+glue datasets (which currently are only linked-by-key) in a
+loose way, and should probably be more tightly coupled.
 
 anndata - Annotated Data
 https://anndata.readthedocs.io/en/latest/
@@ -38,37 +38,24 @@ import numpy as np
 from scipy.sparse import isspmatrix
 from collections import OrderedDict
 
-from glue.core.component import Component, CoordinateComponent, DerivedComponent
-from glue.core.data import BaseCartesianData, Data, Subset
+from glue.core.component import Component, CoordinateComponent
+from glue.core.data import Data, Subset
 from glue.core.component_id import (
     ComponentID,
-    ComponentIDDict,
     PixelComponentID,
-    ComponentIDList,
 )
 
-from glue.core.component_link import ComponentLink, CoordinateComponentLink
+from glue.core.component_link import ComponentLink
 from glue.core.exceptions import IncompatibleAttribute
 
-from fast_histogram import histogram1d, histogram2d
+from fast_histogram import histogram1d
 
-from glue.core import data_factories as df
-from glue.core import Hub, HubListener, DataCollection
+from glue.core import DataCollection
 
-from glue.core.message import (
-    DataMessage,
-    DataCollectionMessage,
-    SubsetMessage,
-    SubsetCreateMessage,
-    SubsetUpdateMessage,
-    SubsetDeleteMessage,
-)
 from glue.core.state import (
-    GlueSerializer,
-    GlueUnSerializer,
     saver,
     loader,
-    VersionedDict,
+    GlueSerializeError
 )
 from glue.core.state import _load_data_collection_4, _save_data_collection_4
 
@@ -183,7 +170,7 @@ class DataAnnData(Data):
                 ].data  # This probably just loads everything into memory
         else:
             if cid not in self._pixel_component_ids:
-                result = self.Xdata.X[:, :].data  # This loads everything into memory
+                result = self.Xdata.X[:, :].data  # Loads everything into memory
             else:
                 result = comp.data
 
@@ -310,7 +297,7 @@ def _save_anndata(data, context):
             (context.id(c), context.id(data.get_component(c))) for c in data._components
         ],
         subsets=[context.id(s) for s in data.subsets],
-        listeners=[context.id(l) for l in data.listeners],
+        listeners=[context.id(v) for v in data.listeners],
         label=data.label,
     )
 

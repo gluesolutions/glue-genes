@@ -145,20 +145,6 @@ class QTLLayerStyleEditor(QtWidgets.QWidget):
         else:
             layer = self.layer_state.layer.data
 
-        try:
-            x_datetime = (
-                layer.get_kind(self.layer_state.viewer_state.x_att) == "datetime"
-            )
-        except IncompatibleAttribute:
-            x_datetime = False
-
-        try:
-            y_datetime = (
-                layer.get_kind(self.layer_state.viewer_state.y_att) == "datetime"
-            )
-        except IncompatibleAttribute:
-            y_datetime = False
-
     def _update_cmap_mode(self, cmap_mode=None):
 
         if self.layer_state.cmap_mode == "Fixed":
