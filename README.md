@@ -32,6 +32,7 @@ installing this package is to use [conda](https://www.anaconda.com) and install 
 ```
 conda create -n glue-genes python==3.9
 conda activate glue-genes
+
 conda install glue-core
 pip install glue-genes@git+https://github.com/gluesolutions/glue-genes.git
 ```
@@ -41,6 +42,7 @@ pip install glue-genes@git+https://github.com/gluesolutions/glue-genes.git
 The Scanpy differential gene expression plugin requires some custom actions to run at startup, which can be achieved by starting glue using this command:
 
 `glue --startup=setup_anndata`
+
 
 
 ### Development
