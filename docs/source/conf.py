@@ -33,7 +33,7 @@ master_doc = "index"
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
 html_logo = "images/glue_genes_icon.png"
-html_theme = "sphinx_book_theme"
+# html_theme = "sphinx_book_theme"
 html_favicon = "images/favicon.png"
 
 html_context = {
@@ -50,16 +50,16 @@ html_css_files = ["style.css"]
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
 # documentation.
-html_theme_options = dict(
-    repository_url="https://github.com/gluesolutions/glue-genes",
-    repository_branch="main",
-    path_to_docs="docs",
-    use_edit_page_button=True,
-    use_repository_button=True,
-    use_issues_button=True,
-    home_page_in_toc=False,
-    extra_navbar="",
-    navbar_footer_text="",
-    extra_footer="""<br>
-    Theme by the <a href="https://ebp.jupyterbook.org">Executable Book Project</a></p>""",
-)
+# html_theme_options = dict(
+#    repository_url="https://github.com/gluesolutions/glue-genes",
+#    repository_branch="main",
+#    path_to_docs="docs",
+#    use_edit_page_button=True,
+#    use_repository_button=True,
+#    use_issues_button=True,
+#    home_page_in_toc=False,
+#    extra_navbar="",
+#    navbar_footer_text="",
+#    extra_footer="""<br>
+#    Theme by the <a href="https://ebp.jupyterbook.org">Executable Book Project</a></p>""",
+# )
