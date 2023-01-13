@@ -33,9 +33,7 @@ def read_bigwig(file_name):
     be necessary to create a loader that also takes an associated BED file so
     that only relevant information is loaded.
 
-    TODO
-    ----
-    Investigate if there is a faster library than pyranges for this.
+    TODO: Investigate if there is a faster library than pyranges for this.
     Perhaps pyBigWig?
 
     """
