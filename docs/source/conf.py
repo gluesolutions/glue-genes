@@ -18,6 +18,7 @@ extensions = [
     "sphinx_automodapi.automodapi",
     "sphinx.ext.intersphinx",
     "sphinx_design",
+    "sphinx_rtd_theme",
     "numpydoc",
 ]
 numpydoc_show_class_members = False
@@ -33,7 +34,7 @@ master_doc = "index"
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
 html_logo = "images/glue_genes_icon.png"
-# html_theme = "sphinx_book_theme"
+html_theme = "sphinx_rtd_theme"
 html_favicon = "images/favicon.png"
 
 html_context = {
