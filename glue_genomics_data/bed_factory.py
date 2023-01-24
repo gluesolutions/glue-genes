@@ -4,7 +4,7 @@ import pandas as pd
 from glue.config import data_factory
 from glue.core import Data
 
-__all__ = ["is_bed", "read_bed"]
+__all__ = ["read_bed"]
 
 
 def is_bed(filename, **kwargs):
@@ -37,6 +37,11 @@ def remap_columns(x):
 def read_bed(file_name):
     """
     Read a BED file.
+
+    The first three columns will be named: chr, start, end
+
+    The remaining columns are named ucol (for unknown column)
+    and can be renamed by the user.
 
     Parameters
     ----------

@@ -11,10 +11,9 @@ from .data import DataAnnData
 from .qt.load_data import LoadDataDialog
 
 __all__ = [
-    "df_to_data",
-    "is_anndata",
-    "join_anndata_on_keys",
     "read_anndata",
+    "setup_gui_joins",
+    "join_anndata_on_keys",
     "AnnDataListener",
     "setup_anndata",
 ]
@@ -22,6 +21,8 @@ __all__ = [
 
 class AnnDataListener(HubListener):
     """
+    Set up :class:`~.JoinLinks` for :class:`~.DataAnnData` objects.
+
     Listen for DataAnnData objects to be added to the
     data collection object, and, if one is, setup the
     correct join_on_key joins in a way that they will
@@ -41,6 +42,10 @@ class AnnDataListener(HubListener):
 
 @startup_action("setup_anndata")
 def setup_anndata(session, data_collection):
+    """
+    A startup action to set up the :class:`~.AnnDataListener`
+    """
+
     data_collection.anndatalistener = AnnDataListener(data_collection.hub)
     return
 
@@ -59,21 +64,24 @@ def is_anndata(filename, **kwargs):
 
 def setup_gui_joins(dc, data):
     """
-    Set up Join_Links that mirror the existing join_on_key links.
-    This allows the user to see and remove links in the GUI.
-
-    We cannot do this at data load because these links are defined
-    at the level of a data_collection, which may not exist at
-    data load time. Instead we call this through a listener
-    when a DataAnnData object is added to a data collection.
+    Set up :class:`~glue.core.link_helpers.JoinLinks` that mirror the existing join_on_key links,
+    so these links show in the Link Editor.
 
     Parameters
     ----------
     dc : :class:`~glue.core.data_collection.DataCollection`
         The DataCollection object associated with this glue session
-    data : :class:`~glue-genes.data.DataAnnData`
+    data : :class:`~glue_single_cell.data.DataAnnData`
         The DataAnnData object that defines join_on_key links
-        to the associate obs and var Data objects
+        to the associated obs and var Data objects
+
+    Notes
+    -----
+    We cannot do this at data load because these links are defined
+    at the level of a data_collection, which may not exist at
+    data load time. Instead we call this through a listener
+    when a :class:`~glue_single_cell.data.DataAnnData` object is added to a data collection.
+
     """
     try:  # If we are using a version of glue that supports links in the GUI
         from glue.core.link_helpers import JoinLink
@@ -142,11 +150,17 @@ def read_anndata(
     try_backed=False,
 ):
     """
-    Use Scanpy/AnnData to read a file from disk
+    Use AnnData to read a single-cell type data file into three linked glue Data objects.
 
-    Currently supports .loom and .h5ad files, but .loom files
-    are read into memory (anndata library does not support
-    a file-backed mode for them) which may cause memory issues.
+    AnnData objects are mapped into three glue Data objects that are linked by JoinLink
+
+    Currently supports .h5ad and .loom files, but reading in
+    backed mode is only supported for .h5ad because of underlying
+    limitations with AnnData.
+
+    Parameters
+
+
     """
     list_of_data_objs = []
     basename = Path(file_name).stem

@@ -55,11 +55,16 @@ def get_system_memory():
 
 class LoadDataDialog(QDialog):
     """
-    I guess we could/should put all the state here into a state class
+    A dialog to allow the user to choose how to load an AnnData object.
 
-    But for now...
+    Currently we return parameters directly from this dialog rather than
+    the ideal approach which is to encapsulate these parameters in a
+    custom State class.
 
-    We return this object with components, and subsample, and backed
+    Parameters
+    ----------
+    filename : str
+                Path to data file to load
     """
 
     def __init__(self, filename=None, parent=None):

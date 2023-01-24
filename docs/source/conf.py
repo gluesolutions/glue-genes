@@ -29,6 +29,18 @@ exclude_patterns = []
 # The master toctree document.
 master_doc = "index"
 
+intersphinx_cache_limit = 10  # days to keep the cached inventories
+intersphinx_mapping = {
+    "python": ("https://docs.python.org/3.7", None),
+    "matplotlib": ("https://matplotlib.org", None),
+    "numpy": ("https://numpy.org/doc/stable/", None),
+    "astropy": ("https://docs.astropy.org/en/stable/", None),
+    "echo": ("https://echo.readthedocs.io/en/latest/", None),
+    "pandas": ("https://pandas.pydata.org/pandas-docs/stable/", None),
+    "PyQt5": ("https://www.riverbankcomputing.com/static/Docs/PyQt5/", None),
+    "glue": ("https://docs.glueviz.org/en/latest/", None),
+}
+
 
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output

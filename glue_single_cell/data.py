@@ -1,5 +1,5 @@
 """
-A glue Dataclass that wraps an AnnData object
+A glue :class:`~glue.core.data.Data` class that wraps an AnnData object
 
 The primary motivation is to support on-disk access
 to a dataset that (even sparse) may be too large
@@ -12,8 +12,8 @@ parts of the AnnData object are stored as regular glue data
 objects -- their creation and linking with the DataAnnData is
 handled by the data loader.
 
-All the obsm arrays and obs table are combined as one dataset
-All the varm arrays and var table are combined as one dataset
+All the obsm arrays and obs table are combined as one dataset.
+All the varm arrays and var table are combined as one dataset.
 
 The obsp and varp arrays could be extremely large and require
 a dedicated data class. We do not deal with these yet.
@@ -47,14 +47,33 @@ from glue.core.component_id import ComponentID, PixelComponentID
 from glue.core.component_link import ComponentLink
 from glue.core.data import Data, Subset
 from glue.core.exceptions import IncompatibleAttribute
-from glue.core.state import (GlueSerializeError, _load_data_collection_4,
-                             _save_data_collection_4, loader, saver)
+from glue.core.state import (
+    GlueSerializeError,
+    _load_data_collection_4,
+    _save_data_collection_4,
+    loader,
+    saver,
+)
 from scipy.sparse import isspmatrix
 
 __all__ = ["DataAnnData", "DataAnnDataTranslator"]
 
 
 class DataAnnData(Data):
+    """
+    A :class:`~glue.core.data.Data` class to handle on-disk and sparse access to a large AnnData X matrix.
+
+    Attributes
+    ----------
+    Xdata
+    listeners : list
+                Any :class:`~glue_single_cell.anndata_factory.AnnDataListener` associated with this object.
+    backed : bool
+             True if the matrix is not loaded into memory but is accessed from the disk.
+    sparse : bool
+             True if the underlying matrix is sparse
+    """
+
     def __init__(
         self, label="", full_anndata_obj=None, backed=False, coords=None, **kwargs
     ):
@@ -85,6 +104,9 @@ class DataAnnData(Data):
 
     @property
     def Xdata(self):
+        """
+        The full AnnData object, accessible for analysis functions that need one.
+        """
         if self._Xdata:
             return self._Xdata
         else:
@@ -96,12 +118,21 @@ class DataAnnData(Data):
 
     def get_mask(self, subset_state, view=None):
         """
+        Do not allow subset_states to propagate through X matrix.
+
         This is a bit of a hack. Because we have join_on_keys on both
-        dimensions of the X array, Data.get_mask() will normally
-        default to trying get_mask_with_key_joins. By not
+        dimensions of the X array, :meth:`~glue.core.data.Data.get_mask` will normally
+        default to trying :func:`~glue.core.joins.get_mask_with_key_joins` . By not
         allowing that we prevent subsets on obs/var arrays traveling
-        through the X array to completely cover var/ob arrays.
-        """
+        through the X array to completely cover var/obs arrays.
+
+        Parameters
+        ----------
+        subset_state : :class:`~glue.core.subset.SubsetState`
+            The subset state to use to compute the mask
+        view : `slice`
+            The 'view' on the mask - anything that is considered a valid
+            Numpy slice/index."""
         return subset_state.to_mask(self, view=view)
 
     def get_kind(self, cid):
@@ -124,6 +155,8 @@ class DataAnnData(Data):
 
     def get_data(self, cid, view=None):
         """
+        Get the data values for a given component.
+
         This is the tricky function for anndata backed store, since
         in general returning the full data object leads to memory problems.
 
@@ -131,6 +164,15 @@ class DataAnnData(Data):
         into other views, so we need to decompose things.
 
         We could have get_data return an iterator directly.
+
+        Parameters
+        ----------
+        cid : :class:`~glue.core.component_id.ComponentID`
+            The component ID to get the data for.
+        view : `slice`
+            The 'view' on the data - anything that is considered a valid
+            Numpy slice/index.
+
         """
 
         if not self.backed:
@@ -503,15 +545,22 @@ def _load_data_collection_5(rec, context):
 
 @data_translator(anndata.AnnData)
 class DataAnnDataTranslator:
+    """
+    A translator between an AnnData object and a :class:`~.DataAnnData` object.
+    """
+
     def to_data(self, data):
         """
-        This is not quite right. We actually
-        need to return a bunch of linked datasets
-        (all the logic in read_anndata)
+        An incomplete implementation of getting :class:`~.DataAnnData` object back from an AnnData object.
+
+        We actually need to return a bunch of linked datasets (all the logic in read_anndata)
         """
         return DataAnnData(data.X)
 
     def unwrap_components(self, data):
+        """
+        Convert the obs and var tables back to Pandas DataFrames.
+        """
         output_dict = {}
         for cid in data.components:
             if (cid.label == "obs_names") or (cid.label == "var_names"):
@@ -523,7 +572,8 @@ class DataAnnDataTranslator:
 
     def to_object(self, data_or_subset, attribute=None):
         """
-        Re-create an AnnData object from the Glue data objects
+        Re-create an AnnData object from the Glue data objects.
+
         This does not faithfully reproduce things since varm and
         obsm arrays have been flattened with var and obs arrays
         and some things (like .uns and layers) are ignored

@@ -4,10 +4,11 @@ import pyranges as pr
 from glue.config import data_factory
 from glue.core import Data
 
-__all__ = ["is_bigwig", "read_bigwig"]
+__all__ = ["read_bigwig"]
 
 
 def is_bigwig(filename, **kwargs):
+    """Check if a file is a BigWig file"""
     return filename.endswith(".bigwig") or filename.endswith(".bw")
 
 
