@@ -3,12 +3,12 @@
 How do I visualize my data?
 ###########################
 
-This guide shows you how to visualize your data in glue genes,
-using either the core glue viewers or the additional viewers
-added by glue genes. 
+This guide shows you how to visualize your data in glue genes, using either the core glue viewers or the additional viewers added by glue genes. 
 
-There are multiple ways to create a Viewer and visualize a dataset
-in glue genes. You can:
+Create a Viewer
+*****************
+
+There are multiple ways to create a Viewer and visualize a dataset in glue genes. You can:
 
 1. Drag and drop a dataset (or subset) into the main viewer area. A pop-up menu will allow you to select the kind of viewer you want to make. The dataset you dragged in will be visualized in the Viewer.
 
@@ -34,6 +34,11 @@ in glue genes. You can:
    :width: 75%
 
    Create a new Viewer from the **Data Manager** menu
+
+Choose a type of Viewer
+*************************
+
+All of the above methods prompt you to choose a kind of Viewer. There are many different viewer types available in glue genes.
 
 
 What next?
