@@ -71,3 +71,35 @@ The Small Multiples Viewer is an extra Viewer bundled by default with glue genes
 Analysis Plug-ins
 ******************
 
+The analysis plug-ins bundled with glue genes can be broken down into two categories: those designed for single cell analysis and those that are more generally applicable.
+
+General Plug-ins
+==================
+
+Enrich Gene Set via Enrichr
+----------------------------
+
+This plug-in uses the `enrichrpy library <https://github.com/estorrs/enrichrpy>`_ to query the `Enrichr <https://maayanlab.cloud/Enrichr/>`_ API for `Gene Set Enrichment Analysis <https://pubmed.ncbi.nlm.nih.gov/16199517/>`_. Currently this plug-in supports retrieving KEGG pathways for a particular set of genes and returns a full glue data object with the results of the query which is automatically joined-on-key to the dataset where the gene subset was drawn for. 
+
+.. figure:: images/enrichr.png
+      :align: center
+      :width: 100%
+   
+      The interface for the Enrichr plugin.
+
+
+Single Cell Analysis Plug-ins
+===============================
+
+Scanpy Differential Gene Expression
+------------------------------------
+
+A basic guide to using this plug-in is :ref:`here<DGE Between Cell Subsets>`
+
+
+Calculate Summary Over Gene Subset
+------------------------------------
+A basic guide to using this plug-in is :ref:`here<Gene Expression Summary>`
+
+
+ 

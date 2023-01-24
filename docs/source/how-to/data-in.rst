@@ -40,11 +40,7 @@ Most of the time, glue genes will correctly identify the type of file you are lo
 Options for loading single-cell data
 **************************************
 
-The AnnData Loader to read in AnnData-type data (.h5ad or .loom single-cell datasets) presents an extra dialog
-to allow you to configure how these datasets are loaded. This dialog will also warn you if the dataset you
-are loading is too large to be loaded into memory (in which case you can load in `backed mode` to keep the
-data on disk) and/or if the data has too many rows/columns for fast interactive display when
-using some of the single cell menubar plug-ins (in which case the dialog presents some options for how
+The AnnData Loader to read in AnnData-type data (.h5ad or .loom single-cell datasets) presents an extra dialog to allow you to configure how these datasets are loaded. This dialog will also warn you if the dataset you are loading is too large to be loaded into memory (in which case you can load in `backed mode` to keep the data on disk) and/or if the data has too many rows/columns for fast interactive display when using some of the single cell menubar plug-ins (in which case the dialog presents some options for how
 to handle this).
 
 
@@ -58,5 +54,4 @@ to handle this).
 What next?
 ************
 
-After loading your data into glue genes you probably want to
-:ref:`link it to other data<Link Data>` or visualize it. 
+After loading your data into glue genes you probably want to :ref:`link it to other data<Link Data>` or visualize it. 
