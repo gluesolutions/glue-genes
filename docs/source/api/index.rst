@@ -12,3 +12,21 @@ Data Loaders
 
 .. automodapi:: glue_single_cell.anndata_factory
    :no-inheritance-diagram:
+
+.. automodapi:: glue_single_cell.data
+   :no-inheritance-diagram:
+
+.. automodapi:: glue_single_cell.qt.diff_gene_exp
+   :no-inheritance-diagram:
+
+.. automodapi:: glue_single_cell.qt.pca_subset
+   :no-inheritance-diagram:
+
+.. automodapi:: glue_single_cell.qt.enrichr
+   :no-inheritance-diagram:
+
+.. automodapi:: glue_single_cell.qt.load_data
+   :no-inheritance-diagram:
+
+.. automodapi:: glue_single_cell.qtl_viewer.state
+   :no-inheritance-diagram:

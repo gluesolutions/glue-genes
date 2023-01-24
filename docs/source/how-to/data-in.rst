@@ -11,31 +11,31 @@ There are multiple ways to get data into glue genes. You can:
 
 1. Click on the **Import Data** icon in the glue toolbar.
 
-.. figure:: images/open_data_set_icon.png
-   :align: center
-   :width: 66%
-
-   Open a data set from the toolbar icon
+   .. figure:: images/open_data_set_icon.png
+      :align: center
+      :width: 66%
+   
+      Open a data set from the toolbar icon
 
 
 2. Select the **Open Data Set** under the **File** menu or use the keyboard shortcut (**Ctrl+O on Linux, Cmd+O on Mac**).
 
-.. figure:: images/open_data_set_menu.png
-   :align: center
-   :width: 66%
-
-   Open a data set from the menubar
+   .. figure:: images/open_data_set_menu.png
+      :align: center
+      :width: 66%
+   
+      Open a data set from the menubar
 
 
 3. Drag and drop files onto the main glue window.
 
 Most of the time, glue genes will correctly identify the type of file you are loading. If it does not, you can choose a specific file type/data loader from the drop-down menu in the loading dialog:
 
-.. figure:: images/loading_options.png
-   :align: center
-   :width: 75%
-
-   Choose a specific data loader if necessary.
+   .. figure:: images/loading_options.png
+      :align: center
+      :width: 75%
+   
+      Choose a specific data loader if necessary.
 
 Options for loading single-cell data
 **************************************
