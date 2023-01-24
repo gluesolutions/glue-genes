@@ -38,11 +38,10 @@ There are multiple ways to create a Viewer and visualize a dataset in glue genes
 Choose a type of Viewer
 *************************
 
-All of the above methods prompt you to choose a kind of Viewer. There are many different viewer types available in glue genes.
+All of the above methods prompt you to choose a kind of Viewer. There are many different viewer types available in glue genes. The User Guide contains a full detail of the different Viewers available. Experiment with different Viewer types; glue is all about looking at your data in multiple ways.
 
 
 What next?
 **********
 
-Now that's you've made one or more visualization you may want
-to :ref:`bring in more data<Get Data In>` and :ref:`link it to existing datasets<Link Data>` or you might want to explore interesting subsets of the data.
+Now that's you've made one or more visualization you may want to :ref:`bring in more data<Get Data In>` and :ref:`link it to existing datasets<Link Data>` or you might want to explore interesting subsets of the data.
