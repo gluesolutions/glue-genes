@@ -15,15 +15,15 @@ Features
 `glue genes <https://github.com/gluesolutions/glue-genes>`_ provides all
 the core features of glue:
 
- * Interactive, linked statistical graphics
- * A user interface for 'glueing' together multiple datasets with complicated relationships
- * A highly scriptable and extendable environment
+* Interactive, linked statistical graphics
+* A user interface for 'glueing' together multiple datasets with complicated relationships
+* A highly scriptable and extendable environment
 
 In addition, `glue genes <https://github.com/gluesolutions/glue-genes>`_ provides:
 
- * Data loaders for genomics data file formats such as .bed, .bigwig, .h5ad, and .loom
- * Viewers including: 2D Heatmap, Small Multiples, QTL Viewer
- * Menubar plug-ins to facilitate analysis of single-cell transcriptomics data
+* Data loaders for genomics data file formats such as .bed, .bigwig, .h5ad, and .loom
+* Viewers including: 2D Heatmap, Small Multiples, QTL Viewer
+* Menubar plug-ins to facilitate analysis of single-cell transcriptomics data
 
 Documentation Contents
 ======================
