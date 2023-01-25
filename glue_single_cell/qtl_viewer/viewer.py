@@ -1,4 +1,3 @@
-# Probably not needed
 from glue.core.roi_pretransforms import ProjectionMplTransform
 from glue.core.subset import RangeSubsetState, roi_to_subset_state
 from glue.utils import decorate_all_methods, defer_draw, mpl_to_datetime64
@@ -15,6 +14,15 @@ __all__ = ["QTLViewer"]
 
 @decorate_all_methods(defer_draw)
 class QTLViewer(MatplotlibScatterMixin, MatplotlibDataViewer):
+    """
+    A dedicated viewer for eQTL-type data.
+
+    Adds LOD threshold filtering and chromosome boundaries on top of
+    a 2D Scatter viewer. The LOD threshold filtering happens in the
+    LayerArtist, while the chromosome boundaries are set here in
+    _update_axes.
+    """
+
     LABEL = "QTL Viewer"
     _layer_style_widget_cls = (
         QTLLayerStyleEditor  # We should trim options that do not make sense

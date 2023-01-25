@@ -21,9 +21,9 @@ __all__ = [
 
 class AnnDataListener(HubListener):
     """
-    Set up :class:`~.JoinLinks` for :class:`~.DataAnnData` objects.
+    Set up :class:`~glue.core.link_helpers.JoinLink` for :class:`~.DataAnnData` objects.
 
-    Listen for DataAnnData objects to be added to the
+    Listen for :class:`~.DataAnnData` objects to be added to the
     data collection object, and, if one is, setup the
     correct join_on_key joins in a way that they will
     show up in the GUI.
@@ -64,7 +64,7 @@ def is_anndata(filename, **kwargs):
 
 def setup_gui_joins(dc, data):
     """
-    Set up :class:`~glue.core.link_helpers.JoinLinks` that mirror the existing join_on_key links,
+    Set up :class:`~glue.core.link_helpers.JoinLink` that mirror the existing join_on_key links,
     so these links show in the Link Editor.
 
     Parameters

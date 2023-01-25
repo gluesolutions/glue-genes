@@ -15,7 +15,7 @@ def is_bigwig(filename, **kwargs):
 @data_factory("BigWig data loader", is_bigwig, priority=999)
 def read_bigwig(file_name):
     """
-    Read a bigwig file.
+    Read a BigWig file into a glue Data object.
 
     Parameters
     ----------

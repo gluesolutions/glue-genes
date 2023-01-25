@@ -1,9 +1,9 @@
 from glue.core.data_combo_helper import ComboHelper, ComponentIDComboHelper
 from glue.core.state_objects import StateAttributeLimitsHelper
-from glue.viewers.matplotlib.state import \
-    DeferredDrawCallbackProperty as DDCProperty
-from glue.viewers.matplotlib.state import \
-    DeferredDrawSelectionCallbackProperty as DDSCProperty
+from glue.viewers.matplotlib.state import DeferredDrawCallbackProperty as DDCProperty
+from glue.viewers.matplotlib.state import (
+    DeferredDrawSelectionCallbackProperty as DDSCProperty,
+)
 from glue.viewers.scatter.state import ScatterViewerState
 
 __all__ = ["QTLViewerState"]
@@ -98,9 +98,15 @@ UNITS_LOOKUP = {1: "bp", 1000: "kb", 1_000_000: "Mb", 1_000_000_000: "Gb"}
 
 
 class QTLViewerState(ScatterViewerState):
+    """
+    A state class that includes all the attributes for a QTL Viewer
+
+    This is a fairly minimal small set of extra attributes on top
+    of the base :class:`~glue.viewers.scatter.state.ScatterViewerState`.
+    """
 
     species = DDSCProperty(
-        0, docstring="The species for displaying chromosome boundaries"
+        0, docstring="The species (for showing chromosome boundaries)"
     )
     pos_units = DDSCProperty(0, docstring="Units for gene and marker position")
 
