@@ -1,5 +1,5 @@
-sphinx > =5.3.0
+sphinx
 sphinx-automodapi
 numpydoc
 sphinx_design
-sphinx_rtd_theme >= 0.5.2
+sphinx_rtd_theme

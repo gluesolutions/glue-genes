@@ -18,7 +18,6 @@ extensions = [
     "sphinx_automodapi.automodapi",
     "sphinx.ext.intersphinx",
     "sphinx_design",
-    "sphinx_rtd_theme",
     "numpydoc",
 ]
 numpydoc_show_class_members = False
@@ -46,7 +45,7 @@ intersphinx_mapping = {
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
 html_logo = "images/glue_genes_icon.png"
-html_theme = "sphinx_rtd_theme"
+html_theme = "furo"
 html_favicon = "images/favicon.png"
 
 html_context = {
@@ -59,6 +58,10 @@ html_context = {
 html_static_path = ["_static"]
 html_css_files = ["style.css"]
 
+
+html_theme_options = {
+    "sidebar_hide_name": True,
+}
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
