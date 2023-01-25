@@ -55,7 +55,7 @@ def get_system_memory():
 
 class LoadDataDialog(QDialog):
     """
-    A dialog to allow the user to choose how to load an AnnData object.
+    A dialog to allow the user to choose how to load an :class:`~.DataAnnData` object.
 
     Currently we return parameters directly from this dialog rather than
     the ideal approach which is to encapsulate these parameters in a

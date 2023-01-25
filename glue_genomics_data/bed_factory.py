@@ -36,7 +36,7 @@ def remap_columns(x):
 @data_factory("BED data loader", is_bed, priority=999)
 def read_bed(file_name):
     """
-    Read a BED file.
+    Read a BED file into a glue Data object.
 
     The first three columns will be named: chr, start, end
 

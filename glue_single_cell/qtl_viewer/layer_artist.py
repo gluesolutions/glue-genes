@@ -1,26 +1,32 @@
 import numpy as np
 from glue.core.exceptions import IncompatibleAttribute
 from glue.utils import broadcast_to, defer_draw, ensure_numerical
-from glue.viewers.scatter.layer_artist import (CMAP_PROPERTIES,
-                                               DATA_PROPERTIES,
-                                               MARKER_PROPERTIES, STRETCHES,
-                                               VISUAL_PROPERTIES,
-                                               DensityMapLimits,
-                                               ImageNormalize,
-                                               ScatterLayerArtist,
-                                               set_mpl_artist_cmap)
+from glue.viewers.scatter.layer_artist import (
+    CMAP_PROPERTIES,
+    DATA_PROPERTIES,
+    MARKER_PROPERTIES,
+    STRETCHES,
+    VISUAL_PROPERTIES,
+    DensityMapLimits,
+    ImageNormalize,
+    ScatterLayerArtist,
+    set_mpl_artist_cmap,
+)
 from glue.viewers.scatter.python_export import python_export_scatter_layer
 from glue.viewers.scatter.state import ScatterLayerState
 
 DATA_PROPERTIES.update(["lod_att", "lod_thresh"])
 
+__all__ = ["QTLLayerArtist"]
+
 
 class QTLLayerArtist(ScatterLayerArtist):
     """
-    This is not going to work for a density artist
+    A custom LayerArtist to facilitate LOD thresholding
 
-    Specifically, _update_data just filters the data list before
-    display, which does not work for the density map mode
+    This is not going to work for a density artist. Specifically,
+    _update_data just filters the data list before display, which
+    does not work for the density map mode
     """
 
     _layer_state_cls = ScatterLayerState

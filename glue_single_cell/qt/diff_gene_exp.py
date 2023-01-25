@@ -12,10 +12,35 @@ from qtpy import QtWidgets
 from ..state import DiffGeneExpState
 from .pca_subset import dialog
 
-__all__ = ["DiffGeneExpDialog"]
+__all__ = ["get_gene_list_diff_exp", "DiffGeneExpDialog"]
 
 
 def get_gene_list_diff_exp(subset1, subset2, data, n_genes=50):
+    """
+    Get differential gene expression for two subsets over a dataset
+
+    Uses scanpy `rank_genes_groups` with just one group (subset1)
+    and one reference set (subset2) and method=wilcoxon.
+
+    Parameters
+    ----------
+    subset1 : :class:`~glue.core.subset.Subset`
+        The highest ranked genes are expressed more in this subset.
+    subset2 : :class:`~glue.core.subset.Subset`
+        The reference subset. The lowest ranked genes are expressed more in this subset.
+    data : :class:`~.DataAnnData`
+        The gene expression (X) matrix connecting genes and cells.
+    n_genes : int, optional
+        A new subset will be created with the top `n_genes` genes.
+
+    Returns
+    -------
+    gene_list : list
+        The top `n_genes` genes expressed more in subset1 than subset2.
+    dge_data : :class:`~glue.core.data.Data`
+        A glue :class:`~glue.core.data.Data` object containing a table of genes, scores, and pvals.
+
+    """
 
     adata = data.Xdata
     obsdata = data.meta["obs_data"]
