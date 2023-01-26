@@ -1,3 +1,12 @@
+"""
+A menubar plugin to compute differential gene expression for two subsets.
+
+This plugin is normally invoked with a GUI but the core logic can be
+invoked as `get_gene_list_diff_exp`.
+
+"""
+
+
 import os
 
 import numpy as np

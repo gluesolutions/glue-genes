@@ -103,6 +103,17 @@ class QTLViewerState(ScatterViewerState):
 
     This is a fairly minimal small set of extra attributes on top
     of the base :class:`~glue.viewers.scatter.state.ScatterViewerState`.
+
+    Attributes
+    ----------
+    species : str
+        The species (for showing chromosome boundaries)
+    pos_units : str
+        Units for gene and marker position
+    lod_att : :class:`~glue.core.component.Component`
+        The attribute giving the LOD score
+    lod_thresh: float
+        The LOD threshold for display and subsets
     """
 
     species = DDSCProperty(
@@ -111,12 +122,12 @@ class QTLViewerState(ScatterViewerState):
     pos_units = DDSCProperty(0, docstring="Units for gene and marker position")
 
     lod_att = DDSCProperty(
-        docstring="The attribute giving the LOD score ", default_index=2
+        docstring="The attribute giving the LOD score", default_index=2
     )
     lod_thresh = DDCProperty(-99, docstring="The LOD threshold for display and subsets")
 
-    lod_min = DDCProperty(docstring="Lower limit of the visible x range")
-    lod_max = DDCProperty(docstring="Upper limit of the visible x range")
+    lod_min = DDCProperty(docstring="Lower limit of lod_att")
+    lod_max = DDCProperty(docstring="Upper limit of lod_att")
 
     def __init__(self, **kwargs):
         super().__init__()

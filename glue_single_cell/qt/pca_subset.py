@@ -1,3 +1,13 @@
+"""
+Calculate a summary statistic for cells based on genesubset
+
+This menubar plugin in normally invoked through a dialog
+which not only does the initial calculation and stores the
+summary is a new component in the target dataset, but sets up
+a Listener to keep that new component up-to-date when changes
+are made to the gene subset.
+"""
+
 import os
 
 import numpy as np
@@ -30,7 +40,19 @@ def dialog(title, text, icon):
 
 
 def do_calculation_over_gene_subset(data_with_Xarray, genesubset, calculation="Means"):
-    """ """
+    """
+    Calculate a summary statistic for cells based on genesubset
+
+    Parameters
+    ----------
+    data_with_Xarray : :class:`~.DataAnnData`
+        The expression matrix (X) used for the calculation
+    genesubset : :class:`glue.core.subset.Subset`
+        The subset of genes to use for the calculation
+    calculation : str
+        The type of calculation to perform: [PCA, Module, Means]
+
+    """
     adata = data_with_Xarray.Xdata
     raw = False
     try:
@@ -121,7 +143,17 @@ class GeneSummaryListener(HubListener):
     A Listener to keep the new components in target_dataset
     up-to-date with any changes in the genesubset.
 
-    SubsetMessage define `subset` and `attribute` (for update?)
+    Parameters
+    ----------
+    genesubset : Subset
+        The subset over genes to watch
+    basename : str
+        The subset label
+    key : str
+        The kind of summary performed: [Means, PCA, Module]
+    data_with_Xarray : :class:`~.DataAnnData`
+        The expression matrix (X) used to reference the target_dataset
+
     """
 
     def __init__(self, genesubset, basename, key, data_with_Xarray=None):

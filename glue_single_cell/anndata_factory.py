@@ -159,6 +159,19 @@ def read_anndata(
     limitations with AnnData.
 
     Parameters
+    ----------
+    file_name: str
+        The file to read
+    skip_dialog: bool, optional
+        Whether to skip the GUI module (useful for scripts and testing)
+    skip_components: list, optional
+        The names of columns in obs/var/obsm/varm to NOT load
+    subsample: bool, optional
+        Whether to subsample on obs to reduce file size
+    subsample_factor: int, optional
+        If specified, and `subsample`, reduce the size of obs by this factor
+    try_backed: bool, optional
+        Attempt to use disk-based access to the data. If AnnData fails to load the file this way it will be loaded into memory.
 
 
     """
