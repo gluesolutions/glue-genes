@@ -11,4 +11,3 @@ QTL Viewer
    
    viewer.QTLViewer
    state.QTLViewerState
-   layer_artist.QTLLayerArtist
