@@ -26,3 +26,9 @@ Gene Subset Summary
 
    do_calculation_over_gene_subset
    GeneSummaryListener
+
+Enrich Gene Subset
+----------------------------
+.. currentmodule:: glue_single_cell.qt.enrichr
+
+.. automodule:: glue_single_cell.qt.enrichr

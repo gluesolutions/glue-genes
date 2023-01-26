@@ -1,3 +1,8 @@
+"""
+A menubar plugin to do Gene Set Enrichment Analysis on a set of genes.
+"""
+
+
 import os
 
 import enrichrpy.enrichr
