@@ -15,7 +15,7 @@ copyright = "2023, glue solutions"
 
 extensions = [
     "sphinx.ext.autodoc",
-    "sphinx_automodapi.automodapi",
+    "sphinx.ext.autosummary",
     "sphinx.ext.intersphinx",
     "sphinx_design",
     "numpydoc",
