@@ -50,5 +50,3 @@ QTL Viewer
 .. automodapi:: glue_single_cell.qtl_viewer.state
    :no-inheritance-diagram:
 
-.. automodapi:: glue_single_cell.qtl_viewer.layer_artist
-   :no-inheritance-diagram:

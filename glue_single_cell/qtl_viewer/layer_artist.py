@@ -1,6 +1,10 @@
 import numpy as np
 from glue.core.exceptions import IncompatibleAttribute
-from glue.utils import broadcast_to, defer_draw, ensure_numerical
+from glue.utils import (
+    broadcast_to,  # This fails on rtd server. Why?
+    defer_draw,
+    ensure_numerical,
+)
 from glue.viewers.scatter.layer_artist import (
     CMAP_PROPERTIES,
     DATA_PROPERTIES,
