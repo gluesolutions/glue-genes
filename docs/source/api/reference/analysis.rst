@@ -13,3 +13,16 @@ Differential Gene Expression
    :toctree: api/
    
    get_gene_list_diff_exp
+
+Gene Subset Summary
+----------------------------
+
+.. currentmodule:: glue_single_cell.qt.pca_subset
+
+.. automodule:: glue_single_cell.qt.pca_subset
+
+.. autosummary::
+   :toctree: api/
+
+   do_calculation_over_gene_subset
+   GeneSummaryListener
