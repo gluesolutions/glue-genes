@@ -12,7 +12,6 @@ python:
       extra_requirements:
         - docs
         - qt
-        - all
 
 formats: []
 
