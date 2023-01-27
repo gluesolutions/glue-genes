@@ -7,7 +7,8 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       max-parallel: 5
-      pytest: ["6.1", "6.2"]
+      matrix:
+        pytest: ["6.1", "6.2"]
 
 
     steps:
