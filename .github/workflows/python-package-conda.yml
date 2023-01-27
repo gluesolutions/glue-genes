@@ -16,3 +16,6 @@ jobs:
         environment-file: environment.yml
         extra-specs: |
           python=3.10
+    - name : Test with pytest
+      run : |
+        pytest
