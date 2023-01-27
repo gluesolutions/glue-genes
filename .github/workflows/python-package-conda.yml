@@ -18,7 +18,8 @@ jobs:
         extra-specs: |
           python=3.10
           pytest
-        cache-env: true
+        cache-env: false
+        log-level: info
     - name : Test with pytest
       shell: bash -l {0}
       run : |
