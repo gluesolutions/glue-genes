@@ -20,5 +20,6 @@ jobs:
           pytest
         cache-env: true
     - name : Test with pytest
+      shell: bash -l {0}
       run : |
         pytest
