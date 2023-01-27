@@ -7,8 +7,6 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       max-parallel: 5
-      matrix:
-        pytest: ["6.1", "6.2"]
 
 
     steps:
@@ -19,7 +17,7 @@ jobs:
         environment-file: environment.yml
         extra-specs: |
           python=3.10
-          pytest=${{ matrix.pytest }}
+          pytest
         cache-env: true
     - name : Test with pytest
       run : |
