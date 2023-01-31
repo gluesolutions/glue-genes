@@ -1,6 +1,6 @@
 import numpy as np
 from glue.core.exceptions import IncompatibleAttribute
-from glue.utils.array import broadcast_to, ensure_numerical
+from glue.utils.array import ensure_numerical
 from glue.utils.matplotlib import defer_draw
 from glue.viewers.scatter.layer_artist import (
     CMAP_PROPERTIES,
@@ -19,6 +19,18 @@ from glue.viewers.scatter.state import ScatterLayerState
 DATA_PROPERTIES.update(["lod_att", "lod_thresh"])
 
 __all__ = ["QTLLayerArtist"]
+
+
+def broadcast_to(array, shape):
+    """
+    Compatibility function - can be removed once we support only Numpy 1.10
+    and above
+    """
+    try:
+        return np.broadcast_to(array, shape)
+    except AttributeError:
+        array = np.asarray(array)
+        return np.broadcast_arrays(array, np.ones(shape, array.dtype))[0]
 
 
 class QTLLayerArtist(ScatterLayerArtist):
