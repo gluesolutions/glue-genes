@@ -171,8 +171,8 @@ def read_anndata(
     subsample_factor: int, optional
         If specified, and `subsample`, reduce the size of obs by this factor
     try_backed: bool, optional
-        Attempt to use disk-based access to the data. If AnnData fails to load the file this way it will be loaded into memory.
-
+        Attempt to use disk-based access to the data. If AnnData fails to load the file this
+        way it will be loaded into memory.
 
     """
     list_of_data_objs = []
