@@ -23,7 +23,6 @@ jobs:
     needs: initial_checks
     uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@v1
     with:
-      coverage: codecov
       display: true
       libraries: |
         apt:
@@ -38,6 +37,16 @@ jobs:
 
       envs: |
         # Standard tests
+        - linux: py38-test-pyqt514
         - linux: py39-test-pyqt515
-        - linux: py38-test-pyqt514-all
+        - linux: py310-test
+
+        - macos: py38-test-pyqt514
+        - macos: py38-test-pyqt514
+        - macos: py310-test
+
+        - windows: py38-test-pyqt514
+        - windows: py38-test-pyqt514
+        - windows: py310-test
+
 
