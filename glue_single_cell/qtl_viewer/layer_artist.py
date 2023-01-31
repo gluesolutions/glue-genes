@@ -21,18 +21,6 @@ DATA_PROPERTIES.update(["lod_att", "lod_thresh"])
 __all__ = ["QTLLayerArtist"]
 
 
-def broadcast_to(array, shape):
-    """
-    Compatibility function - can be removed once we support only Numpy 1.10
-    and above
-    """
-    try:
-        return np.broadcast_to(array, shape)
-    except AttributeError:
-        array = np.asarray(array)
-        return np.broadcast_arrays(array, np.ones(shape, array.dtype))[0]
-
-
 class QTLLayerArtist(ScatterLayerArtist):
     """
     A custom LayerArtist to facilitate LOD thresholding
@@ -256,7 +244,9 @@ class QTLLayerArtist(ScatterLayerArtist):
 
                         if self.state.size_mode == "Fixed":
                             s = self.state.size * self.state.size_scaling
-                            s = broadcast_to(s, self.scatter_artist.get_sizes().shape)
+                            s = np.broadcast_to(
+                                s, self.scatter_artist.get_sizes().shape
+                            )
                         else:
                             s = ensure_numerical(
                                 self.layer[self.state.size_att].ravel()
