@@ -1,0 +1,53 @@
+name: CI Tests
+
+on:
+  push:
+    branches:
+    - 0.9.x
+    - main
+    tags:
+    - '*'
+  pull_request:
+
+jobs:
+
+  tests:
+    uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@v1
+    with:
+      display: true
+      # Linux PyQt 5.15 and 6.x installations require apt-getting xcb and EGL deps
+      # and headless X11 display; as of Python 3.11 Scipy and h5py also need their own deps.
+      libraries: |
+        apt:
+          - '^libxcb.*-dev'
+          - libxkbcommon-x11-dev
+          - libegl1-mesa
+          - libopenblas-dev
+          - libhdf5-dev
+        brew:
+          - enchant
+
+      envs: |
+        # Standard tests
+        # Linux builds - test on all supported PyQt5/6 and PySide2/6 versions,
+        # and include all dependencies in some builds
+        - linux: py38-test-pyqt514-all
+        - linux: py38-test-pyside514
+        - linux: py39-test-pyqt515
+        - linux: py39-test-pyside515
+
+        # Documentation build
+        - linux: py38-docs-pyqt514
+          coverage: false
+        - macos: py39-docs-pyqt515
+          coverage: false
+
+        # Test a few configurations on macOS
+        - macos: py38-test-pyqt514-all
+        - macos: py310-test-pyqt515
+
+        # Test some configurations on Windows
+        - windows: py38-test-pyqt514
+
+        # Test against latest developer versions of some packages
+        - linux: py310-test-pyqt515-dev-all
