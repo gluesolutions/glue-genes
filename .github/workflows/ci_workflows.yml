@@ -24,9 +24,13 @@ jobs:
     uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@v1
     with:
       coverage: codecov
+      display: true
       libraries: |
         apt:
-          - libxkbcommon-x11-0
+          - '^libxcb.*-dev'
+          - libxkbcommon-x11-dev
+          - libegl1-mesa
+          - libopenblas-dev
           - libgfortran5
           - libhdf5-dev
         brew:
@@ -44,13 +48,4 @@ jobs:
         - windows: py39-test-dev
         - macos: py310-test-dev
           PLAT: arm64
-
-  publish:
-    needs: tests
-    uses: OpenAstronomy/github-actions-workflows/.github/workflows/publish_pure_python.yml@v1
-    with:
-      test_extras: test
-      test_command: pytest --pyargs glue_single_cell
-    secrets:
-      pypi_token: ${{ secrets.pypi_token }}
 
