@@ -38,14 +38,6 @@ jobs:
 
       envs: |
         # Standard tests
-        - linux: py38-test
-        - linux: py39-test
-        - linux: py310-test-dev
-        - linux: py311-test-dev
-
-        - macos: py311-test
-        - windows: py38-test
-        - windows: py39-test-dev
-        - macos: py310-test-dev
-          PLAT: arm64
+        - linux: py39-test-pyqt515
+        - linux: py38-test-pyqt514-all
 
