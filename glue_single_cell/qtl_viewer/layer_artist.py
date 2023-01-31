@@ -1,6 +1,7 @@
 import numpy as np
 from glue.core.exceptions import IncompatibleAttribute
-from glue.utils import broadcast_to, defer_draw, ensure_numerical
+from glue.utils.array import broadcast_to, ensure_numerical
+from glue.utils.matplotlib import defer_draw
 from glue.viewers.scatter.layer_artist import (
     CMAP_PROPERTIES,
     DATA_PROPERTIES,
