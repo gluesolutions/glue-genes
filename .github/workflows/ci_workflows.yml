@@ -10,44 +10,47 @@ on:
   pull_request:
 
 jobs:
-
-  tests:
+  initial_checks:
+    # Mandatory checks before CI tests
     uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@v1
     with:
-      display: true
-      # Linux PyQt 5.15 and 6.x installations require apt-getting xcb and EGL deps
-      # and headless X11 display; as of Python 3.11 Scipy and h5py also need their own deps.
+      coverage: false
+      envs: |
+        # Code style
+        - linux: codestyle
+
+  tests:
+    needs: initial_checks
+    uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@v1
+    with:
+      coverage: codecov
       libraries: |
         apt:
-          - '^libxcb.*-dev'
-          - libxkbcommon-x11-dev
-          - libegl1-mesa
-          - libopenblas-dev
+          - libxkbcommon-x11-0
+          - libgfortran5
           - libhdf5-dev
         brew:
           - enchant
 
       envs: |
         # Standard tests
-        # Linux builds - test on all supported PyQt5/6 and PySide2/6 versions,
-        # and include all dependencies in some builds
-        - linux: py38-test-pyqt514-all
-        - linux: py38-test-pyside514
-        - linux: py39-test-pyqt515
-        - linux: py39-test-pyside515
+        - linux: py38-test
+        - linux: py39-test
+        - linux: py310-test-dev
+        - linux: py311-test-dev
 
-        # Documentation build
-        - linux: py38-docs-pyqt514
-          coverage: false
-        - macos: py39-docs-pyqt515
-          coverage: false
+        - macos: py311-test
+        - windows: py38-test
+        - windows: py39-test-dev
+        - macos: py310-test-dev
+          PLAT: arm64
 
-        # Test a few configurations on macOS
-        - macos: py38-test-pyqt514-all
-        - macos: py310-test-pyqt515
+  publish:
+    needs: tests
+    uses: OpenAstronomy/github-actions-workflows/.github/workflows/publish_pure_python.yml@v1
+    with:
+      test_extras: test
+      test_command: pytest --pyargs glue_single_cell
+    secrets:
+      pypi_token: ${{ secrets.pypi_token }}
 
-        # Test some configurations on Windows
-        - windows: py38-test-pyqt514
-
-        # Test against latest developer versions of some packages
-        - linux: py310-test-pyqt515-dev-all
