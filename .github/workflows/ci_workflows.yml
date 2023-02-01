@@ -53,4 +53,12 @@ jobs:
         - windows: py38-test-pyqt514
         - windows: py310-test
 
+  publish:
+    needs: tests
+    uses: OpenAstronomy/github-actions-workflows/.github/workflows/publish_pure_python.yml@v1
+    with:
+      test_extras: test
+      test_command: pytest --pyargs glue_genes
+    secrets:
+      pypi_token: ${{ secrets.PYPI_API_TOKEN }}
 

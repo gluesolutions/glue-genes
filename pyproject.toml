@@ -1,6 +1,6 @@
 [project]
+name = "glue-genes"
 version = "0.9"
-
 
 [build-system]
 requires = ["setuptools>=30.3.0",
