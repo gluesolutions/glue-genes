@@ -23,9 +23,6 @@ In addition, glue genes provides:
 
 ### Install
 
-This package does not contain any code, but instead is a meta-package that 
-installs all the packages necessary to use glue with genomics data. 
-
 Due to some complicated binary dependencies, the recommended procedure for 
 installing this package is to use [conda](https://www.anaconda.com) and install into a new environment as follows:
 
