@@ -39,10 +39,14 @@ jobs:
         # Standard tests
         - linux: py38-test-pyqt514
         - linux: py39-test-pyqt515
+        - linux: py39-test-pyside63
+        - linux: py310-test-pyside64
         - linux: py310-test
 
         - macos: py38-test-pyqt514
         - macos: py38-test-pyqt514
+        - macos: py39-test-pyside63
+        - macos: py310-test-pyside64
         - macos: py310-test
 
         - windows: py38-test-pyqt514
