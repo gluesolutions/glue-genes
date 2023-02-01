@@ -20,7 +20,7 @@ class QTLViewer(MatplotlibScatterMixin, MatplotlibDataViewer):
     Adds LOD threshold filtering and chromosome boundaries on top of
     a 2D Scatter viewer. The LOD threshold filtering happens in the
     LayerArtist, while the chromosome boundaries are set here in
-    _update_axes.
+    update_axes.
     """
 
     LABEL = "QTL Viewer"

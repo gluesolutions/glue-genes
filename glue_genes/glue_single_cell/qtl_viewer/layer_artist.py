@@ -26,7 +26,7 @@ class QTLLayerArtist(ScatterLayerArtist):
     A custom LayerArtist to facilitate LOD thresholding
 
     This is not going to work for a density artist. Specifically,
-    _update_data just filters the data list before display, which
+    update_data just filters the data list before display, which
     does not work for the density map mode
     """
 
