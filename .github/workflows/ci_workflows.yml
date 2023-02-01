@@ -50,7 +50,7 @@ jobs:
     with:
       test_extras: test
       test_command: pytest --pyargs glue_genes
-      python: 3.10
+      python-version: 3.10
       
     secrets:
       pypi_token: ${{ secrets.PYPI_API_TOKEN }}
