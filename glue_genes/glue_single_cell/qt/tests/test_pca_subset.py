@@ -77,7 +77,9 @@ class TestCellSummarySession(object):
         sumdiag.state.do_pca = False
         sumdiag.state.do_module = False
 
-        with patch("glue_single_cell.qt.pca_subset.dialog") as fakedialog:  # noqa: F841
+        with patch(
+            "glue_genes.glue_single_cell.qt.pca_subset.dialog"
+        ) as fakedialog:  # noqa: F841
             sumdiag._apply()
 
         assert len(self.dc[0].listeners) == 1
@@ -273,7 +275,9 @@ class TestCellSummary(object):
         for subset in subset_group.subsets:
             if subset.data == self.dc[0].meta["var_data"]:
                 genesubset = subset
-        with patch("glue_single_cell.qt.pca_subset.dialog") as fakedialog:  # noqa: F841
+        with patch(
+            "glue_genes.glue_single_cell.qt.pca_subset.dialog"
+        ) as fakedialog:  # noqa: F841
             data_arr = do_calculation_over_gene_subset(
                 d1_adata, genesubset, calculation="Means"
             )

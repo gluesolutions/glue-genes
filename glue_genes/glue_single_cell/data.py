@@ -378,7 +378,7 @@ def correct_coords_problem(rec):
     """
     do_patch = False
     for key, value in rec.items():
-        if value["_type"] == "glue_single_cell.data.DataAnnData":
+        if value["_type"] == "glue_genes.glue_single_cell.data.DataAnnData":
             do_patch = True
 
     if do_patch:
@@ -405,7 +405,7 @@ def move_metadata_into_load_log(rec):
     all_load_logs = {}
 
     for key, value in rec.items():
-        if value["_type"] == "glue_single_cell.data.DataAnnData":
+        if value["_type"] == "glue_genes.glue_single_cell.data.DataAnnData":
             load_log_kwargs = {}
             meta_keywords = value["meta"]["contents"]
             for meta_keyword, meta_value in meta_keywords.items():
