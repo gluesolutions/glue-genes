@@ -25,10 +25,13 @@ from glue.core.data_collection import DataCollection
 from glue.core.link_helpers import JoinLink
 from glue.core.state import GlueUnSerializer
 
-from glue_single_cell.anndata_factory import read_anndata
+from glue_genes.glue_single_cell.anndata_factory import read_anndata
 
-from ..pca_subset import (PCASubsetDialog, apply_data_arr,
-                          do_calculation_over_gene_subset)
+from ..pca_subset import (
+    PCASubsetDialog,
+    apply_data_arr,
+    do_calculation_over_gene_subset,
+)
 
 DATA = os.path.join(os.path.dirname(__file__), "data")
 

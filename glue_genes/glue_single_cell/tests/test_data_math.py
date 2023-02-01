@@ -9,7 +9,7 @@ from numpy.random import RandomState
 from numpy.testing import assert_almost_equal, assert_equal
 from scipy.sparse import csc_matrix, find
 
-from glue_single_cell.anndata_factory import read_anndata
+from glue_genes.glue_single_cell.anndata_factory import read_anndata
 
 SPARSE_BACKED_OBS_NUM = 500
 SPARSE_BACKED_VAR_NUM = 700
