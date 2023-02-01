@@ -1,7 +1,7 @@
-﻿glue\_single\_cell.data.DataAnnData
-===================================
+﻿glue\_genes.glue\_single\_cell.data.DataAnnData
+===============================================
 
-.. currentmodule:: glue_single_cell.data
+.. currentmodule:: glue_genes.glue_single_cell.data
 
 .. autoclass:: DataAnnData
 

@@ -2,9 +2,9 @@
 Single Cell Data
 =================
 
-.. currentmodule:: glue_single_cell.data
+.. currentmodule:: glue_genes.glue_single_cell.data
 
-.. automodule:: glue_single_cell.data
+.. automodule:: glue_genes.glue_single_cell.data
 
 
 DataAnnData Object

@@ -5,7 +5,7 @@ Data Readers
 
 BED files
 ----------
-.. currentmodule:: glue_genomics_data.bed_factory
+.. currentmodule:: glue_genes.glue_genomics_data.bed_factory
 
 .. autosummary::
    :toctree: api/
@@ -15,7 +15,7 @@ BED files
 
 BigWig files
 -------------
-.. currentmodule:: glue_genomics_data.bigwig_factory
+.. currentmodule:: glue_genes.glue_genomics_data.bigwig_factory
 
 .. autosummary::
    :toctree: api/
@@ -25,7 +25,7 @@ BigWig files
 
 AnnData files
 ---------------
-.. currentmodule:: glue_single_cell.anndata_factory
+.. currentmodule:: glue_genes.glue_single_cell.anndata_factory
 
 .. autosummary::
    :toctree: api/
