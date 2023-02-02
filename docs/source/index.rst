@@ -6,20 +6,20 @@
 glue genes Documentation
 ###########################
 
-`glue genes <https://github.com/gluesolutions/glue-genes>`_ is a custom version of the `glue software <http://glueviz.org>`_
-for exploratory data analysis of genomics and transcriptomics data.
+`glue genes <https://gluesolutions.github.io/glue-genes/>`_ is a custom version of the `glue software <http://glueviz.org>`_
+for exploratory data analysis of genomics and transcriptomics data, developed in partnership with `The Jackson Laboratory <https://www.jax.org>`.
 
 Features
 =========
 
-`glue genes <https://github.com/gluesolutions/glue-genes>`_ provides all
+`glue genes <https://gluesolutions.github.io/glue-genes/>`_ provides all
 the core features of glue:
 
 * Interactive, linked statistical graphics
 * A user interface for 'glueing' together multiple datasets with complicated relationships
 * A highly scriptable and extendable environment
 
-In addition, `glue genes <https://github.com/gluesolutions/glue-genes>`_ provides:
+In addition, `glue genes <https://gluesolutions.github.io/glue-genes/>`_ provides:
 
 * Data loaders for genomics data file formats such as .bed, .bigwig, .h5ad, and .loom
 * Viewers including: 2D Heatmap, Small Multiples, QTL Viewer

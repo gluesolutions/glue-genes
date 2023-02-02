@@ -53,7 +53,8 @@ that two datasets will be selected by default, so if you only have two datasets
 they will already be selected.
 
 3. Choose the components to link on. In this case, we choose *Pixel Axis 1 [y]* and
-*spatial_0* which encode the y pixel locations in the table data. When the correct components are selected, press the **Glue attributes** button.
+*spatial_0* which encode the y pixel locations in the table data. When the correct
+components are selected, press the **Glue attributes** button.
 
 .. figure:: images/linking_attributes_step1.png
    :align: center

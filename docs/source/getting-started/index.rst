@@ -14,7 +14,7 @@ We recommend installing into a dedicated virtual environment using conda::
     conda activate glue-genes-env
 
     conda install -c conda-forge glue-core
-    pip install git+https://github.com/gluesolutions/glue-genes.git
+    pip install glue-genes
 
 This process uses conda to get some of the difficult-to-install dependencies
 for glue set up first.
