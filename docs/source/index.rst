@@ -7,7 +7,7 @@ glue genes Documentation
 ###########################
 
 `glue genes <https://gluesolutions.github.io/glue-genes/>`_ is a custom version of the `glue software <http://glueviz.org>`_
-for exploratory data analysis of genomics and transcriptomics data, developed in partnership with `The Jackson Laboratory <https://www.jax.org>`.
+for exploratory data analysis of genomics and transcriptomics data, developed in partnership with `The Jackson Laboratory <https://www.jax.org>`_.
 
 Features
 =========
