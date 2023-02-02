@@ -71,7 +71,7 @@ def setup_gui_joins(dc, data):
     ----------
     dc : :class:`~glue.core.data_collection.DataCollection`
         The DataCollection object associated with this glue session
-    data : :class:`~glue_single_cell.data.DataAnnData`
+    data : :class:`~glue_genes.glue_single_cell.data.DataAnnData`
         The DataAnnData object that defines join_on_key links
         to the associated obs and var Data objects
 
@@ -80,7 +80,7 @@ def setup_gui_joins(dc, data):
     We cannot do this at data load because these links are defined
     at the level of a data_collection, which may not exist at
     data load time. Instead we call this through a listener
-    when a :class:`~glue_single_cell.data.DataAnnData` object is added to a data collection.
+    when a :class:`~glue_genes.glue_single_cell.data.DataAnnData` object is added to a data collection.
 
     """
     try:  # If we are using a version of glue that supports links in the GUI

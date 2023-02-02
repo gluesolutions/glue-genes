@@ -67,7 +67,7 @@ class DataAnnData(Data):
     ----------
     Xdata
     listeners : list
-                Any :class:`~glue_single_cell.anndata_factory.AnnDataListener` associated with this object.
+                Any :class:`~glue_genes.glue_single_cell.anndata_factory.AnnDataListener` associated with this object.
     backed : bool
              True if the matrix is not loaded into memory but is accessed from the disk.
     sparse : bool
