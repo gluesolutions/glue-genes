@@ -1,0 +1,54 @@
+name: CI Tests
+
+on:
+  push:
+    branches:
+    - 0.9.x
+    - main
+    tags:
+    - '*'
+  pull_request:
+
+jobs:
+  initial_checks:
+    # Mandatory checks before CI tests
+    uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@v1
+    with:
+      coverage: false
+      envs: |
+        # Code style
+        - linux: codestyle
+
+  tests:
+    needs: initial_checks
+    uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@v1
+    with:
+      display: true
+      libraries: |
+        apt:
+          - '^libxcb.*-dev'
+          - libxkbcommon-x11-dev
+          - libegl1-mesa
+          - libopenblas-dev
+          - libgfortran5
+          - libhdf5-dev
+        brew:
+          - enchant
+
+      envs: |
+        # Standard tests
+        - linux: py38-test-pyqt514
+        - linux: py39-test-pyqt515
+        - linux: py39-test-pyside63
+        - linux: py310-test-pyside64
+        - linux: py310-test
+
+        - macos: py38-test-pyqt514
+        - macos: py38-test-pyqt514
+        - macos: py39-test-pyside63
+        - macos: py310-test-pyside64
+        - macos: py310-test
+
+        - windows: py38-test-pyqt514
+        - windows: py38-test-pyqt514
+        - windows: py310-test

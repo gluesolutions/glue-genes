@@ -1,5 +1,0 @@
-prune build
-prune dist
-
-include LICENSE
-include README.md
