@@ -4,9 +4,9 @@ Analysis Tools
 
 Differential Gene Expression
 ----------------------------
-.. currentmodule:: glue_single_cell.qt.diff_gene_exp
+.. currentmodule:: glue_genes.glue_single_cell.qt.diff_gene_exp
 
-.. automodule:: glue_single_cell.qt.diff_gene_exp
+.. automodule:: glue_genes.glue_single_cell.qt.diff_gene_exp
 
 
 .. autosummary::
@@ -17,9 +17,9 @@ Differential Gene Expression
 Gene Subset Summary
 ----------------------------
 
-.. currentmodule:: glue_single_cell.qt.pca_subset
+.. currentmodule:: glue_genes.glue_single_cell.qt.pca_subset
 
-.. automodule:: glue_single_cell.qt.pca_subset
+.. automodule:: glue_genes.glue_single_cell.qt.pca_subset
 
 .. autosummary::
    :toctree: api/
@@ -29,6 +29,6 @@ Gene Subset Summary
 
 Enrich Gene Subset
 ----------------------------
-.. currentmodule:: glue_single_cell.qt.enrichr
+.. currentmodule:: glue_genes.glue_single_cell.qt.enrichr
 
-.. automodule:: glue_single_cell.qt.enrichr
+.. automodule:: glue_genes.glue_single_cell.qt.enrichr
