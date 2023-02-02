@@ -31,7 +31,7 @@ conda create -n glue-genes python==3.9
 conda activate glue-genes
 
 conda install glue-core
-pip install glue-genes@git+https://github.com/gluesolutions/glue-genes.git
+pip install glue-genes
 ```
 
 ### Usage
@@ -44,4 +44,4 @@ The Scanpy differential gene expression plugin requires some custom actions to r
 
 ### Development
 
-glue genes is currently under active development towards a 1.0 release. Please file all bug reports as github issues. 
+glue genes is under active development. Please file all bug reports as github issues. 
