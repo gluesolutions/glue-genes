@@ -6,18 +6,11 @@ Getting Started with glue genes
 Installation
 ================
 
-You can install glue genes as a Python package.
-
-We recommend installing into a dedicated virtual environment using conda::
-
-    conda create -n glue-genes-env
-    conda activate glue-genes-env
-
-    conda install -c conda-forge glue-core
-    pip install glue-genes
-
-This process uses conda to get some of the difficult-to-install dependencies
-for glue set up first.
+If you already have an existing Python setup on your machine and are comfortable with
+installing Python packages, we recommend that you install glue genes as a Python
+package following the instructions for :ref:`python-installation`. If you are not
+experienced with Python, you can follow the instructions to install the
+:ref:`standalone-applications`.
 
 Brief Introduction to glue
 ============================

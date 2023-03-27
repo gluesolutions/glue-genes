@@ -3,7 +3,7 @@
 How do I start glue genes?
 ####################################
 
-Once you have :ref:`installed<Installation>` glue genes, you need to start it from a terminal by typing::
+If you have install glue as a Python package you need to start it from a terminal by typing::
 
     glue --startup=setup_anndata
 
@@ -18,6 +18,10 @@ If something does not seem to be working correctly with glue genes (typically so
     glue -v --startup=setup_anndata
 
 and checking the terminal output for error messages. 
+
+If, instead, you have installed the :ref:`standalone-applications` then you can simply double-click
+the application icon to launch glue. Note that you may have to deal with the security prompts if you
+did not deal with them during installation. See `Mac security instructions <http://docs.glueviz.org/en/stable/installation/standalone.html#macos-x>`_ and `Windows security instructions <http://docs.glueviz.org/en/stable/installation/standalone.html#windows>`_.
 
 
 What Next?
