@@ -18,24 +18,23 @@ Standalone Applications
 The easiest way to get started with glue genes is to download and run these
 pre-built single-file applications.
 
+.. warning::
+    Currently, these applications will prompt security warnings and apparently fail to work
+    on most operating systems the first time you launch them. The core glue documentation
+    shows you how to work around this problem. See `Mac instructions <http://docs.glueviz.org/en/stable/installation/standalone.html#macos-x>`_ and `Windows instructions <http://docs.glueviz.org/en/stable/installation/standalone.html#windows>`_.
+
 * `Mac <https://gluesolutions.s3.amazonaws.com/installers/genes/glue+genes.dmg>`_
 * `Windows <https://gluesolutions.s3.amazonaws.com/installers/genes/glue+genes.exe>`_
 * `Linux <https://gluesolutions.s3.amazonaws.com/installers/genes/glue-genes>`_
 
 These applications contain the latest stable version of glue, along with the glue genes
-plug-ins and other core plug-ins.
+plug-ins and other core plug-ins such as 3D viewers, export to plotly, and WWT.
 
 .. note::
     Using the standalone applications does not allow you to install additional glue plug-ins
     or upgrade/modify glue code. If you want to develop glue genes or make use of any of the 
     myriad ways you can `customize glue <https://glueviz.readthedocs.io/en/stable/customizing_guide/customization.html>`_ you should follow the 
     :ref:`python-installation` instructions.
-
-
-.. warning::
-    Currently, these applications will prompt security warnings and apparently fail to work
-    on most operating systems the first time you launch them. The core glue documentation
-    shows you how to work around this problem. See `Mac instructions <http://docs.glueviz.org/en/stable/installation/standalone.html#macos-x>`_ and `Windows instructions <http://docs.glueviz.org/en/stable/installation/standalone.html#windows>`_.
 
 
 .. _python-installation:
