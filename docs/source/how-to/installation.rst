@@ -21,7 +21,8 @@ pre-built single-file applications.
 .. warning::
     Currently, these applications will prompt security warnings and apparently fail to work
     on most operating systems the first time you launch them. The core glue documentation
-    shows you how to work around this problem. See `Mac instructions <http://docs.glueviz.org/en/stable/installation/standalone.html#macos-x>`_ and `Windows instructions <http://docs.glueviz.org/en/stable/installation/standalone.html#windows>`_.
+    shows you how to work around this problem. See `Mac instructions <http://docs.glueviz.org/en/stable/installation/standalone.html#macos-x>`_ and `Windows instructions <http://docs.glueviz.org/en/stable/installation/standalone.html#windows>`_ for detailed walkthroughs (with
+    screenshots) on how to fix this.
 
 * `Mac <https://gluesolutions.s3.amazonaws.com/installers/genes/glue+genes.dmg>`_
 * `Windows <https://gluesolutions.s3.amazonaws.com/installers/genes/glue+genes.exe>`_
@@ -29,6 +30,11 @@ pre-built single-file applications.
 
 These applications contain the latest stable version of glue, along with the glue genes
 plug-ins and other core plug-ins such as 3D viewers, export to plotly, and WWT.
+
+.. note::
+    The standalone Mac application will probably launch with two icons in the dock;
+    there are not actually two instances of glue running. We hope to fix this soon.
+
 
 .. note::
     Using the standalone applications does not allow you to install additional glue plug-ins
