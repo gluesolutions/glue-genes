@@ -175,7 +175,6 @@ def read_anndata(
         way it will be loaded into memory.
 
     """
-    list_of_data_objs = []
     basename = Path(file_name).stem
 
     if not skip_dialog:
@@ -199,6 +198,31 @@ def read_anndata(
     else:
         adata = sc.read(file_name, sparse=True, backed=False)
         backed = False
+
+    translate_adata_to_DataAnnData(
+        adata,
+        subsample=subsample,
+        backed=backed,
+        basename=basename,
+        file_name=file_name,
+        skip_components=skip_components,
+        subsample_factor=subsample_factor,
+        try_backed=try_backed,
+    )
+
+
+def translate_adata_to_DataAnnData(
+    adata,
+    subsample=False,
+    backed=False,
+    basename="",
+    file_name="",
+    skip_components=[],
+    subsample_factor=1,
+    try_backed=False,
+    skip_joins=False,
+):
+    list_of_data_objs = []
 
     if subsample:
         adata = sc.pp.subsample(
@@ -278,5 +302,7 @@ def read_anndata(
 
     # obs_data.meta['xarray_data'] = Xdata
     # var_data.meta['xarray_data'] = Xdata
-
-    return join_anndata_on_keys(list_of_data_objs)
+    if skip_joins:
+        return list_of_data_objs
+    else:
+        return join_anndata_on_keys(list_of_data_objs)
