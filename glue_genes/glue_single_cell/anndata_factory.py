@@ -199,7 +199,7 @@ def read_anndata(
         adata = sc.read(file_name, sparse=True, backed=False)
         backed = False
 
-    translate_adata_to_DataAnnData(
+    return translate_adata_to_DataAnnData(
         adata,
         subsample=subsample,
         backed=backed,
