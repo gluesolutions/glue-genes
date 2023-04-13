@@ -1,5 +1,6 @@
 from pathlib import Path
 
+import pandas as pd
 import scanpy as sc
 from glue.config import data_factory, startup_action
 from glue.core import Data, HubListener
@@ -250,6 +251,11 @@ def translate_adata_to_DataAnnData(
     XData.meta["loadlog_subsample_factor"] = subsample_factor
     XData.meta["loadlog_try_backed"] = try_backed
 
+    # uns is unstructured data on the AnnData object
+    # We just store it in metadata so we can recreate
+    # the AnnData object
+    XData.meta['uns'] = adata.uns
+
     list_of_data_objs.append(XData)
 
     # The var array is all components of the same length
@@ -272,7 +278,11 @@ def translate_adata_to_DataAnnData(
     for key in adata.varm_keys():
         if key not in skip_components:
             data_arr = adata.varm[key]
-            data_to_add = {f"{key}_{i}": k for i, k in enumerate(data_arr.T)}
+            # Sometimes this is a dataframe with names, and sometimes a simple np.array
+            if isinstance(data_arr, pd.DataFrame):
+                data_to_add = {f"{key}_{col}": data_arr[col].values for col in data_arr.columns}
+            else:
+                data_to_add = {f"{key}_{i}": k for i, k in enumerate(data_arr.T)}
             for comp_name, comp in data_to_add.items():
                 var_data.add_component(comp, comp_name)
 
@@ -296,7 +306,11 @@ def translate_adata_to_DataAnnData(
     for key in adata.obsm_keys():
         if key not in skip_components:
             data_arr = adata.obsm[key]
-            data_to_add = {f"{key}_{i}": k for i, k in enumerate(data_arr.T)}
+            # Sometimes this is a dataframe with names, and sometimes a simple np.array
+            if isinstance(data_arr, pd.DataFrame):
+                data_to_add = {f"{key}_{col}": data_arr[col].values for col in data_arr.columns}
+            else:
+                data_to_add = {f"{key}_{i}": k for i, k in enumerate(data_arr.T)}
             for comp_name, comp in data_to_add.items():
                 obs_data.add_component(comp, comp_name)
 
