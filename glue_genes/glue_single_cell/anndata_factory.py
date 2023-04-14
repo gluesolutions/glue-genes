@@ -1,12 +1,17 @@
 from pathlib import Path
 
+import numpy as np
 import pandas as pd
 import scanpy as sc
 from glue.config import data_factory, startup_action
 from glue.core import Data, HubListener
+from glue.core.component import ExtendedComponent
+from glue.core.component_id import PixelComponentID
+from glue.core.data import RegionData
 from glue.core.message import DataCollectionAddMessage
 from glue.utils.qt import set_cursor_cm
 from qtpy.QtCore import Qt
+from shapely.geometry import Point
 
 from .data import DataAnnData
 from .qt.load_data import LoadDataDialog
@@ -200,6 +205,11 @@ def read_anndata(
         adata = sc.read(file_name, sparse=True, backed=False)
         backed = False
 
+    if 'spatial' in adata.uns_keys():
+        make_spatial_components = True
+    else:
+        make_spatial_components = False
+
     return translate_adata_to_DataAnnData(
         adata,
         subsample=subsample,
@@ -209,6 +219,7 @@ def read_anndata(
         skip_components=skip_components,
         subsample_factor=subsample_factor,
         try_backed=try_backed,
+        make_spatial_componentsts=make_spatial_components,
     )
 
 
@@ -222,6 +233,7 @@ def translate_adata_to_DataAnnData(
     subsample_factor=1,
     try_backed=False,
     skip_joins=False,
+    make_spatial_components=False,
 ):
     list_of_data_objs = []
 
@@ -238,6 +250,18 @@ def translate_adata_to_DataAnnData(
         XData = DataAnnData(Xarray=adata.X, backed=backed, label=f"{basename}_X")
 
     XData.meta["orig_filename"] = basename
+
+    if make_spatial_components:
+        library_id = list(adata.uns["spatial"].keys())[0]
+        basename = library_id  # This is often a nicer name, but maybe this should be optional?
+        # Want radius
+        # We should not assume this much about the structure of spatial
+        # but this is okay for now...
+        scale_fac = adata.uns["spatial"][library_id]["scalefactors"]
+        hi_res_scale_fac = scale_fac["tissue_hires_scalef"]
+        # Want radius
+        spot_size = scale_fac["spot_diameter_fullres"] * hi_res_scale_fac / 2.0
+
     XData.meta["full_filename"] = file_name
     XData.meta["Xdata"] = XData.uuid
     XData.meta["anndatatype"] = "X Array"
@@ -313,6 +337,32 @@ def translate_adata_to_DataAnnData(
                 data_to_add = {f"{key}_{i}": k for i, k in enumerate(data_arr.T)}
             for comp_name, comp in data_to_add.items():
                 obs_data.add_component(comp, comp_name)
+
+    obs_data = list_of_data_objs.pop()
+    if make_spatial_components:
+        # We need to cast the obs Data object into a RegionData object
+        spots = []
+        for x, y in zip(obs_data["spatial_0"], obs_data["spatial_1"]):
+            spots.append(Point(x, y).buffer(spot_size))
+        spot_arr = np.array(spots)
+
+        obs_data_new = RegionData(label=obs_data.label)
+        for compid in obs_data.components:
+            if not isinstance(compid, PixelComponentID):
+                # Use same names (with .label) but NOT same ComponentIDs!
+                obs_data_new.add_component(obs_data.get_component(compid), compid.label)
+        spot_comp = ExtendedComponent(
+            spot_arr,
+            parent_component_ids=[
+                obs_data_new.id["spatial_0"],
+                obs_data_new.id["spatial_1"],
+            ],
+        )
+
+        obs_data_new.add_component(spot_comp, label="spots")
+        obs_data_new.meta = obs_data.meta
+
+        list_of_data_objs.append(obs_data_new)
 
     # obs_data.meta['xarray_data'] = Xdata
     # var_data.meta['xarray_data'] = Xdata

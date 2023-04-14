@@ -42,8 +42,9 @@ def read_spaceranger_directory(filename, **kwargs):
     adata_obj = visium(filename, load_images=True)
     library_id = list(adata_obj.uns["spatial"].keys())[0]
 
+    # We do the spatial components by hand
     adata_objs = translate_adata_to_DataAnnData(
-        adata_obj, basename=library_id, file_name=filename, skip_joins=True
+        adata_obj, basename=library_id, file_name=filename, skip_joins=True, make_spatial_components=False
     )
     hi_res_image = list(spatial_path.glob("*hires*"))
     if hi_res_image:
