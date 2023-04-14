@@ -36,7 +36,7 @@
    <item row="2" column="0">
     <widget class="QComboBox" name="combosel_data">
      <property name="sizeAdjustPolicy">
-      <enum>QComboBox::AdjustToMinimumContentsLength</enum>
+      <enum>QComboBox::AdjustToMinimumContentsLengthWithIcon</enum>
      </property>
     </widget>
    </item>
@@ -45,7 +45,7 @@
      <item>
       <widget class="QComboBox" name="combosel_gene_att">
        <property name="sizeAdjustPolicy">
-        <enum>QComboBox::AdjustToMinimumContentsLength</enum>
+        <enum>QComboBox::AdjustToMinimumContentsLengthWithIcon</enum>
        </property>
       </widget>
      </item>
@@ -70,7 +70,7 @@
      <item>
       <widget class="QComboBox" name="combosel_subset1">
        <property name="sizeAdjustPolicy">
-        <enum>QComboBox::AdjustToMinimumContentsLength</enum>
+        <enum>QComboBox::AdjustToMinimumContentsLengthWithIcon</enum>
        </property>
       </widget>
      </item>
@@ -88,7 +88,7 @@
      <item>
       <widget class="QComboBox" name="combosel_subset2">
        <property name="sizeAdjustPolicy">
-        <enum>QComboBox::AdjustToMinimumContentsLength</enum>
+        <enum>QComboBox::AdjustToMinimumContentsLengthWithIcon</enum>
        </property>
       </widget>
      </item>
