@@ -219,7 +219,7 @@ def read_anndata(
         skip_components=skip_components,
         subsample_factor=subsample_factor,
         try_backed=try_backed,
-        make_spatial_componentsts=make_spatial_components,
+        make_spatial_components=make_spatial_components,
     )
 
 
@@ -338,8 +338,9 @@ def translate_adata_to_DataAnnData(
             for comp_name, comp in data_to_add.items():
                 obs_data.add_component(comp, comp_name)
 
-    obs_data = list_of_data_objs.pop()
     if make_spatial_components:
+        obs_data = list_of_data_objs.pop()
+
         # We need to cast the obs Data object into a RegionData object
         spots = []
         for x, y in zip(obs_data["spatial_0"], obs_data["spatial_1"]):

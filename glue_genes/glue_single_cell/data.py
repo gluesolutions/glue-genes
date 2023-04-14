@@ -589,7 +589,7 @@ class DataAnnDataTranslator:
                 )
             else:
                 adata = anndata.AnnData(
-                    data_or_subset["Xarray"], obs=obs_data, var=var_data, uns=data_or_subset.meta['uns'],
+                    data_or_subset["Xarray"], obs=obs_data, var=var_data, uns=data_or_subset.meta.get('uns'),
                 )
             return adata
         else:
