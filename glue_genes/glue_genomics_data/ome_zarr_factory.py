@@ -12,7 +12,7 @@ __all__ = ["is_ome_zarr"]
 
 def is_ome_zarr(filename, **kwargs):
     """Check if a file is a Zarr file"""
-    return True  # filename.endswith(".zarr")
+    return filename.endswith(".zarr")
 
 
 @data_factory("OME-ZARR Loader", is_ome_zarr, priority=999)
@@ -55,20 +55,22 @@ def read_ome_zarr(filename):
             channel_names = meta.get("name", None)
             if len(channel_names) == num_channels:
                 channel_dict = {
-                    ch: np.flipud(dask_array[i, ...])
+                    ch: np.flipud(np.squeeze(dask_array[i, ...]))
                     for i, ch in enumerate(channel_names)
                 }
                 channel_dict = {
-                    ch: np.flipud(dask_array[i, ...])
+                    ch: np.flipud(np.squeeze(dask_array[i, ...]))
                     for i, ch in enumerate(channel_names)
                 }
 
             else:
                 channel_dict = {
-                    f"ch{i}": np.flipud(dask_array[i, ...]) for i in range(num_channels)
+                    f"ch{i}": np.flipud(np.squeeze(dask_array[i, ...]))
+                    for i in range(num_channels)
                 }
                 channel_dict = {
-                    f"ch{i}": np.flipud(dask_array[i, ...]) for i in range(num_channels)
+                    f"ch{i}": np.flipud(np.squeeze(dask_array[i, ...]))
+                    for i in range(num_channels)
                 }
 
             data_components.append(channel_dict)
@@ -77,19 +79,19 @@ def read_ome_zarr(filename):
             channel_names = meta.get("name", None)
             if len(channel_names) == num_channels:
                 channel_dict = {
-                    ch: np.flipud(dask_array[:, i, ...])
+                    ch: np.flipud(np.squeeze(dask_array[:, i, ...]))
                     for i, ch in enumerate(channel_names)
                 }
             else:
                 channel_dict = {
-                    f"ch{i}": np.flipud(dask_array[:, i, ...])
+                    f"ch{i}": np.flipud(np.squeeze(dask_array[:, i, ...]))
                     for i in range(num_channels)
                 }
             data_components.append(channel_dict)
     elif channel_index is None:
         for dask_array in dask_data:
             channel_dict = {}
-            channel_dict["value"] = np.flipud(dask_array)
+            channel_dict["value"] = np.flipud(np.squeeze(dask_array))
             data_components.append(channel_dict)
     else:
         pass
