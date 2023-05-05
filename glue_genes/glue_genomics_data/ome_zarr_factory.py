@@ -1,5 +1,6 @@
 from pathlib import Path
 
+import numpy as np
 from glue.config import data_factory
 from ome_zarr.io import parse_url
 from ome_zarr.reader import Reader
@@ -26,7 +27,8 @@ def read_ome_zarr(filename):
 
     Notes
     -----
-
+    TODO: Use metadata to set up coordinates
+    This is particularly useful for giving t and z proper names in the 4/5D case
 
     """
     reader = Reader(parse_url(filename))
@@ -53,29 +55,41 @@ def read_ome_zarr(filename):
             channel_names = meta.get("name", None)
             if len(channel_names) == num_channels:
                 channel_dict = {
-                    ch: dask_array[i, ...] for i, ch in enumerate(channel_names)
+                    ch: np.flipud(dask_array[i, ...])
+                    for i, ch in enumerate(channel_names)
                 }
+                channel_dict = {
+                    ch: np.flipud(dask_array[i, ...])
+                    for i, ch in enumerate(channel_names)
+                }
+
             else:
                 channel_dict = {
-                    f"ch{i}": dask_array[i, ...] for i in range(num_channels)
+                    f"ch{i}": np.flipud(dask_array[i, ...]) for i in range(num_channels)
                 }
+                channel_dict = {
+                    f"ch{i}": np.flipud(dask_array[i, ...]) for i in range(num_channels)
+                }
+
             data_components.append(channel_dict)
     elif channel_index == 1:
         for dask_array in dask_data:
             channel_names = meta.get("name", None)
             if len(channel_names) == num_channels:
                 channel_dict = {
-                    ch: dask_array[:, i, ...] for i, ch in enumerate(channel_names)
+                    ch: np.flipud(dask_array[:, i, ...])
+                    for i, ch in enumerate(channel_names)
                 }
             else:
                 channel_dict = {
-                    f"ch{i}": dask_array[:, i, ...] for i in range(num_channels)
+                    f"ch{i}": np.flipud(dask_array[:, i, ...])
+                    for i in range(num_channels)
                 }
             data_components.append(channel_dict)
     elif channel_index is None:
         for dask_array in dask_data:
             channel_dict = {}
-            channel_dict["value"] = dask_array
+            channel_dict["value"] = np.flipud(dask_array)
             data_components.append(channel_dict)
     else:
         pass
