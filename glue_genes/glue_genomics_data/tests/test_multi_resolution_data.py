@@ -12,7 +12,6 @@ def test_frb_with_multi_resolution_data():
     y = da.arange(64).reshape((4, 4, 4))
 
     data1 = MultiResolutionData(x=x, all_resolutions=[{"x": x}, {"y": y}], label="d1")
-    # data1.compute_fixed_resolution_buffer()
 
     assert_equal(
         data1.compute_fixed_resolution_buffer(
@@ -47,7 +46,6 @@ def test_frb_with_sliced_multi_resolution_data():
     y = y[0, 0, ...]
 
     data1 = MultiResolutionData(x=x, all_resolutions=[{"x": x}, {"y": y}], label="d1")
-    # data1.compute_fixed_resolution_buffer()
 
     assert_equal(
         data1.compute_fixed_resolution_buffer(
@@ -76,7 +74,6 @@ def test_frb_with_sliced_multi_resolution_data():
 
 def test_frb_with_dask():
     data1 = Data(x=da.arange(12).reshape((1, 4, 3)), label="d1")
-    # data1.compute_fixed_resolution_buffer()
 
     assert_equal(
         compute_fixed_resolution_buffer(
@@ -99,7 +96,6 @@ def test_frb_with_sliced_dask():
     x = da.arange(12).reshape((1, 1, 4, 3))
     y = x[:, 0, ...]
     data1 = Data(y=y, label="d1")
-    # data1.compute_fixed_resolution_buffer()
 
     assert_equal(
         compute_fixed_resolution_buffer(

@@ -26,8 +26,10 @@ class MultiResolutionData(Data):
     def __init__(self, label="", coords=None, all_resolutions=[], **kwargs):
         super(MultiResolutionData, self).__init__(label=label, coords=coords, **kwargs)
 
-        self._reduced_res_data_sets = [Data(**x) for x in all_resolutions[1:]]
-
+        if len(all_resolutions) > 1:
+            self._reduced_res_data_sets = [Data(**x) for x in all_resolutions[1:]]
+        else:
+            self._reduced_res_data_sets = []
         # Assumes that data is listed from highest resolution to lowest resolution
         # This is fixed 2x, but we could trivially derive this from the data
         # Our assumption is that there is a consistent downscaling across
