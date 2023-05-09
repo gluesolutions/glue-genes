@@ -61,8 +61,6 @@ def read_open_slide_as_zarr(filename):
 
     Notes
     -----
-    TODO: Use metadata to set up coordinates
-    This is particularly useful for giving t and z proper names in the 4/5D case
     """
     store = OpenSlideStore(filename)
     grp = zarr.open(store, mode="r")
@@ -72,7 +70,7 @@ def read_open_slide_as_zarr(filename):
     ]
     data_components = []
     for dask_array in dask_data:
-        channel_names = ["red", "green", "blue", "opacity"]  # Is this correct?
+        channel_names = ["red", "green", "blue", "opacity"]
         channel_dict = {
             ch: np.flipud(np.squeeze(dask_array[..., i]))
             for i, ch in enumerate(channel_names)

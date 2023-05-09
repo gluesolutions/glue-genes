@@ -45,7 +45,7 @@ class MultiResolutionData(Data):
         """
         # This might only be getting the *first* view, and sometimes full_view could be integers?
 
-        full_view = args[0]  #  This should be the only thing in args
+        full_view = args[0]  # This should be the only thing in args
         # view is t,z,x,y where t and z are optional
         if len(full_view) == 4:
             t = full_view[0]
@@ -61,7 +61,8 @@ class MultiResolutionData(Data):
             x = full_view[0]
 
         # Gets the index of the smallest Data object that has sufficient resolution for the request.
-        # If we request a higher resolution than we have present in the data, this just gets the highest resolution available
+        # If we request a higher resolution than we have present in the data,
+        # this just gets the highest resolution available
 
         if isinstance(x, tuple):
             x_res = abs(x[1] - x[0]) / x[2]
@@ -78,7 +79,7 @@ class MultiResolutionData(Data):
 
         # print(f"{xx=}")
         # print(f"{yy=}")
-        b = min(xx, yy)  #  Use the highest resolution needed for either x or y
+        b = min(xx, yy)  # Use the highest resolution needed for either x or y
 
         if b == 0:
             # print(f'{full_view=}')
