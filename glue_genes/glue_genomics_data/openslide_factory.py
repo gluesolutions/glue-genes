@@ -9,8 +9,11 @@ from .multires_data import MultiResolutionData
 
 try:
     from napari_lazy_openslide import OpenSlideStore
-    from openslide import (PROPERTY_NAME_COMMENT, OpenSlide,
-                           OpenSlideUnsupportedFormatError)
+    from openslide import (
+        PROPERTY_NAME_COMMENT,
+        OpenSlide,
+        OpenSlideUnsupportedFormatError,
+    )
 
     OPENSLIDE_INSTALLED = True
 

@@ -12,7 +12,11 @@ __all__ = ["is_ome_zarr"]
 
 def is_ome_zarr(filename, **kwargs):
     """Check if a file is a Zarr file"""
-    return filename.endswith(".zarr")
+    zarr = parse_url(filename)
+    if zarr:
+        return True
+    else:
+        return False
 
 
 @data_factory("OME-ZARR Loader", is_ome_zarr, priority=999)
