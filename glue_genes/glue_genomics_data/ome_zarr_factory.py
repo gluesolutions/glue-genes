@@ -22,7 +22,7 @@ def read_ome_zarr(filename):
 
     Parameters
     ----------
-    file_name: str
+    filename: str
         The pathname to the file.
 
     Notes

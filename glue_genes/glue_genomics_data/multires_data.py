@@ -76,8 +76,8 @@ class MultiResolutionData(Data):
         else:
             yy = 0
 
-        print(f"{xx=}")
-        print(f"{yy=}")
+        # print(f"{xx=}")
+        # print(f"{yy=}")
         b = min(xx, yy)  #  Use the highest resolution needed for either x or y
 
         if b == 0:
@@ -122,8 +122,8 @@ class MultiResolutionData(Data):
                     break
             # target_data = kwargs.pop("target_data", None)
             kwargs["target_data"] = reduced_data
-            print(full_view)
-            print(kwargs)
+            # print(full_view)
+            # print(kwargs)
             frb = compute_fixed_resolution_buffer(reduced_data, full_view, **kwargs)
-            print(f"{frb.shape}")
+            # print(f"{frb.shape}")
             return frb
