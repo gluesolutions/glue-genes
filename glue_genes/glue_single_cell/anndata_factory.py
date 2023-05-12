@@ -205,7 +205,7 @@ def read_anndata(
         adata = sc.read(file_name, sparse=True, backed=False)
         backed = False
 
-    if 'spatial' in adata.uns_keys():
+    if "spatial" in adata.uns_keys():
         make_spatial_components = True
     else:
         make_spatial_components = False
@@ -237,6 +237,8 @@ def translate_adata_to_DataAnnData(
 ):
     list_of_data_objs = []
 
+    adata.var_names_make_unique()
+
     if subsample:
         adata = sc.pp.subsample(
             adata, fraction=subsample_factor, copy=True, random_state=0
@@ -253,7 +255,9 @@ def translate_adata_to_DataAnnData(
 
     if make_spatial_components:
         library_id = list(adata.uns["spatial"].keys())[0]
-        basename = library_id  # This is often a nicer name, but maybe this should be optional?
+        basename = (
+            library_id  # This is often a nicer name, but maybe this should be optional?
+        )
         # Want radius
         # We should not assume this much about the structure of spatial
         # but this is okay for now...
@@ -278,7 +282,7 @@ def translate_adata_to_DataAnnData(
     # uns is unstructured data on the AnnData object
     # We just store it in metadata so we can recreate
     # the AnnData object
-    XData.meta['uns'] = adata.uns
+    XData.meta["uns"] = adata.uns
 
     list_of_data_objs.append(XData)
 
@@ -304,7 +308,9 @@ def translate_adata_to_DataAnnData(
             data_arr = adata.varm[key]
             # Sometimes this is a dataframe with names, and sometimes a simple np.array
             if isinstance(data_arr, pd.DataFrame):
-                data_to_add = {f"{key}_{col}": data_arr[col].values for col in data_arr.columns}
+                data_to_add = {
+                    f"{key}_{col}": data_arr[col].values for col in data_arr.columns
+                }
             else:
                 data_to_add = {f"{key}_{i}": k for i, k in enumerate(data_arr.T)}
             for comp_name, comp in data_to_add.items():
@@ -332,7 +338,9 @@ def translate_adata_to_DataAnnData(
             data_arr = adata.obsm[key]
             # Sometimes this is a dataframe with names, and sometimes a simple np.array
             if isinstance(data_arr, pd.DataFrame):
-                data_to_add = {f"{key}_{col}": data_arr[col].values for col in data_arr.columns}
+                data_to_add = {
+                    f"{key}_{col}": data_arr[col].values for col in data_arr.columns
+                }
             else:
                 data_to_add = {f"{key}_{i}": k for i, k in enumerate(data_arr.T)}
             for comp_name, comp in data_to_add.items():
