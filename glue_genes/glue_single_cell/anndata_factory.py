@@ -262,9 +262,9 @@ def translate_adata_to_DataAnnData(
         # We should not assume this much about the structure of spatial
         # but this is okay for now...
         scale_fac = adata.uns["spatial"][library_id]["scalefactors"]
-        hi_res_scale_fac = scale_fac["tissue_hires_scalef"]
+        # hi_res_scale_fac = scale_fac["tissue_hires_scalef"]
         # Want radius
-        spot_size = scale_fac["spot_diameter_fullres"] * hi_res_scale_fac / 2.0
+        spot_size = scale_fac["spot_diameter_fullres"] / 2.0  # * hi_res_scale_fac / 2.0
 
     XData.meta["full_filename"] = file_name
     XData.meta["Xdata"] = XData.uuid
@@ -349,6 +349,20 @@ def translate_adata_to_DataAnnData(
     if make_spatial_components:
         obs_data = list_of_data_objs.pop()
 
+        library_id = list(adata.uns["spatial"].keys())[0]
+        image_data = adata.uns["spatial"][library_id]["images"]["hires"]
+        scale_fac = adata.uns["spatial"][library_id]["scalefactors"]
+        hi_res_scale_fac = scale_fac["tissue_hires_scalef"]
+
+        new_spatial_0 = obs_data["spatial_0"]
+        new_spatial_1 = (
+            int(image_data.shape[0] / hi_res_scale_fac) - obs_data["spatial_1"]
+        )  # flip coordinates
+        spatial_0_id = obs_data.id["spatial_0"]
+        spatial_1_id = obs_data.id["spatial_1"]
+        obs_data.update_components({spatial_1_id: new_spatial_1})
+        obs_data.update_components({spatial_0_id: new_spatial_0})
+
         # We need to cast the obs Data object into a RegionData object
         spots = []
         for x, y in zip(obs_data["spatial_0"], obs_data["spatial_1"]):
@@ -360,6 +374,7 @@ def translate_adata_to_DataAnnData(
             if not isinstance(compid, PixelComponentID):
                 # Use same names (with .label) but NOT same ComponentIDs!
                 obs_data_new.add_component(obs_data.get_component(compid), compid.label)
+
         spot_comp = ExtendedComponent(
             spot_arr,
             parent_component_ids=[
@@ -370,6 +385,7 @@ def translate_adata_to_DataAnnData(
 
         obs_data_new.add_component(spot_comp, label="spots")
         obs_data_new.meta = obs_data.meta
+        XData.meta["obs_data"] = obs_data_new
 
         list_of_data_objs.append(obs_data_new)
 
