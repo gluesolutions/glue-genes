@@ -19,7 +19,7 @@ def is_ome_zarr(filename, **kwargs):
         return False
 
 
-@data_factory("OME-ZARR Loader", is_ome_zarr, priority=999)
+@data_factory("OME-ZARR Loader", is_ome_zarr, priority=900)
 def read_ome_zarr(filename):
     """
     Read an OME-Zarr file into a glue MultiResolutionData object.

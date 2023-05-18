@@ -11,7 +11,9 @@ from shapely.geometry import Point
 from squidpy.read import visium
 
 from glue_genes.glue_single_cell.anndata_factory import (
-    join_anndata_on_keys, translate_adata_to_DataAnnData)
+    join_anndata_on_keys,
+    translate_adata_to_DataAnnData,
+)
 
 __all__ = ["read_spaceranger_directory"]
 
