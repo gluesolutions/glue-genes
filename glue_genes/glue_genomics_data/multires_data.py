@@ -1,6 +1,41 @@
 import numpy as np
+from glue.core.component_link import ComponentLink
 from glue.core.data import Data
+from glue.core.exceptions import IncompatibleAttribute
 from glue.core.fixed_resolution_buffer import compute_fixed_resolution_buffer
+
+
+class ReducedResolutionData(Data):
+    """
+    A simple data class that represents reduced resolution versions of
+    data in a MultiResolutionData object
+    """
+
+    def __init__(self, label="", coords=None, parent=None, **kwargs):
+        super().__init__(label=label, coords=coords, **kwargs)
+        self.parent = parent
+
+    def get_data(self, cid, view=None):
+        if isinstance(cid, ComponentLink):
+            return cid.compute(self, view)
+
+        if cid in self._components:
+            comp = self._components[cid]
+        elif cid in self.parent._components:
+            comp = self.parent._components[cid]
+        elif cid in self._externally_derivable_components:
+            comp = self._externally_derivable_components[cid]
+        elif cid in self.parent._externally_derivable_components:
+            comp = self.parent._externally_derivable_components[cid]
+        else:
+            raise IncompatibleAttribute(cid)
+
+        if view is not None:
+            result = comp[view]
+        else:
+            result = comp.data
+
+        return result
 
 
 class MultiResolutionData(Data):
@@ -27,7 +62,9 @@ class MultiResolutionData(Data):
         super(MultiResolutionData, self).__init__(label=label, coords=coords, **kwargs)
 
         if len(all_resolutions) > 1:
-            self._reduced_res_data_sets = [Data(**x) for x in all_resolutions[1:]]
+            self._reduced_res_data_sets = [
+                ReducedResolutionData(**x, parent=self) for x in all_resolutions[1:]
+            ]
         else:
             self._reduced_res_data_sets = []
         # Assumes that data is listed from highest resolution to lowest resolution
