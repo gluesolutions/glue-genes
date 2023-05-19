@@ -12,10 +12,17 @@ def is_zarr(filename, **kwargs):
     """
     Check if a file is a Zarr file.
     """
-    return filename.endswith(".zarr")
+    if filename.endswith(".zarr"):
+        try:
+            _ = from_zarr(filename, component="image")
+            return True
+        except KeyError:
+            return False
+    else:
+        return False
 
 
-@data_factory("Zarr data loader", is_zarr, priority=999)
+@data_factory("Zarr data loader", is_zarr, priority=800)
 def read_zarr(file_name):
     """
     Read a Zarr file into a glue Data object.

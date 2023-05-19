@@ -3,6 +3,7 @@ from glue.core.component_link import ComponentLink
 from glue.core.data import Data
 from glue.core.exceptions import IncompatibleAttribute
 from glue.core.fixed_resolution_buffer import compute_fixed_resolution_buffer
+from glue.core.joins import get_mask_with_key_joins
 
 
 class ReducedResolutionData(Data):
@@ -11,9 +12,10 @@ class ReducedResolutionData(Data):
     data in a MultiResolutionData object
     """
 
-    def __init__(self, label="", coords=None, parent=None, **kwargs):
+    def __init__(self, label="", coords=None, parent=None, scale_factor=1, **kwargs):
         super().__init__(label=label, coords=coords, **kwargs)
         self.parent = parent
+        self.scale_factor = scale_factor
 
     def get_data(self, cid, view=None):
         if isinstance(cid, ComponentLink):
@@ -36,6 +38,51 @@ class ReducedResolutionData(Data):
             result = comp.data
 
         return result
+
+    def get_mask(self, subset_state, view=None):
+        # import pdb
+
+        # pdb.set_trace()
+
+        new_atts = []
+        for att in subset_state.attributes:
+            for attribute in self._components:
+                if (
+                    attribute.label == att.label
+                ):  # This is a weak check, we should do better by maintaining our own lookup. See IndexedData
+                    new_atts.append(attribute)
+        # import pdb
+
+        def scale_roi(x):
+            return x / self.scale_factor
+
+        # pdb.set_trace()
+        # subset_state_reduced.attributes = tuple(new_atts)
+        subset_state_reduced = subset_state.copy()
+
+        try:
+            subset_state_reduced.xatt = new_atts[0]
+        except IndexError:
+            pass
+        try:
+            subset_state_reduced.yatt = new_atts[1]
+        except IndexError:
+            pass
+        subset_state_reduced.roi = subset_state.roi.transformed(
+            xfunc=scale_roi, yfunc=scale_roi
+        )
+        print(f"{self.scale_factor=}")
+        print(subset_state.roi)
+        print(subset_state_reduced.roi)
+        # TODO: We should probably chain these pretransforms in case we already have one
+        # subset_state_reduced.pretransform = scale_down
+        try:
+            array = subset_state_reduced.to_mask(self, view=view)
+            return array
+        except IncompatibleAttribute:
+            return get_mask_with_key_joins(
+                self, self._key_joins, subset_state_reduced, view=view
+            )
 
 
 class MultiResolutionData(Data):
@@ -60,10 +107,14 @@ class MultiResolutionData(Data):
 
     def __init__(self, label="", coords=None, all_resolutions=[], **kwargs):
         super(MultiResolutionData, self).__init__(label=label, coords=coords, **kwargs)
+        self.scale = 2
 
         if len(all_resolutions) > 1:
             self._reduced_res_data_sets = [
-                ReducedResolutionData(**x, parent=self) for x in all_resolutions[1:]
+                ReducedResolutionData(
+                    **x, parent=self, scale_factor=self.scale ** (i + 1)
+                )
+                for i, x in enumerate(all_resolutions[1:])
             ]
         else:
             self._reduced_res_data_sets = []
@@ -71,7 +122,7 @@ class MultiResolutionData(Data):
         # This is fixed 2x, but we could trivially derive this from the data
         # Our assumption is that there is a consistent downscaling across
         # all relevant dimensions. This probably does not have to be true.
-        self._resolutions = np.array(2 ** np.arange(len(all_resolutions)))
+        self._resolutions = np.array(self.scale ** np.arange(len(all_resolutions)))
 
     def compute_fixed_resolution_buffer(self, *args, **kwargs):
         """
@@ -114,17 +165,17 @@ class MultiResolutionData(Data):
         else:
             yy = 0
 
-        # print(f"{xx=}")
-        # print(f"{yy=}")
+        print(f"{xx=}")
+        print(f"{yy=}")
         b = min(xx, yy)  # Use the highest resolution needed for either x or y
 
         if b == 0:
-            # print(f'{full_view=}')
+            print(f"{full_view=}")
             frb = compute_fixed_resolution_buffer(self, full_view, **kwargs)
-            # print(f'{frb.shape}')
+            print(f"{frb.shape}")
             return frb
         else:
-            # print(f'{full_view=}')
+            print(f"{full_view=}")
             # Is the cache working properly?
             reduced_data = self._reduced_res_data_sets[b - 1]
             target_cid = kwargs.pop("target_cid", None)
@@ -134,34 +185,58 @@ class MultiResolutionData(Data):
                 if len(full_view) == 2:
                     old_x, old_y = full_view
                     full_view = [
-                        (old_x[0] / 2, old_x[1] / 2, max(1, int(old_x[2]))),
-                        (old_y[0] / 2, old_y[1] / 2, max(1, int(old_y[2]))),
+                        (
+                            old_x[0] / self.scale,
+                            old_x[1] / self.scale,
+                            max(1, int(old_x[2])),
+                        ),
+                        (
+                            old_y[0] / self.scale,
+                            old_y[1] / self.scale,
+                            max(1, int(old_y[2])),
+                        ),
                     ]
                 elif len(full_view) == 3:
                     z, old_x, old_y = full_view
                     full_view = [
                         z,
-                        (old_x[0] / 2, old_x[1] / 2, max(1, int(old_x[2]))),
-                        (old_y[0] / 2, old_y[1] / 2, max(1, int(old_y[2]))),
+                        (
+                            old_x[0] / self.scale,
+                            old_x[1] / self.scale,
+                            max(1, int(old_x[2])),
+                        ),
+                        (
+                            old_y[0] / self.scale,
+                            old_y[1] / self.scale,
+                            max(1, int(old_y[2])),
+                        ),
                     ]
                 elif len(full_view) == 4:
                     t, z, old_x, old_y = full_view
                     full_view = [
                         t,
                         z,
-                        (old_x[0] / 2, old_x[1] / 2, max(1, int(old_x[2]))),
-                        (old_y[0] / 2, old_y[1] / 2, max(1, int(old_y[2]))),
+                        (
+                            old_x[0] / self.scale,
+                            old_x[1] / self.scale,
+                            max(1, int(old_x[2])),
+                        ),
+                        (
+                            old_y[0] / self.scale,
+                            old_y[1] / self.scale,
+                            max(1, int(old_y[2])),
+                        ),
                     ]
 
-            # print(f'{full_view=}')
+            print(f"{full_view=}")
             for new_comp, old_comp in zip(reduced_data.components, self.components):
                 if target_cid == old_comp:
                     kwargs["target_cid"] = new_comp
                     break
-            # target_data = kwargs.pop("target_data", None)
+            target_data = kwargs.pop("target_data", None)
             kwargs["target_data"] = reduced_data
-            # print(full_view)
-            # print(kwargs)
+            print(full_view)
+            print(kwargs)
             frb = compute_fixed_resolution_buffer(reduced_data, full_view, **kwargs)
-            # print(f"{frb.shape}")
+            print(f"{frb.shape}")
             return frb
