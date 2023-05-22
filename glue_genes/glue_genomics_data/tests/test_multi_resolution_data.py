@@ -7,11 +7,32 @@ from numpy.testing import assert_equal
 from glue_genes.glue_genomics_data.multires_data import MultiResolutionData
 
 
+class TestMultiResolutionData:
+    def setup_class(self):
+        x1 = np.eye(64, 64)
+        x2 = np.eye(32, 32)
+        x3 = np.eye(16, 16)
+        self.data = MultiResolutionData(
+            x=x1, all_resolutions=[{"x": x1}, {"x": x2}, {"x": x3}], label="Test data"
+        )
+
+    def test_basic_init(self):
+        assert len(self.data._reduced_res_data_sets) == 2
+        assert self.data._reduced_res_data_sets[0]._cid_to_parent_cid == {}
+
+    def test_cid_lookup(self):
+        red_data = self.data._reduced_res_data_sets[0]
+        for red_comp, parent_comp in zip(
+            red_data.main_components, self.data.main_components
+        ):
+            assert red_data._translate_reduced_cid_to_full_cid(red_comp) == parent_comp
+
+
 def test_frb_with_multi_resolution_data():
     x = da.arange(512).reshape((8, 8, 8))
     y = da.arange(64).reshape((4, 4, 4))
 
-    data1 = MultiResolutionData(x=x, all_resolutions=[{"x": x}, {"y": y}], label="d1")
+    data1 = MultiResolutionData(x=x, all_resolutions=[{"x": x}, {"x": y}], label="d1")
 
     assert_equal(
         data1.compute_fixed_resolution_buffer(
@@ -45,7 +66,7 @@ def test_frb_with_sliced_multi_resolution_data():
     x = x[0, 0, ...]
     y = y[0, 0, ...]
 
-    data1 = MultiResolutionData(x=x, all_resolutions=[{"x": x}, {"y": y}], label="d1")
+    data1 = MultiResolutionData(x=x, all_resolutions=[{"x": x}, {"x": y}], label="d1")
 
     assert_equal(
         data1.compute_fixed_resolution_buffer(

@@ -1,4 +1,5 @@
 import numpy as np
+from glue.core.component_id import ComponentID
 from glue.core.component_link import ComponentLink
 from glue.core.data import Data
 from glue.core.exceptions import IncompatibleAttribute
@@ -10,36 +11,104 @@ class ReducedResolutionData(Data):
     """
     A simple data class that represents reduced resolution versions of
     data in a MultiResolutionData object
+
+    Parameters
+    ----------
+    parent : `~.MultiResolutionData`
+        The parent MulitResolutionData that this object is a reducted-resolution
+        version of.
+    scale_factor : `int`
+        The scale factor between this data and parent. Currently only a single
+        value, since it must be the same in all dimensions
+
     """
 
     def __init__(self, label="", coords=None, parent=None, scale_factor=1, **kwargs):
         super().__init__(label=label, coords=coords, **kwargs)
-        self.parent = parent
+        self._parent_data = parent
+        self._cid_to_parent_cid = {}
+        self._parent_cid_to_cid = {}
         self.scale_factor = scale_factor
 
-    def get_data(self, cid, view=None):
-        if isinstance(cid, ComponentLink):
-            return cid.compute(self, view)
+        # Construct a list of original pixel component IDs
+        self._parent_pixel_cids = []
+        for idim in range(self._parent_data.ndim):
+            self._parent_pixel_cids.append(self._parent_data.pixel_component_ids[idim])
 
-        if cid in self._components:
-            comp = self._components[cid]
-        elif cid in self.parent._components:
-            comp = self.parent._components[cid]
-        elif cid in self._externally_derivable_components:
-            comp = self._externally_derivable_components[cid]
-        elif cid in self.parent._externally_derivable_components:
-            comp = self.parent._externally_derivable_components[cid]
-        else:
-            raise IncompatibleAttribute(cid)
+        # Construct a list of original world component IDs
+        self._parent_world_cids = []
+        if len(self._parent_data.world_component_ids) > 0:
+            idim_new = 0
+            for idim in range(self._parent_data.ndim):
+                if self._indices[idim] is None:
+                    self._cid_to_parent_cid[
+                        self.world_component_ids[idim_new]
+                    ] = self._parent_data.world_component_ids[idim]
+                    idim_new += 1
+        # Yeah, but this isn't quite right. We actually have different
+        # ComponentIDs and we need to set this dictionary up when we init
+        # The MultiResolutionData object
+        # _ = self.main_components  # Just to trigger this code to run
 
-        if view is not None:
-            result = comp[view]
-        else:
-            result = comp.data
+    # @property
+    # def main_components(self):
+    #    main = []
+    #    for cid in self._parent_data.main_components:
+    #        if cid not in self._parent_cid_to_cid:
+    #            cid_new = ComponentID(label=cid.label, parent=self)
+    #            self._parent_cid_to_cid[cid] = cid_new
+    #            self._cid_to_parent_cid[cid_new] = cid
+    #        main.append(self._parent_cid_to_cid[cid])
+    #    return main
 
-        return result
+    def _translate_full_cid_to_reduced_cid(self, cid):
+        """
+        This translates the full resolution cid to the reduced resolution cid
+        """
+        if cid in self._parent_pixel_cids:
+            cid = self.pixel_component_ids[cid.axis]
+        elif cid in self._parent_cid_to_cid:
+            cid = self._parent_cid_to_cid[cid]
+        return cid
+
+    def _translate_reduced_cid_to_full_cid(self, cid):
+        """
+        This translates the reduced resolution cid to the full resolution cid
+        """
+        if cid in self.pixel_component_ids:
+            cid = self._parent_pixel_cids[cid.axis]
+        elif cid in self._cid_to_parent_cid:
+            cid = self._cid_to_parent_cid[cid]
+        return cid
+
+    # def get_data(self, cid, view=None):
+    #    """
+    #    Sometimes
+    #    """
+    #    cid = self._translate_reduced_cid_to_full_cid(cid)
+    #    return self._parent_data.get_data(cid, view=view)
 
     def get_mask(self, subset_state, view=None):
+        """
+        We need to either translate subset_state rois
+        or use pixel/world components in the original
+        coordinate system.
+
+        The following basically works for polygon selections
+        but will break for range selections, and anything
+        with a categorical. Also probably any composite subset.
+
+        We need to do something more complicated for those.
+
+        This is adjusting the subset_state.roi into the coordinates
+        of the ReducedResolutionData. Probably a better thing is
+        to maintain two set of coordinates for our ReducedResolutionData
+        perhaps in a dictionary and then translate any attributes that are
+        in the subset_state.attributes (will this always be sufficient?)
+        to use these other attributes. See IndexedData
+
+        """
+
         # import pdb
 
         # pdb.set_trace()
@@ -123,6 +192,15 @@ class MultiResolutionData(Data):
         # Our assumption is that there is a consistent downscaling across
         # all relevant dimensions. This probably does not have to be true.
         self._resolutions = np.array(self.scale ** np.arange(len(all_resolutions)))
+        self.setup_cid_lookups()
+
+    def setup_cid_lookups(self):
+        for reduced_data in self._reduced_res_data_sets:
+            for r_compid, compid in zip(
+                reduced_data.main_components, self.main_components
+            ):
+                reduced_data._cid_to_parent_cid[r_compid] = compid
+                reduced_data._parent_cid_to_cid[compid] = r_compid
 
     def compute_fixed_resolution_buffer(self, *args, **kwargs):
         """
@@ -229,10 +307,11 @@ class MultiResolutionData(Data):
                     ]
 
             print(f"{full_view=}")
-            for new_comp, old_comp in zip(reduced_data.components, self.components):
-                if target_cid == old_comp:
-                    kwargs["target_cid"] = new_comp
-                    break
+            print(reduced_data._parent_cid_to_cid)
+            # This is not doing it for some reason...
+            kwargs["target_cid"] = reduced_data._translate_full_cid_to_reduced_cid(
+                target_cid
+            )
             target_data = kwargs.pop("target_data", None)
             kwargs["target_data"] = reduced_data
             print(full_view)
