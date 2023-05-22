@@ -1,6 +1,4 @@
 import numpy as np
-from glue.core.component_id import ComponentID
-from glue.core.component_link import ComponentLink
 from glue.core.data import Data
 from glue.core.exceptions import IncompatibleAttribute
 from glue.core.fixed_resolution_buffer import compute_fixed_resolution_buffer
@@ -21,6 +19,7 @@ class ReducedResolutionData(Data):
         The scale factor between this data and parent. Currently only a single
         value, since it must be the same in all dimensions
 
+    TODO: Check that any of this works for coordinate components
     """
 
     def __init__(self, label="", coords=None, parent=None, scale_factor=1, **kwargs):
@@ -45,23 +44,8 @@ class ReducedResolutionData(Data):
                         self.world_component_ids[idim_new]
                     ] = self._parent_data.world_component_ids[idim]
                     idim_new += 1
-        # Yeah, but this isn't quite right. We actually have different
-        # ComponentIDs and we need to set this dictionary up when we init
-        # The MultiResolutionData object
-        # _ = self.main_components  # Just to trigger this code to run
 
-    # @property
-    # def main_components(self):
-    #    main = []
-    #    for cid in self._parent_data.main_components:
-    #        if cid not in self._parent_cid_to_cid:
-    #            cid_new = ComponentID(label=cid.label, parent=self)
-    #            self._parent_cid_to_cid[cid] = cid_new
-    #            self._cid_to_parent_cid[cid_new] = cid
-    #        main.append(self._parent_cid_to_cid[cid])
-    #    return main
-
-    def _translate_full_cid_to_reduced_cid(self, cid):
+    def convert_full_to_reduced_cid(self, cid):
         """
         This translates the full resolution cid to the reduced resolution cid
         """
@@ -71,7 +55,7 @@ class ReducedResolutionData(Data):
             cid = self._parent_cid_to_cid[cid]
         return cid
 
-    def _translate_reduced_cid_to_full_cid(self, cid):
+    def convert_reduced_to_full_cid(self, cid):
         """
         This translates the reduced resolution cid to the full resolution cid
         """
@@ -80,13 +64,6 @@ class ReducedResolutionData(Data):
         elif cid in self._cid_to_parent_cid:
             cid = self._cid_to_parent_cid[cid]
         return cid
-
-    # def get_data(self, cid, view=None):
-    #    """
-    #    Sometimes
-    #    """
-    #    cid = self._translate_reduced_cid_to_full_cid(cid)
-    #    return self._parent_data.get_data(cid, view=view)
 
     def get_mask(self, subset_state, view=None):
         """
@@ -108,10 +85,6 @@ class ReducedResolutionData(Data):
         to use these other attributes. See IndexedData
 
         """
-
-        # import pdb
-
-        # pdb.set_trace()
 
         new_atts = []
         for att in subset_state.attributes:
@@ -143,8 +116,6 @@ class ReducedResolutionData(Data):
         print(f"{self.scale_factor=}")
         print(subset_state.roi)
         print(subset_state_reduced.roi)
-        # TODO: We should probably chain these pretransforms in case we already have one
-        # subset_state_reduced.pretransform = scale_down
         try:
             array = subset_state_reduced.to_mask(self, view=view)
             return array
@@ -309,9 +280,7 @@ class MultiResolutionData(Data):
             print(f"{full_view=}")
             print(reduced_data._parent_cid_to_cid)
             # This is not doing it for some reason...
-            kwargs["target_cid"] = reduced_data._translate_full_cid_to_reduced_cid(
-                target_cid
-            )
+            kwargs["target_cid"] = reduced_data.convert_full_to_reduced_cid(target_cid)
             target_data = kwargs.pop("target_data", None)
             kwargs["target_data"] = reduced_data
             print(full_view)
