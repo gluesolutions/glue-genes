@@ -1,7 +1,6 @@
 import numpy as np
 from glue.core.component import CoordinateComponent
-from glue.core.component_id import (ComponentID, ComponentIDDict,
-                                    PixelComponentID)
+from glue.core.component_id import ComponentID, ComponentIDDict, PixelComponentID
 from glue.core.component_link import ComponentLink
 from glue.core.data import Data, pixel_label
 from glue.core.exceptions import IncompatibleAttribute
@@ -103,6 +102,34 @@ class ReducedResolutionData(Data):
             cid = self._cid_to_parent_cid[cid]
         return cid
 
+    def get_data(self, cid, view=None):
+        """
+        In the case were we are trying to get a pixel cid
+        from the original dataset we want to return the
+        reduced pixel
+        """
+
+        if isinstance(cid, ComponentLink):
+            return cid.compute(self, view)
+
+        if cid in self._components:
+            comp = self._components[cid]
+        elif cid in self._externally_derivable_components:
+            comp = self._externally_derivable_components[cid]
+        else:
+            try:
+                cid = self.convert_full_to_reduced_cid(cid, downsample=True)
+                comp = self._components[cid]
+            except AttributeError:
+                raise IncompatibleAttribute(cid)
+
+        if view is not None:
+            result = comp[view]
+        else:
+            result = comp.data
+
+        return result
+
     def get_mask(self, subset_state, view=None):
         """
         We need to either translate subset_state rois
@@ -126,71 +153,32 @@ class ReducedResolutionData(Data):
         Okay -- fundamentally we want to apply the mask to the parent data
         and then downsample the mask, that could work?
 
+        No. That does not work because the view is such that
+        the typical use case will return an entirely false mask
+        from the parent data, and we can never downsample that
+
+        PixelSubsetState and SliceSubsetState might already do this
+        can we just leverage that?
+
+
+        kwargs['subset_state'] &= self._indices_subset_state
+
+        No. We never WANT to calculate the subset mask on the full dataset
+        because then we have to load the full thing into memory
+        and this slicing thing is just going to post-process the subset
+        mask in the same way we are already doing. AAARGH!!
+
         """
-
-        new_atts = []
-        for att in subset_state.attributes:
-            if (
-                att in self._parent_pixel_cids
-            ):  # IFF we are in pixel coordinates we need to translate
-                print(f"Old att is {att=}")
-                new_att = self.convert_full_to_reduced_cid(att, downsample=True)
-                print(f"New att is {new_att=}")
-
-            else:
-                new_att = att
-            new_atts.append(new_att)
-
-        # def scale_roi(x):
-        #    return x / self.scale_factor
-
-        # pdb.set_trace()
-        # subset_state_reduced.attributes = tuple(new_atts)
-
-        # This is inelegant to have to code around lots of different
-        # kinds of subset states, but it sort of works
-        # Note that this does NOT yet work for disjoint subsets
-
-        # Would it be simpler to overrite get_data? to check for pixel
-        # coordinates and return the strided versions there?
-        # No, the problem is that we get the mask on the data first
-        # Blah.
-        # Maybe we *should* just downsample the mask?
-        # This is super-annoying to deal with more complicated subsets
-        # And things like ElementSubsetState (defined over pixel ids)
-        # make this even worse.
-
-        subset_state_reduced = subset_state.copy()
-        if isinstance(subset_state, RangeSubsetState):
-            subset_state_reduced._att = new_atts[0]  # If there is just one
-        elif isinstance(subset_state, RoiSubsetStateNd):
-            for i in range(len(subset_state_reduced._atts)):
-                subset_state_reduced._atts[i] = new_atts[i]
-
-        # for att, new_att in zip(subset_state_reduced._atts, new_atts):
-        #    att = new_att
-        print(subset_state_reduced.attributes)
-        # try:
-        #    subset_state_reduced.xatt = new_atts[0]
-        # except IndexError:
-        #    pass
-        # try:
-        #    subset_state_reduced.yatt = new_atts[1]
-        # except IndexError:
-        #    pass
-        # subset_state_reduced.roi = subset_state.roi.transformed(
-        #    xfunc=scale_roi, yfunc=scale_roi
-        # )
-        # print(f"{self.scale_factor=}")
-        # print(subset_state.roi)
-        # print(subset_state_reduced.roi)
         try:
-            array = subset_state_reduced.to_mask(self, view=view)
+            array = subset_state.to_mask(self, view=view)
             return array
+            # return array[tuple([slice(None, None, self.scale_factor)] * self.ndim)]
         except IncompatibleAttribute:
-            return get_mask_with_key_joins(
-                self, self._key_joins, subset_state_reduced, view=view
+            array = get_mask_with_key_joins(
+                self, self._key_joins, subset_state, view=view
             )
+            return array
+            # return array[tuple([slice(None, None, self.scale_factor)] * self.ndim)]
 
 
 class MultiResolutionData(Data):
