@@ -1,8 +1,31 @@
 import numpy as np
-from glue.core.data import Data
+from glue.core.component import CoordinateComponent
+from glue.core.component_id import (ComponentID, ComponentIDDict,
+                                    PixelComponentID)
+from glue.core.component_link import ComponentLink
+from glue.core.data import Data, pixel_label
 from glue.core.exceptions import IncompatibleAttribute
 from glue.core.fixed_resolution_buffer import compute_fixed_resolution_buffer
 from glue.core.joins import get_mask_with_key_joins
+from glue.core.subset import RangeSubsetState, RoiSubsetStateNd
+
+
+class ReducedCoordinateComponent(CoordinateComponent):
+    def __init__(self, data, axis, world=False, stride=1):
+        super().__init__(data, axis, world=world)
+        self.stride = stride
+
+    def _calculate(self, view=None):
+        if self.world:
+            return super()._calculate(view=view)
+        else:
+            slices = [
+                slice(0, s, self.stride) for s in np.array(self.shape) * self.stride
+            ]  # Use stride here to get downsampled pixel coordinates
+            grids = np.broadcast_arrays(*np.ogrid[slices])
+            if view is not None:
+                grids = [g[view] for g in grids]
+            return grids[self.axis]
 
 
 class ReducedResolutionData(Data):
@@ -29,10 +52,22 @@ class ReducedResolutionData(Data):
         self._parent_cid_to_cid = {}
         self.scale_factor = scale_factor
 
+        # def scale_pix(x):
+        #    return x / self.scale_factor
+
         # Construct a list of original pixel component IDs
         self._parent_pixel_cids = []
+        self._downsampled_pixel_cids = []
         for idim in range(self._parent_data.ndim):
             self._parent_pixel_cids.append(self._parent_data.pixel_component_ids[idim])
+            comp = ReducedCoordinateComponent(
+                self, idim, world=False, stride=self.scale_factor
+            )
+            label = pixel_label(idim, self._parent_data.ndim)
+            cid = PixelComponentID(idim, "Reduced Pixel Axis %s" % label, parent=self)
+
+            self.add_component(comp, cid)
+            self._downsampled_pixel_cids.append(cid)
 
         # Construct a list of original world component IDs
         self._parent_world_cids = []
@@ -45,12 +80,15 @@ class ReducedResolutionData(Data):
                     ] = self._parent_data.world_component_ids[idim]
                     idim_new += 1
 
-    def convert_full_to_reduced_cid(self, cid):
+    def convert_full_to_reduced_cid(self, cid, downsample=False):
         """
         This translates the full resolution cid to the reduced resolution cid
         """
         if cid in self._parent_pixel_cids:
-            cid = self.pixel_component_ids[cid.axis]
+            if downsample:
+                cid = self._downsampled_pixel_cids[cid.axis]
+            else:
+                cid = self.pixel_component_ids[cid.axis]
         elif cid in self._parent_cid_to_cid:
             cid = self._parent_cid_to_cid[cid]
         return cid
@@ -84,38 +122,68 @@ class ReducedResolutionData(Data):
         in the subset_state.attributes (will this always be sufficient?)
         to use these other attributes. See IndexedData
 
+        The other option is to mess around with views?
+        Okay -- fundamentally we want to apply the mask to the parent data
+        and then downsample the mask, that could work?
+
         """
 
         new_atts = []
         for att in subset_state.attributes:
-            for attribute in self._components:
-                if (
-                    attribute.label == att.label
-                ):  # This is a weak check, we should do better by maintaining our own lookup. See IndexedData
-                    new_atts.append(attribute)
-        # import pdb
+            if (
+                att in self._parent_pixel_cids
+            ):  # IFF we are in pixel coordinates we need to translate
+                print(f"Old att is {att=}")
+                new_att = self.convert_full_to_reduced_cid(att, downsample=True)
+                print(f"New att is {new_att=}")
 
-        def scale_roi(x):
-            return x / self.scale_factor
+            else:
+                new_att = att
+            new_atts.append(new_att)
+
+        # def scale_roi(x):
+        #    return x / self.scale_factor
 
         # pdb.set_trace()
         # subset_state_reduced.attributes = tuple(new_atts)
-        subset_state_reduced = subset_state.copy()
 
-        try:
-            subset_state_reduced.xatt = new_atts[0]
-        except IndexError:
-            pass
-        try:
-            subset_state_reduced.yatt = new_atts[1]
-        except IndexError:
-            pass
-        subset_state_reduced.roi = subset_state.roi.transformed(
-            xfunc=scale_roi, yfunc=scale_roi
-        )
-        print(f"{self.scale_factor=}")
-        print(subset_state.roi)
-        print(subset_state_reduced.roi)
+        # This is inelegant to have to code around lots of different
+        # kinds of subset states, but it sort of works
+        # Note that this does NOT yet work for disjoint subsets
+
+        # Would it be simpler to overrite get_data? to check for pixel
+        # coordinates and return the strided versions there?
+        # No, the problem is that we get the mask on the data first
+        # Blah.
+        # Maybe we *should* just downsample the mask?
+        # This is super-annoying to deal with more complicated subsets
+        # And things like ElementSubsetState (defined over pixel ids)
+        # make this even worse.
+
+        subset_state_reduced = subset_state.copy()
+        if isinstance(subset_state, RangeSubsetState):
+            subset_state_reduced._att = new_atts[0]  # If there is just one
+        elif isinstance(subset_state, RoiSubsetStateNd):
+            for i in range(len(subset_state_reduced._atts)):
+                subset_state_reduced._atts[i] = new_atts[i]
+
+        # for att, new_att in zip(subset_state_reduced._atts, new_atts):
+        #    att = new_att
+        print(subset_state_reduced.attributes)
+        # try:
+        #    subset_state_reduced.xatt = new_atts[0]
+        # except IndexError:
+        #    pass
+        # try:
+        #    subset_state_reduced.yatt = new_atts[1]
+        # except IndexError:
+        #    pass
+        # subset_state_reduced.roi = subset_state.roi.transformed(
+        #    xfunc=scale_roi, yfunc=scale_roi
+        # )
+        # print(f"{self.scale_factor=}")
+        # print(subset_state.roi)
+        # print(subset_state_reduced.roi)
         try:
             array = subset_state_reduced.to_mask(self, view=view)
             return array
