@@ -2,9 +2,17 @@ import dask.array as da
 import numpy as np
 from glue.core import Data
 from glue.core.fixed_resolution_buffer import compute_fixed_resolution_buffer
-from glue.core.roi import (CategoricalROI, CircularROI, EllipticalROI,
-                           PolygonalROI, Projected3dROI, RangeROI,
-                           RectangularROI, XRangeROI, YRangeROI)
+from glue.core.roi import (
+    CategoricalROI,
+    CircularROI,
+    EllipticalROI,
+    PolygonalROI,
+    Projected3dROI,
+    RangeROI,
+    RectangularROI,
+    XRangeROI,
+    YRangeROI,
+)
 from glue.core.subset import MultiOrState, RangeSubsetState, RoiSubsetState
 from numpy.testing import assert_equal
 
@@ -17,7 +25,10 @@ class TestMultiResolutionData:
         x2 = np.eye(4, 4)
         x3 = np.eye(2, 2)
         self.data = MultiResolutionData(
-            x=x1, all_resolutions=[{"x": x1}, {"x": x2}, {"x": x3}], label="Test data"
+            x=x1,
+            all_resolutions=[{"x": x1}, {"x": x2}, {"x": x3}],
+            label="Test data",
+            reduced_dims=[0, 1],
         )
 
     def test_basic_init(self):
@@ -30,8 +41,8 @@ class TestMultiResolutionData:
             np.array([[0, 0, 0, 0], [2, 2, 2, 2], [4, 4, 4, 4], [6, 6, 6, 6]]),
         )
         assert d2[d2._downsampled_pixel_cids[0]].data.shape == d2.shape
-        #d3 = self.data._reduced_res_data_sets[1]
-        #assert_equal(d3._downsampled_pixel_cids[0].data, np.array([[0, 0], [4, 4]]))
+        # d3 = self.data._reduced_res_data_sets[1]
+        # assert_equal(d3._downsampled_pixel_cids[0].data, np.array([[0, 0], [4, 4]]))
 
         # assert d2._cid_to_parent_cid == {}
 

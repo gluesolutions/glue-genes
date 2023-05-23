@@ -105,4 +105,8 @@ def read_ome_zarr(filename):
         **data_components[0],
         all_resolutions=data_components,
         label=Path(filename).stem,
+        reduced_dims=[
+            -2,
+            -1,
+        ],  # The only reduced dimensions in x,y which are the last two
     )

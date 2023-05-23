@@ -1,12 +1,11 @@
 import numpy as np
 from glue.core.component import CoordinateComponent
-from glue.core.component_id import ComponentID, ComponentIDDict, PixelComponentID
+from glue.core.component_id import PixelComponentID
 from glue.core.component_link import ComponentLink
 from glue.core.data import Data, pixel_label
 from glue.core.exceptions import IncompatibleAttribute
 from glue.core.fixed_resolution_buffer import compute_fixed_resolution_buffer
 from glue.core.joins import get_mask_with_key_joins
-from glue.core.subset import RangeSubsetState, RoiSubsetStateNd
 
 
 class ReducedCoordinateComponent(CoordinateComponent):
@@ -44,13 +43,21 @@ class ReducedResolutionData(Data):
     TODO: Check that any of this works for coordinate components
     """
 
-    def __init__(self, label="", coords=None, parent=None, scale_factor=1, **kwargs):
+    def __init__(
+        self,
+        label="",
+        coords=None,
+        parent=None,
+        scale_factor=1,
+        reduced_dims=[],
+        **kwargs,
+    ):
         super().__init__(label=label, coords=coords, **kwargs)
         self._parent_data = parent
         self._cid_to_parent_cid = {}
         self._parent_cid_to_cid = {}
         self.scale_factor = scale_factor
-
+        self.reduced_dims = reduced_dims
         # def scale_pix(x):
         #    return x / self.scale_factor
 
@@ -59,16 +66,23 @@ class ReducedResolutionData(Data):
         self._downsampled_pixel_cids = []
         for idim in range(self._parent_data.ndim):
             self._parent_pixel_cids.append(self._parent_data.pixel_component_ids[idim])
-            comp = ReducedCoordinateComponent(
-                self, idim, world=False, stride=self.scale_factor
-            )
+            # For ease of referencing we produce a ReducedCoordinateComponent
+            # for every dimension, but only axes in self.reduced_dims are actually
+            # reduced
+            if idim in self.reduced_dims:
+                comp = ReducedCoordinateComponent(
+                    self, idim, world=False, stride=self.scale_factor
+                )
+            else:
+                comp = ReducedCoordinateComponent(self, idim, world=False, stride=1)
+
             label = pixel_label(idim, self._parent_data.ndim)
             cid = PixelComponentID(idim, "Reduced Pixel Axis %s" % label, parent=self)
-
             self.add_component(comp, cid)
             self._downsampled_pixel_cids.append(cid)
 
         # Construct a list of original world component IDs
+        # TODO: test if this works at all
         self._parent_world_cids = []
         if len(self._parent_data.world_component_ids) > 0:
             idim_new = 0
@@ -92,10 +106,13 @@ class ReducedResolutionData(Data):
             cid = self._parent_cid_to_cid[cid]
         return cid
 
-    def convert_reduced_to_full_cid(self, cid):
+    def convert_reduced_to_full_cid(self, cid, upsample=True):
         """
         This translates the reduced resolution cid to the full resolution cid
         """
+        if upsample:
+            if cid in self._downsampled_pixel_cids:
+                cid = self._parent_pixel_cids[cid.axis]
         if cid in self.pixel_component_ids:
             cid = self._parent_pixel_cids[cid.axis]
         elif cid in self._cid_to_parent_cid:
@@ -120,7 +137,7 @@ class ReducedResolutionData(Data):
             try:
                 cid = self.convert_full_to_reduced_cid(cid, downsample=True)
                 comp = self._components[cid]
-            except AttributeError:
+            except KeyError:
                 raise IncompatibleAttribute(cid)
 
         if view is not None:
@@ -131,54 +148,15 @@ class ReducedResolutionData(Data):
         return result
 
     def get_mask(self, subset_state, view=None):
-        """
-        We need to either translate subset_state rois
-        or use pixel/world components in the original
-        coordinate system.
-
-        The following basically works for polygon selections
-        but will break for range selections, and anything
-        with a categorical. Also probably any composite subset.
-
-        We need to do something more complicated for those.
-
-        This is adjusting the subset_state.roi into the coordinates
-        of the ReducedResolutionData. Probably a better thing is
-        to maintain two set of coordinates for our ReducedResolutionData
-        perhaps in a dictionary and then translate any attributes that are
-        in the subset_state.attributes (will this always be sufficient?)
-        to use these other attributes. See IndexedData
-
-        The other option is to mess around with views?
-        Okay -- fundamentally we want to apply the mask to the parent data
-        and then downsample the mask, that could work?
-
-        No. That does not work because the view is such that
-        the typical use case will return an entirely false mask
-        from the parent data, and we can never downsample that
-
-        PixelSubsetState and SliceSubsetState might already do this
-        can we just leverage that?
-
-
-        kwargs['subset_state'] &= self._indices_subset_state
-
-        No. We never WANT to calculate the subset mask on the full dataset
-        because then we have to load the full thing into memory
-        and this slicing thing is just going to post-process the subset
-        mask in the same way we are already doing. AAARGH!!
-
-        """
+        """ """
         try:
             array = subset_state.to_mask(self, view=view)
             return array
-            # return array[tuple([slice(None, None, self.scale_factor)] * self.ndim)]
         except IncompatibleAttribute:
             array = get_mask_with_key_joins(
                 self, self._key_joins, subset_state, view=view
             )
             return array
-            # return array[tuple([slice(None, None, self.scale_factor)] * self.ndim)]
 
 
 class MultiResolutionData(Data):
@@ -201,14 +179,19 @@ class MultiResolutionData(Data):
 
     """
 
-    def __init__(self, label="", coords=None, all_resolutions=[], **kwargs):
+    def __init__(
+        self, label="", coords=None, all_resolutions=[], reduced_dims=[], **kwargs
+    ):
         super(MultiResolutionData, self).__init__(label=label, coords=coords, **kwargs)
         self.scale = 2
 
         if len(all_resolutions) > 1:
             self._reduced_res_data_sets = [
                 ReducedResolutionData(
-                    **x, parent=self, scale_factor=self.scale ** (i + 1)
+                    **x,
+                    parent=self,
+                    scale_factor=self.scale ** (i + 1),
+                    reduced_dims=reduced_dims,
                 )
                 for i, x in enumerate(all_resolutions[1:])
             ]
@@ -275,12 +258,12 @@ class MultiResolutionData(Data):
         b = min(xx, yy)  # Use the highest resolution needed for either x or y
 
         if b == 0:
-            print(f"{full_view=}")
+            # print(f"{full_view=}")
             frb = compute_fixed_resolution_buffer(self, full_view, **kwargs)
-            print(f"{frb.shape}")
+            # print(f"{frb.shape}")
             return frb
         else:
-            print(f"{full_view=}")
+            # print(f"{full_view=}")
             # Is the cache working properly?
             reduced_data = self._reduced_res_data_sets[b - 1]
             target_cid = kwargs.pop("target_cid", None)
@@ -333,14 +316,13 @@ class MultiResolutionData(Data):
                         ),
                     ]
 
-            print(f"{full_view=}")
-            print(reduced_data._parent_cid_to_cid)
-            # This is not doing it for some reason...
+            # print(f"{full_view=}")
+            # print(reduced_data._parent_cid_to_cid)
             kwargs["target_cid"] = reduced_data.convert_full_to_reduced_cid(target_cid)
-            target_data = kwargs.pop("target_data", None)
+            _ = kwargs.pop("target_data", None)
             kwargs["target_data"] = reduced_data
-            print(full_view)
-            print(kwargs)
+            # print(full_view)
+            # print(kwargs)
             frb = compute_fixed_resolution_buffer(reduced_data, full_view, **kwargs)
-            print(f"{frb.shape}")
+            # print(f"{frb.shape}")
             return frb

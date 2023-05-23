@@ -22,7 +22,7 @@ def is_zarr(filename, **kwargs):
         return False
 
 
-@data_factory("Zarr data loader", is_zarr, priority=800)
+@data_factory("Zarr data loader", is_zarr, priority=950)
 def read_zarr(file_name):
     """
     Read a Zarr file into a glue Data object.
