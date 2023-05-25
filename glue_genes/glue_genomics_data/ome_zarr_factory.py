@@ -106,7 +106,7 @@ def read_ome_zarr(filename):
         all_resolutions=data_components,
         label=Path(filename).stem,
         reduced_dims=[
-            -2,
-            -1,
-        ],  # The only reduced dimensions in x,y which are the last two
+            1,
+            2,
+        ],  # This is only correct it we have z,y,x after squeeze. TODO: Make this flexible
     )
