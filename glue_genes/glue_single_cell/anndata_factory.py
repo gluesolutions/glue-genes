@@ -295,7 +295,6 @@ def translate_adata_to_DataAnnData(
 
     # obs_data.meta['xarray_data'] = Xdata
     # var_data.meta['xarray_data'] = Xdata
-<<<<<<< HEAD
 
     return join_anndata_on_keys(list_of_data_objs)
 
@@ -323,9 +322,3 @@ def anndata_autolink(data_collection):
             if gui_link not in data_collection._link_manager._external_links:
                 gui_links.append(gui_link)
     return gui_links
-=======
-    if skip_joins:
-        return list_of_data_objs
-    else:
-        return join_anndata_on_keys(list_of_data_objs)
->>>>>>> 1.1.x
