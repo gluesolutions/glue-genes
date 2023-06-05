@@ -1,9 +1,9 @@
 from pathlib import Path
 
 import scanpy as sc
-from glue.config import data_factory, startup_action
-from glue.core import Data, HubListener
-from glue.core.message import DataCollectionAddMessage
+from glue.config import data_factory, autolinker
+from glue.core import Data
+from glue.core.link_helpers import JoinLink
 from glue.utils.qt import set_cursor_cm
 from qtpy.QtCore import Qt
 
@@ -12,42 +12,8 @@ from .qt.load_data import LoadDataDialog
 
 __all__ = [
     "read_anndata",
-    "setup_gui_joins",
     "join_anndata_on_keys",
-    "AnnDataListener",
-    "setup_anndata",
 ]
-
-
-class AnnDataListener(HubListener):
-    """
-    Set up :class:`~glue.core.link_helpers.JoinLink` for :class:`~.DataAnnData` objects.
-
-    Listen for :class:`~.DataAnnData` objects to be added to the
-    data collection object, and, if one is, setup the
-    correct join_on_key joins in a way that they will
-    show up in the GUI.
-
-    """
-
-    def __init__(self, hub):
-        hub.subscribe(self, DataCollectionAddMessage, handler=self.setup_anndata)
-
-    def setup_anndata(self, message):
-        data = message.data
-        dc = message.sender
-        if isinstance(data, DataAnnData):
-            setup_gui_joins(dc, data)
-
-
-@startup_action("setup_anndata")
-def setup_anndata(session, data_collection):
-    """
-    A startup action to set up the :class:`~.AnnDataListener`
-    """
-
-    data_collection.anndatalistener = AnnDataListener(data_collection.hub)
-    return
 
 
 def df_to_data(obj, label=None, skip_components=[]):
@@ -60,44 +26,6 @@ def df_to_data(obj, label=None, skip_components=[]):
 
 def is_anndata(filename, **kwargs):
     return filename.endswith(".h5ad") or filename.endswith(".loom")
-
-
-def setup_gui_joins(dc, data):
-    """
-    Set up :class:`~glue.core.link_helpers.JoinLink` that mirror the existing join_on_key links,
-    so these links show in the Link Editor.
-
-    Parameters
-    ----------
-    dc : :class:`~glue.core.data_collection.DataCollection`
-        The DataCollection object associated with this glue session
-    data : :class:`~glue_genes.glue_single_cell.data.DataAnnData`
-        The DataAnnData object that defines join_on_key links
-        to the associated obs and var Data objects
-
-    Notes
-    -----
-    We cannot do this at data load because these links are defined
-    at the level of a data_collection, which may not exist at
-    data load time. Instead we call this through a listener
-    when a :class:`~glue_genes.glue_single_cell.data.DataAnnData` object is added to a data collection.
-
-    """
-    try:  # If we are using a version of glue that supports links in the GUI
-        from glue.core.link_helpers import JoinLink
-
-        do_gui_link = True
-    except ImportError:
-        print("Cannot set up GUI join_on_key links")
-        do_gui_link = False
-    if do_gui_link:
-        for other, joins in data._key_joins.items():
-            cid, cid_other = joins
-            gui_link = JoinLink(
-                cids1=[cid[0]], cids2=[cid_other[0]], data1=data, data2=other
-            )
-            if gui_link not in dc._link_manager._external_links:
-                dc.add_link(gui_link)
 
 
 def join_anndata_on_keys(datasets):
@@ -280,3 +208,28 @@ def read_anndata(
     # var_data.meta['xarray_data'] = Xdata
 
     return join_anndata_on_keys(list_of_data_objs)
+
+
+@autolinker("AnnData")
+def anndata_autolink(data_collection):
+    """
+    This sets up automatic links between the components of an Anndata
+    dataset, specifically join_on_key links between the X and obs/var
+    datasets. This is pretty straightforward because our data loader
+    already sets up the _key_joins in the dataset and this is "just"
+    adding them as full GUI links.
+    """
+    anndata_datasets = [data for data in data_collection if isinstance(data, DataAnnData)]
+    if len(anndata_datasets) < 1:
+        return []
+
+    gui_links = []
+    for data in anndata_datasets:
+        for other, joins in data._key_joins.items():
+            cid, cid_other = joins
+            gui_link = JoinLink(
+                cids1=[cid[0]], cids2=[cid_other[0]], data1=data, data2=other
+            )
+            if gui_link not in data_collection._link_manager._external_links:
+                gui_links.append(gui_link)
+    return gui_links
