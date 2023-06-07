@@ -84,14 +84,14 @@ class TestCellSummarySession(object):
 
         assert len(self.dc[0].listeners) == 1
         assert len(self.dc[2].components) == 6
-        assert np.sum(self.dc[2]["Subset 1_Means_0"]) > 99
-        assert np.sum(self.dc[2]["Subset 1_Means_0"]) < 100
+        assert np.sum(self.dc[2]["Subset 1_Means (sync)"]) > 99
+        assert np.sum(self.dc[2]["Subset 1_Means (sync)"]) < 100
 
         sumdiag.state.genesubset.subset_state = d1_var.id["gene_stuff_0"] > 0.6
 
-        assert np.sum(self.dc[2]["Subset 1_Means_0"]) > 99
+        assert np.sum(self.dc[2]["Subset 1_Means (sync)"]) > 99
         assert (
-            not np.sum(self.dc[2]["Subset 1_Means_0"]) < 100
+            not np.sum(self.dc[2]["Subset 1_Means (sync)"]) < 100
         )  # Check that updating subset changes the result
 
         filename = tmpdir.join("test_anndata_load_session.glu").strpath
@@ -113,8 +113,8 @@ class TestCellSummarySession(object):
 
         dc.subset_groups[0].subset_state = dc[1].id["gene_stuff_0"] > 0
 
-        assert np.sum(dc[2]["Subset 1_Means_0"]) > 99
-        assert np.sum(dc[2]["Subset 1_Means_0"]) < 100
+        assert np.sum(dc[2]["Subset 1_Means (sync)"]) > 99
+        assert np.sum(dc[2]["Subset 1_Means (sync)"]) < 100
         ga.close()
 
 
@@ -294,7 +294,7 @@ class TestCellSummary(object):
         s.subset_state = d1_var.id["gene_stuff_0"] > 0
 
         data_arr = do_calculation_over_gene_subset(d1_adata, s, calculation="Means")
-        apply_data_arr(d1_obs, data_arr, "d1", key="Means")
+        apply_data_arr(d1_obs, data_arr, "d1", s, key="Means")
         assert len(d1_obs.components) == 6
 
 

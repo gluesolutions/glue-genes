@@ -290,7 +290,7 @@ def translate_adata_to_DataAnnData(
 
         obs_data_new.add_component(spot_comp, label="spots")
         obs_data_new.meta = obs_data.meta
-
+        XData.meta["obs_data"] = obs_data_new
         list_of_data_objs.append(obs_data_new)
 
     # obs_data.meta['xarray_data'] = Xdata
