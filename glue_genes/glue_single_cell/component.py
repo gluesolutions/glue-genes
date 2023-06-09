@@ -4,7 +4,7 @@ from matplotlib.colors import LinearSegmentedColormap
 from glue.config import colormaps
 import warnings
 
-__all__ = ['SyncComponent']
+__all__ = ["SyncComponent"]
 
 
 class SyncComponent(Component):
@@ -19,7 +19,8 @@ class SyncComponent(Component):
     ----------
     preferred_cmap : `str` or :class:`~matplotlib.colors.Colormap`, optional
         A colormap to be used as the preferred colormap, by name or instance. Default is `None`.
-"""
+    """
+
     def __init__(self, data, units=None, subsets=[], preferred_cmap=None):
         super().__init__(data, units=units)
         if preferred_cmap is not None:
@@ -50,5 +51,5 @@ class SyncComponent(Component):
         colormaps.add(cmap_name, my_cmap)
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
-            mpl.colormaps.register(cmap=my_cmap, force=True) # Do we need this?
+            mpl.colormaps.register(cmap=my_cmap, force=True)  # Do we need this?
         return (cmap_name, my_cmap)
