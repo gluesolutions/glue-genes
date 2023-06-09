@@ -9,7 +9,7 @@ from glue.core.state_objects import State
 
 from .data import DataAnnData
 
-__all__ = ["DiffGeneExpState", "PCASubsetState", "EnrichpyState"]
+__all__ = ["DiffGeneExpState", "SummarizeGeneSubsetState", "EnrichpyState"]
 
 
 class EnrichpyState(State):

@@ -4,15 +4,10 @@ def setup():
     from .anndata_factory import read_anndata  # noqa
     from .menubar_plugin import diff_gene_exp_plugin  # noqa
     from .menubar_plugin import enrichrpy_plugin  # noqa
-    from .menubar_plugin import pca_subset_exp_plugin  # noqa
+    from .menubar_plugin import summarize_gene_subset_exp_plugin  # noqa
     from .qtl_viewer.viewer import QTLViewer  # noqa
 
     qt_client.add(QTLViewer)
-
-    # Add colormaps we can use when we use the pca_subset_exp_plugin
-    # to maps gene expression to a summary over cells. A summary generated
-    # from a red subset can then be displayed using the 'Reds' colormap
-    # This does not happen automatically... at least not yet
 
     d3_dozen = [
         "#1E77B3",
@@ -56,11 +51,6 @@ def setup():
     from glue.config import colormaps
     from matplotlib.colors import ListedColormap
 
-    colormaps.add("Reds", cm.Reds)
-    colormaps.add("Greens", cm.Greens)
-    colormaps.add("Blues", cm.Blues)
-    colormaps.add("Purples", cm.Purples)
-    colormaps.add("Oranges", cm.Oranges)
     # Add some categorical colormaps
 
     colormaps.add("d3_dozen", ListedColormap(d3_dozen, name="d3_dozen"))
