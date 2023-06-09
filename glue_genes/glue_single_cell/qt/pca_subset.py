@@ -129,6 +129,7 @@ def apply_data_arr(target_dataset, data_arr, basename, key="PCA"):
     data = Data(
         **{f"{key}_{i}": k for i, k in enumerate(data_arr.T)}, label=f"{basename}_{key}"
     )
+    new_comp_name = f"{basename}_0"
     for x in data.components:
         if x not in data.coordinate_components:
             new_comp_name = f"{basename}_{x}"
@@ -179,7 +180,6 @@ class GeneSummaryListener(HubListener):
         self.hub.subscribe(self, SubsetDeleteMessage, handler=self.delete_subset)
 
     def __gluestate__(self, context):
-
         return dict(
             genesubset=context.id(self.genesubset),
             basename=context.do(self.basename),
@@ -216,6 +216,7 @@ class GeneSummaryListener(HubListener):
             )
 
             if new_data is not None:
+                mapping_ok = False
                 mapping = {
                     f"{self.basename}_{self.key}_{i}": k
                     for i, k in enumerate(new_data.T)
@@ -224,11 +225,13 @@ class GeneSummaryListener(HubListener):
                     x
                 ) in (
                     self.target_dataset.components
-                ):  # This is to get the right component ids
+                ):  # This is to get the right component ids.
                     xstr = f"{x.label}"
                     if xstr in mapping.keys():
                         mapping[x] = mapping.pop(xstr)
-                self.target_dataset.update_components(mapping)
+                        mapping_ok = True
+                if mapping_ok:
+                    self.target_dataset.update_components(mapping)
 
     def delete_subset(self, message):
         """
@@ -242,7 +245,6 @@ class GeneSummaryListener(HubListener):
 
 class PCASubsetDialog(QtWidgets.QDialog):
     def __init__(self, collect, default=None, parent=None):
-
         super(PCASubsetDialog, self).__init__(parent=parent)
 
         self.state = PCASubsetState(collect)
@@ -294,13 +296,15 @@ class PCASubsetDialog(QtWidgets.QDialog):
         )
 
         if data_arr is not None:
-
             new_comp_name = apply_data_arr(target_dataset, data_arr, basename, key=key)
             gene_summary_listener = GeneSummaryListener(
                 genesubset, basename, key, data_with_Xarray
             )
             gene_summary_listener.register_to_hub()
             data_with_Xarray.listeners.append(gene_summary_listener)
+        else:
+            new_comp_name = "Broken"
+            print("Something is very wrong??!!??")
 
         confirm = dialog(  # noqa: F841
             "Adding a new component",

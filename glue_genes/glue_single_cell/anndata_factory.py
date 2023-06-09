@@ -205,7 +205,7 @@ def read_anndata(
         adata = sc.read(file_name, sparse=True, backed=False)
         backed = False
 
-    if 'spatial' in adata.uns_keys():
+    if "spatial" in adata.uns_keys():
         make_spatial_components = True
     else:
         make_spatial_components = False
@@ -237,6 +237,8 @@ def translate_adata_to_DataAnnData(
 ):
     list_of_data_objs = []
 
+    adata.var_names_make_unique()
+
     if subsample:
         adata = sc.pp.subsample(
             adata, fraction=subsample_factor, copy=True, random_state=0
@@ -253,14 +255,16 @@ def translate_adata_to_DataAnnData(
 
     if make_spatial_components:
         library_id = list(adata.uns["spatial"].keys())[0]
-        basename = library_id  # This is often a nicer name, but maybe this should be optional?
+        basename = (
+            library_id  # This is often a nicer name, but maybe this should be optional?
+        )
         # Want radius
         # We should not assume this much about the structure of spatial
         # but this is okay for now...
         scale_fac = adata.uns["spatial"][library_id]["scalefactors"]
-        hi_res_scale_fac = scale_fac["tissue_hires_scalef"]
+        # hi_res_scale_fac = scale_fac["tissue_hires_scalef"]
         # Want radius
-        spot_size = scale_fac["spot_diameter_fullres"] * hi_res_scale_fac / 2.0
+        spot_size = scale_fac["spot_diameter_fullres"] / 2.0  # * hi_res_scale_fac / 2.0
 
     XData.meta["full_filename"] = file_name
     XData.meta["Xdata"] = XData.uuid
@@ -278,7 +282,7 @@ def translate_adata_to_DataAnnData(
     # uns is unstructured data on the AnnData object
     # We just store it in metadata so we can recreate
     # the AnnData object
-    XData.meta['uns'] = adata.uns
+    XData.meta["uns"] = adata.uns
 
     list_of_data_objs.append(XData)
 
@@ -304,7 +308,9 @@ def translate_adata_to_DataAnnData(
             data_arr = adata.varm[key]
             # Sometimes this is a dataframe with names, and sometimes a simple np.array
             if isinstance(data_arr, pd.DataFrame):
-                data_to_add = {f"{key}_{col}": data_arr[col].values for col in data_arr.columns}
+                data_to_add = {
+                    f"{key}_{col}": data_arr[col].values for col in data_arr.columns
+                }
             else:
                 data_to_add = {f"{key}_{i}": k for i, k in enumerate(data_arr.T)}
             for comp_name, comp in data_to_add.items():
@@ -332,7 +338,9 @@ def translate_adata_to_DataAnnData(
             data_arr = adata.obsm[key]
             # Sometimes this is a dataframe with names, and sometimes a simple np.array
             if isinstance(data_arr, pd.DataFrame):
-                data_to_add = {f"{key}_{col}": data_arr[col].values for col in data_arr.columns}
+                data_to_add = {
+                    f"{key}_{col}": data_arr[col].values for col in data_arr.columns
+                }
             else:
                 data_to_add = {f"{key}_{i}": k for i, k in enumerate(data_arr.T)}
             for comp_name, comp in data_to_add.items():
@@ -340,6 +348,20 @@ def translate_adata_to_DataAnnData(
 
     if make_spatial_components:
         obs_data = list_of_data_objs.pop()
+
+        library_id = list(adata.uns["spatial"].keys())[0]
+        image_data = adata.uns["spatial"][library_id]["images"]["hires"]
+        scale_fac = adata.uns["spatial"][library_id]["scalefactors"]
+        hi_res_scale_fac = scale_fac["tissue_hires_scalef"]
+
+        new_spatial_0 = obs_data["spatial_0"]
+        new_spatial_1 = (
+            int(image_data.shape[0] / hi_res_scale_fac) - obs_data["spatial_1"]
+        )  # flip coordinates
+        spatial_0_id = obs_data.id["spatial_0"]
+        spatial_1_id = obs_data.id["spatial_1"]
+        obs_data.update_components({spatial_1_id: new_spatial_1})
+        obs_data.update_components({spatial_0_id: new_spatial_0})
 
         # We need to cast the obs Data object into a RegionData object
         spots = []
@@ -352,6 +374,7 @@ def translate_adata_to_DataAnnData(
             if not isinstance(compid, PixelComponentID):
                 # Use same names (with .label) but NOT same ComponentIDs!
                 obs_data_new.add_component(obs_data.get_component(compid), compid.label)
+
         spot_comp = ExtendedComponent(
             spot_arr,
             parent_component_ids=[
@@ -362,6 +385,7 @@ def translate_adata_to_DataAnnData(
 
         obs_data_new.add_component(spot_comp, label="spots")
         obs_data_new.meta = obs_data.meta
+        XData.meta["obs_data"] = obs_data_new
 
         list_of_data_objs.append(obs_data_new)
 
