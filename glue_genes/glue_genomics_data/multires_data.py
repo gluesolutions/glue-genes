@@ -40,7 +40,7 @@ class ReducedResolutionData(Data):
         The scale factor between this data and parent. Currently only a single
         value, since it must be the same in all dimensions
 
-    TODO: Check that any of this works for coordinate components
+    TODO: Check that any of this works for world coordinate components
     """
 
     def __init__(
@@ -123,7 +123,9 @@ class ReducedResolutionData(Data):
         """
         In the case were we are trying to get a pixel cid
         from the original dataset we want to return the
-        reduced pixel
+        reduced pixel, otherwise we do the normal thing
+        and we could simplify this logic to call the parent
+        method
         """
 
         if isinstance(cid, ComponentLink):
@@ -139,7 +141,6 @@ class ReducedResolutionData(Data):
                 comp = self._components[cid]
             except KeyError:
                 raise IncompatibleAttribute(cid)
-
         if view is not None:
             result = comp[view]
         else:
@@ -176,6 +177,9 @@ class MultiResolutionData(Data):
     Currently this class assumes OME-Zarr datasets where the multi-resolution
     datasets are stored from highest to lowest resolution with each lower resolution
     version downsampled by a factor of two.
+
+    Since the MultiResolutionData set contains the full data, we do not
+    need to override get_mask or get_data.
 
     """
 
@@ -219,6 +223,7 @@ class MultiResolutionData(Data):
         tczxy
 
         """
+
         # This might only be getting the *first* view, and sometimes full_view could be integers?
 
         full_view = args[0]  # This should be the only thing in args
@@ -326,3 +331,62 @@ class MultiResolutionData(Data):
             frb = compute_fixed_resolution_buffer(reduced_data, full_view, **kwargs)
             # print(f"{frb.shape}")
             return frb
+
+    def compute_statistic(self, statistic, cid, **kwargs):
+        """
+        random_views_for_dask_array (used if random_subset is set
+        and we have a dask array) has a problem if there is structure
+        in the image that corresponds to the chunk size. For biology
+        imaging data with wells, this is often the case. Here we assume
+        that the smallest reduced-resolution dataset will be small
+        enough to just compute statistics without using random subset.
+        """
+        _ = kwargs.pop("random_subset", None)
+        kwargs["random_subset"] = None
+
+        for reduced_data in self._reduced_res_data_sets[::-1]:
+            print(f"Trying {reduced_data}")
+            print(f"With scale factor {reduced_data.scale_factor}")
+            if cid:
+                cid = reduced_data.convert_full_to_reduced_cid(cid)
+            return reduced_data.compute_statistic(statistic, cid, **kwargs)
+
+    #    pass
+
+    def compute_histogram(
+        self, cids, weights=None, range=None, bins=None, log=None, subset_state=None
+    ):
+        # def compute_histogram(self, *args, **kwargs):
+        """
+        We want to pass the compute_histogram calls to whatever reduced resolution dataset has
+        sufficient number of points. I'm not aware of a particular heuristic here. We could just
+        start from the smallest dataset and then expand if we think that there aren't enough
+        points.
+        """
+
+        # Start with smallest dataset and move to larger sets
+        # if we don't have a good number of points within the
+        # most populous bin
+        for reduced_data in self._reduced_res_data_sets[::-1]:
+            print(f"Trying {reduced_data}")
+            print(f"With scale factor {reduced_data.scale_factor}")
+
+            target_cids = []
+            for cid in cids:
+                target_cids.append(reduced_data.convert_full_to_reduced_cid(cid))
+            if weights:
+                weights = reduced_data.convert_full_to_reduced_cid(weights)
+
+            histogram = reduced_data.compute_histogram(
+                target_cids,
+                weights=weights,
+                range=range,
+                bins=bins,
+                log=log,
+                subset_state=subset_state,
+            )
+            print(histogram)
+            if np.max(histogram) > 30:
+                return (
+                    histogram * reduced_data.scale_factor
+                )  # Inflate reported bins by scale factor
