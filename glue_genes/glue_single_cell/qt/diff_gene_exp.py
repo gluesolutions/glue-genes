@@ -19,7 +19,7 @@ from glue.utils.qt import load_ui
 from qtpy import QtWidgets
 
 from ..state import DiffGeneExpState
-from .pca_subset import dialog
+from .summarize_gene_subset import dialog
 
 __all__ = ["get_gene_list_diff_exp", "DiffGeneExpDialog"]
 
@@ -89,7 +89,6 @@ def get_gene_list_diff_exp(subset1, subset2, data, n_genes=50):
 
 class DiffGeneExpDialog(QtWidgets.QDialog):
     def __init__(self, collect, default=None, parent=None):
-
         super(DiffGeneExpDialog, self).__init__(parent=parent)
 
         self.state = DiffGeneExpState(collect)

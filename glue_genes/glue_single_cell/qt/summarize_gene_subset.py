@@ -22,9 +22,9 @@ from qtpy.QtWidgets import QMessageBox
 from glue_genes.glue_single_cell.component import SyncComponent
 from glue.core.component_id import ComponentID
 
-from ..state import PCASubsetState
+from ..state import SummarizeGeneSubsetState
 
-__all__ = ["PCASubsetDialog", "GeneSummaryListener"]
+__all__ = ["SummarizeGeneSubsetDialog", "GeneSummaryListener"]
 
 
 def dialog(title, text, icon):
@@ -101,7 +101,7 @@ def do_calculation_over_gene_subset(data_with_Xarray, genesubset, calculation="M
                 :, mask
             ]  # This will fail if genesubset is not actually over genes
             if data_with_Xarray.sparse is True:
-                data_arr = adata_sel.mean(axis=1).A1,
+                data_arr = (adata_sel.mean(axis=1).A1,)
             else:
                 data_arr = adata_sel.mean(axis=1)
 
@@ -115,7 +115,7 @@ def do_calculation_over_gene_subset(data_with_Xarray, genesubset, calculation="M
     return data_arr
 
 
-def apply_data_arr(target_dataset, data_arr, basename, subset, key="PCA"):
+def apply_data_arr(target_dataset, data_arr, basename, subset, key="Means"):
     """
     Add appropriately named SyncComponents from data_arr to target_dataset
 
@@ -185,7 +185,6 @@ class GeneSummaryListener(HubListener):
         self.hub.subscribe(self, SubsetDeleteMessage, handler=self.delete_subset)
 
     def __gluestate__(self, context):
-
         return dict(
             genesubset=context.id(self.genesubset),
             basename=context.do(self.basename),
@@ -243,14 +242,15 @@ class GeneSummaryListener(HubListener):
         pass
 
 
-class PCASubsetDialog(QtWidgets.QDialog):
+class SummarizeGeneSubsetDialog(QtWidgets.QDialog):
     def __init__(self, collect, default=None, parent=None):
+        super().__init__(parent=parent)
 
-        super(PCASubsetDialog, self).__init__(parent=parent)
+        self.state = SummarizeGeneSubsetState(collect)
 
-        self.state = PCASubsetState(collect)
-
-        self.ui = load_ui("pca_subset.ui", self, directory=os.path.dirname(__file__))
+        self.ui = load_ui(
+            "summarize_gene_subset.ui", self, directory=os.path.dirname(__file__)
+        )
         self._connections = autoconnect_callbacks_to_qt(self.state, self.ui)
 
         self._collect = collect
@@ -297,8 +297,9 @@ class PCASubsetDialog(QtWidgets.QDialog):
         )
 
         if data_arr is not None:
-
-            new_comps = apply_data_arr(target_dataset, data_arr, basename, genesubset, key=key)
+            new_comps = apply_data_arr(
+                target_dataset, data_arr, basename, genesubset, key=key
+            )
             gene_summary_listener = GeneSummaryListener(
                 genesubset, basename, key, data_with_Xarray, new_comps
             )

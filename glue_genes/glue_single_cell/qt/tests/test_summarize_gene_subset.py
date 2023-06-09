@@ -27,8 +27,8 @@ from glue.core.state import GlueUnSerializer
 
 from glue_genes.glue_single_cell.anndata_factory import read_anndata
 
-from ..pca_subset import (
-    PCASubsetDialog,
+from ..summarize_gene_subset import (
+    SummarizeGeneSubsetDialog,
     apply_data_arr,
     do_calculation_over_gene_subset,
 )
@@ -70,7 +70,7 @@ class TestCellSummarySession(object):
         # s = d1_var.new_subset()
         s.subset_state = d1_var.id["gene_stuff_0"] > 0
 
-        sumdiag = PCASubsetDialog(self.dc)
+        sumdiag = SummarizeGeneSubsetDialog(self.dc)
         sumdiag.state.data = self.dc[2]
         sumdiag.state.genesubset = s
         sumdiag.state.do_means = True
@@ -78,7 +78,7 @@ class TestCellSummarySession(object):
         sumdiag.state.do_module = False
 
         with patch(
-            "glue_genes.glue_single_cell.qt.pca_subset.dialog"
+            "glue_genes.glue_single_cell.qt.summarize_gene_subset.dialog"
         ) as fakedialog:  # noqa: F841
             sumdiag._apply()
 
@@ -120,7 +120,6 @@ class TestCellSummarySession(object):
 
 class TestCellSummary(object):
     def setup_method(self, method):
-
         d1 = df.load_data(
             os.path.join(DATA, "test_data.h5ad"), factory=read_anndata, skip_dialog=True
         )
@@ -276,7 +275,7 @@ class TestCellSummary(object):
             if subset.data == self.dc[0].meta["var_data"]:
                 genesubset = subset
         with patch(
-            "glue_genes.glue_single_cell.qt.pca_subset.dialog"
+            "glue_genes.glue_single_cell.qt.summarize_gene_subset.dialog"
         ) as fakedialog:  # noqa: F841
             data_arr = do_calculation_over_gene_subset(
                 d1_adata, genesubset, calculation="Means"
@@ -300,7 +299,6 @@ class TestCellSummary(object):
 
 class TestCellSummaryBacked(TestCellSummary):
     def setup_method(self, method):
-
         d1 = df.load_data(
             os.path.join(DATA, "test_data.h5ad"),
             factory=read_anndata,
