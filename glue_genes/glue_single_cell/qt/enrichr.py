@@ -12,7 +12,7 @@ from qtpy import QtWidgets
 
 from ..anndata_factory import df_to_data
 from ..state import EnrichpyState
-from .pca_subset import dialog
+from .summarize_gene_subset import dialog
 
 __all__ = ["EnrichpyDialog"]
 
@@ -36,7 +36,6 @@ def convert_to_mouse_ids(row):
 
 class EnrichpyDialog(QtWidgets.QDialog):
     def __init__(self, collect, default=None, parent=None):
-
         super(EnrichpyDialog, self).__init__(parent=parent)
 
         self.state = EnrichpyState(collect)
