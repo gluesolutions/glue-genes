@@ -20,10 +20,20 @@ class SyncComponent(Component):
     preferred_cmap : `str` or :class:`~matplotlib.colors.Colormap`, optional
         A colormap to be used as the preferred colormap, by name or instance. Default is `None`.
 """
-    def __init__(self, data, units=None, subsets=[]):
+    def __init__(self, data, units=None, subsets=[], preferred_cmap=None):
         super().__init__(data, units=units)
-        if len(subsets) > 0:
+        if preferred_cmap is not None:
+            if isinstance(preferred_cmap, str):
+                self.preferred_cmap = mpl.cm.get_cmap(preferred_cmap)
+                self.cmap_name = preferred_cmap
+            elif isinstance(preferred_cmap, mpl.colors.Colormap):
+                self.preferred_cmap = preferred_cmap
+                self.cmap_name = preferred_cmap.name
+        elif len(subsets) > 0:
             self.cmap_name, self.preferred_cmap = self.get_cmap_from_subsets(subsets)
+        else:
+            self.preferred_cmap = None
+            self.cmap_name = None
 
     def get_cmap_from_subsets(self, subsets):
         if len(subsets) == 1:
