@@ -295,7 +295,7 @@ class SummarizeGeneSubsetDialog(QtWidgets.QDialog):
         data_arr = do_calculation_over_gene_subset(
             data_with_Xarray, genesubset, calculation=key
         )
-
+        new_comps = []
         if data_arr is not None:
             new_comps = apply_data_arr(
                 target_dataset, data_arr, basename, genesubset, key=key
