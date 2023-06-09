@@ -1,6 +1,7 @@
 from pathlib import Path
 
-import zarr
+import numpy as np
+from dask.array import from_zarr
 from glue.config import data_factory
 from glue.core import Data
 
@@ -11,10 +12,17 @@ def is_zarr(filename, **kwargs):
     """
     Check if a file is a Zarr file.
     """
-    return filename.endswith(".zarr")
+    if filename.endswith(".zarr"):
+        try:
+            _ = from_zarr(filename, component="image")
+            return True
+        except KeyError:
+            return False
+    else:
+        return False
 
 
-@data_factory("Zarr data loader", is_zarr, priority=999)
+@data_factory("Zarr data loader", is_zarr, priority=950)
 def read_zarr(file_name):
     """
     Read a Zarr file into a glue Data object.
@@ -33,10 +41,15 @@ def read_zarr(file_name):
     file_name: str
         The pathname to the input file.
     """
-    zarr_data = zarr.open(file_name, mode="r").image[:, :].squeeze()
 
-    ch_0 = zarr_data[:, :, 0]
-    ch_1 = zarr_data[:, :, 1]
-    ch_2 = zarr_data[:, :, 2]
+    # zarr_data = zarr.open(file_name, mode="r").image[:, :].squeeze()
+    dask_array = from_zarr(file_name, component="image").squeeze()
+    channel_index = 2  # Don't know if this will generally by true
+    num_channels = dask_array.shape[channel_index]
+    if channel_index == 2:
+        channel_dict = {
+            f"ch{i}": np.flipud(np.squeeze(dask_array[:, :, i]))
+            for i in range(num_channels)
+        }
 
-    return Data(ch0=ch_0, ch1=ch_1, ch2=ch_2, label=Path(file_name).stem)
+    return Data(**channel_dict, label=Path(file_name).stem)
