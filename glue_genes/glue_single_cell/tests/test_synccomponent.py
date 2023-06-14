@@ -26,7 +26,7 @@ def test_synccomponent_no_subsets():
     data = Data(label="Test Data")
     cid = ComponentID("SyncComponent (sync)")
     comp = SyncComponent(np.random.random((2, 3)))
-    cid2 = data.add_component(comp, cid)
+    _ = data.add_component(comp, cid)
     assert comp.preferred_cmap is None
 
 
@@ -45,7 +45,6 @@ def test_synccomponent_two_subsets():
 
 def test_synccomponent_three_subsets():
     data = Data(label="Test Data")
-    cid = ComponentID("SyncComponent (sync)")
     sub1 = data.new_subset()
     sub2 = data.new_subset()
     sub3 = data.new_subset()
@@ -53,7 +52,7 @@ def test_synccomponent_three_subsets():
     sub2.style.color == "#1f78b4"
     sub3.style.color == "#33a02c"
     with pytest.raises(NotImplementedError):
-        comp = SyncComponent(np.random.random((2, 3)), subsets=[sub1, sub2, sub3])
+        _ = SyncComponent(np.random.random((2, 3)), subsets=[sub1, sub2, sub3])
 
 
 def test_synccomponent_cmap():

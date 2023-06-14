@@ -5,8 +5,7 @@ from glue.core import Data
 from glue.core.fixed_resolution_buffer import compute_fixed_resolution_buffer
 from glue.core.roi import RangeROI, RectangularROI
 from glue.core.subset import RangeSubsetState, RoiSubsetState
-from glue.utils.array import random_views_for_dask_array
-from numpy.testing import assert_allclose, assert_equal
+from numpy.testing import assert_equal
 
 from glue_genes.glue_genomics_data.multires_data import MultiResolutionData
 
@@ -53,6 +52,8 @@ def test_downsample():
     )
     # assert est_min == 2
     assert np.isclose(np.min(b), est_min, atol=10)
+    assert np.isclose(np.max(b), est_max, atol=10)
+
     # assert np.isclose(est_min, 0.5) == 0
     # assert pytest.approx(est_max, 0.5) == 4096
 
@@ -70,6 +71,7 @@ def test_downsample():
     )
     # assert est_min == 2
     assert np.isclose(np.min(b_d).compute(), est_min)
+    assert np.isclose(np.max(b_d).compute(), est_max)
 
 
 x1 = np.eye(8, 8)
