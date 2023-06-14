@@ -1,53 +1,25 @@
 from pathlib import Path
 
+import numpy as np
+import pandas as pd
 import scanpy as sc
-from glue.config import data_factory, startup_action
-from glue.core import Data, HubListener
-from glue.core.message import DataCollectionAddMessage
+from glue.config import data_factory, autolinker
+from glue.core import Data
+from glue.core.link_helpers import JoinLink
+from glue.core.component import ExtendedComponent
+from glue.core.component_id import PixelComponentID
+from glue.core.data import RegionData
 from glue.utils.qt import set_cursor_cm
 from qtpy.QtCore import Qt
+from shapely.geometry import Point
 
 from .data import DataAnnData
 from .qt.load_data import LoadDataDialog
 
 __all__ = [
     "read_anndata",
-    "setup_gui_joins",
     "join_anndata_on_keys",
-    "AnnDataListener",
-    "setup_anndata",
 ]
-
-
-class AnnDataListener(HubListener):
-    """
-    Set up :class:`~glue.core.link_helpers.JoinLink` for :class:`~.DataAnnData` objects.
-
-    Listen for :class:`~.DataAnnData` objects to be added to the
-    data collection object, and, if one is, setup the
-    correct join_on_key joins in a way that they will
-    show up in the GUI.
-
-    """
-
-    def __init__(self, hub):
-        hub.subscribe(self, DataCollectionAddMessage, handler=self.setup_anndata)
-
-    def setup_anndata(self, message):
-        data = message.data
-        dc = message.sender
-        if isinstance(data, DataAnnData):
-            setup_gui_joins(dc, data)
-
-
-@startup_action("setup_anndata")
-def setup_anndata(session, data_collection):
-    """
-    A startup action to set up the :class:`~.AnnDataListener`
-    """
-
-    data_collection.anndatalistener = AnnDataListener(data_collection.hub)
-    return
 
 
 def df_to_data(obj, label=None, skip_components=[]):
@@ -60,44 +32,6 @@ def df_to_data(obj, label=None, skip_components=[]):
 
 def is_anndata(filename, **kwargs):
     return filename.endswith(".h5ad") or filename.endswith(".loom")
-
-
-def setup_gui_joins(dc, data):
-    """
-    Set up :class:`~glue.core.link_helpers.JoinLink` that mirror the existing join_on_key links,
-    so these links show in the Link Editor.
-
-    Parameters
-    ----------
-    dc : :class:`~glue.core.data_collection.DataCollection`
-        The DataCollection object associated with this glue session
-    data : :class:`~glue_genes.glue_single_cell.data.DataAnnData`
-        The DataAnnData object that defines join_on_key links
-        to the associated obs and var Data objects
-
-    Notes
-    -----
-    We cannot do this at data load because these links are defined
-    at the level of a data_collection, which may not exist at
-    data load time. Instead we call this through a listener
-    when a :class:`~glue_genes.glue_single_cell.data.DataAnnData` object is added to a data collection.
-
-    """
-    try:  # If we are using a version of glue that supports links in the GUI
-        from glue.core.link_helpers import JoinLink
-
-        do_gui_link = True
-    except ImportError:
-        print("Cannot set up GUI join_on_key links")
-        do_gui_link = False
-    if do_gui_link:
-        for other, joins in data._key_joins.items():
-            cid, cid_other = joins
-            gui_link = JoinLink(
-                cids1=[cid[0]], cids2=[cid_other[0]], data1=data, data2=other
-            )
-            if gui_link not in dc._link_manager._external_links:
-                dc.add_link(gui_link)
 
 
 def join_anndata_on_keys(datasets):
@@ -175,7 +109,6 @@ def read_anndata(
         way it will be loaded into memory.
 
     """
-    list_of_data_objs = []
     basename = Path(file_name).stem
 
     if not skip_dialog:
@@ -200,6 +133,40 @@ def read_anndata(
         adata = sc.read(file_name, sparse=True, backed=False)
         backed = False
 
+    if "spatial" in adata.uns_keys():
+        make_spatial_components = True
+    else:
+        make_spatial_components = False
+
+    return translate_adata_to_DataAnnData(
+        adata,
+        subsample=subsample,
+        backed=backed,
+        basename=basename,
+        file_name=file_name,
+        skip_components=skip_components,
+        subsample_factor=subsample_factor,
+        try_backed=try_backed,
+        make_spatial_components=make_spatial_components,
+    )
+
+
+def translate_adata_to_DataAnnData(
+    adata,
+    subsample=False,
+    backed=False,
+    basename="",
+    file_name="",
+    skip_components=[],
+    subsample_factor=1,
+    try_backed=False,
+    skip_joins=False,
+    make_spatial_components=False,
+):
+    list_of_data_objs = []
+
+    adata.var_names_make_unique()
+
     if subsample:
         adata = sc.pp.subsample(
             adata, fraction=subsample_factor, copy=True, random_state=0
@@ -213,6 +180,20 @@ def read_anndata(
         XData = DataAnnData(Xarray=adata.X, backed=backed, label=f"{basename}_X")
 
     XData.meta["orig_filename"] = basename
+
+    if make_spatial_components:
+        library_id = list(adata.uns["spatial"].keys())[0]
+        basename = (
+            library_id  # This is often a nicer name, but maybe this should be optional?
+        )
+        # Want radius
+        # We should not assume this much about the structure of spatial
+        # but this is okay for now...
+        scale_fac = adata.uns["spatial"][library_id]["scalefactors"]
+        # hi_res_scale_fac = scale_fac["tissue_hires_scalef"]
+        # Want radius
+        spot_size = scale_fac["spot_diameter_fullres"] / 2.0  # * hi_res_scale_fac / 2.0
+
     XData.meta["full_filename"] = file_name
     XData.meta["Xdata"] = XData.uuid
     XData.meta["anndatatype"] = "X Array"
@@ -225,6 +206,11 @@ def read_anndata(
     XData.meta["loadlog_subsample"] = subsample
     XData.meta["loadlog_subsample_factor"] = subsample_factor
     XData.meta["loadlog_try_backed"] = try_backed
+
+    # uns is unstructured data on the AnnData object
+    # We just store it in metadata so we can recreate
+    # the AnnData object
+    XData.meta["uns"] = adata.uns
 
     list_of_data_objs.append(XData)
 
@@ -248,7 +234,13 @@ def read_anndata(
     for key in adata.varm_keys():
         if key not in skip_components:
             data_arr = adata.varm[key]
-            data_to_add = {f"{key}_{i}": k for i, k in enumerate(data_arr.T)}
+            # Sometimes this is a dataframe with names, and sometimes a simple np.array
+            if isinstance(data_arr, pd.DataFrame):
+                data_to_add = {
+                    f"{key}_{col}": data_arr[col].values for col in data_arr.columns
+                }
+            else:
+                data_to_add = {f"{key}_{i}": k for i, k in enumerate(data_arr.T)}
             for comp_name, comp in data_to_add.items():
                 var_data.add_component(comp, comp_name)
 
@@ -272,11 +264,86 @@ def read_anndata(
     for key in adata.obsm_keys():
         if key not in skip_components:
             data_arr = adata.obsm[key]
-            data_to_add = {f"{key}_{i}": k for i, k in enumerate(data_arr.T)}
+            # Sometimes this is a dataframe with names, and sometimes a simple np.array
+            if isinstance(data_arr, pd.DataFrame):
+                data_to_add = {
+                    f"{key}_{col}": data_arr[col].values for col in data_arr.columns
+                }
+            else:
+                data_to_add = {f"{key}_{i}": k for i, k in enumerate(data_arr.T)}
             for comp_name, comp in data_to_add.items():
                 obs_data.add_component(comp, comp_name)
+
+    if make_spatial_components:
+        obs_data = list_of_data_objs.pop()
+
+        library_id = list(adata.uns["spatial"].keys())[0]
+        image_data = adata.uns["spatial"][library_id]["images"]["hires"]
+        scale_fac = adata.uns["spatial"][library_id]["scalefactors"]
+        hi_res_scale_fac = scale_fac["tissue_hires_scalef"]
+
+        new_spatial_0 = obs_data["spatial_0"]
+        new_spatial_1 = (
+            int(image_data.shape[0] / hi_res_scale_fac) - obs_data["spatial_1"]
+        )  # flip coordinates
+        spatial_0_id = obs_data.id["spatial_0"]
+        spatial_1_id = obs_data.id["spatial_1"]
+        obs_data.update_components({spatial_1_id: new_spatial_1})
+        obs_data.update_components({spatial_0_id: new_spatial_0})
+
+        # We need to cast the obs Data object into a RegionData object
+        spots = []
+        for x, y in zip(obs_data["spatial_0"], obs_data["spatial_1"]):
+            spots.append(Point(x, y).buffer(spot_size))
+        spot_arr = np.array(spots)
+
+        obs_data_new = RegionData(label=obs_data.label)
+        for compid in obs_data.components:
+            if not isinstance(compid, PixelComponentID):
+                # Use same names (with .label) but NOT same ComponentIDs!
+                obs_data_new.add_component(obs_data.get_component(compid), compid.label)
+
+        spot_comp = ExtendedComponent(
+            spot_arr,
+            parent_component_ids=[
+                obs_data_new.id["spatial_0"],
+                obs_data_new.id["spatial_1"],
+            ],
+        )
+
+        obs_data_new.add_component(spot_comp, label="spots")
+        obs_data_new.meta = obs_data.meta
+        XData.meta["obs_data"] = obs_data_new
+        list_of_data_objs.append(obs_data_new)
 
     # obs_data.meta['xarray_data'] = Xdata
     # var_data.meta['xarray_data'] = Xdata
 
     return join_anndata_on_keys(list_of_data_objs)
+
+
+@autolinker("AnnData")
+def anndata_autolink(data_collection):
+    """
+    This sets up automatic links between the components of an Anndata
+    dataset, specifically join_on_key links between the X and obs/var
+    datasets. This is pretty straightforward because our data loader
+    already sets up the _key_joins in the dataset and this is "just"
+    adding them as full GUI links.
+    """
+    anndata_datasets = [
+        data for data in data_collection if isinstance(data, DataAnnData)
+    ]
+    if len(anndata_datasets) < 1:
+        return []
+
+    gui_links = []
+    for data in anndata_datasets:
+        for other, joins in data._key_joins.items():
+            cid, cid_other = joins
+            gui_link = JoinLink(
+                cids1=[cid[0]], cids2=[cid_other[0]], data1=data, data2=other
+            )
+            if gui_link not in data_collection._link_manager._external_links:
+                gui_links.append(gui_link)
+    return gui_links

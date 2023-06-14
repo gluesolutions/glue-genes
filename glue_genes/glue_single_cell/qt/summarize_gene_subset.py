@@ -13,16 +13,18 @@ import os
 import numpy as np
 import scanpy as sc
 from echo.qt import autoconnect_callbacks_to_qt
-from glue.core import Data, HubListener
+from glue.core import HubListener
 from glue.core.exceptions import IncompatibleAttribute
 from glue.core.message import SubsetDeleteMessage, SubsetUpdateMessage
 from glue.utils.qt import load_ui
 from qtpy import QtWidgets
 from qtpy.QtWidgets import QMessageBox
+from glue_genes.glue_single_cell.component import SyncComponent
+from glue.core.component_id import ComponentID
 
-from ..state import PCASubsetState
+from ..state import SummarizeGeneSubsetState
 
-__all__ = ["PCASubsetDialog", "GeneSummaryListener"]
+__all__ = ["SummarizeGeneSubsetDialog", "GeneSummaryListener"]
 
 
 def dialog(title, text, icon):
@@ -99,43 +101,45 @@ def do_calculation_over_gene_subset(data_with_Xarray, genesubset, calculation="M
                 :, mask
             ]  # This will fail if genesubset is not actually over genes
             if data_with_Xarray.sparse is True:
-                data_arr = np.expand_dims(
-                    adata_sel.mean(axis=1).A1, axis=1
-                )  # Expand to make same dimensionality as PCA
+                data_arr = (adata_sel.mean(axis=1).A1,)
             else:
-                data_arr = np.expand_dims(adata_sel.mean(axis=1), axis=1)
+                data_arr = adata_sel.mean(axis=1)
 
         else:
             adata_sel = adata.X[:, mask]
             if data_with_Xarray.sparse is True:
-                data_arr = np.expand_dims(
-                    adata_sel.mean(axis=1).A1, axis=1
-                )  # Expand to make same dimensionality as PCA
+                data_arr = adata_sel.mean(axis=1).A1
             else:
-                data_arr = np.expand_dims(adata_sel.mean(axis=1), axis=1)
+                data_arr = adata_sel.mean(axis=1)
 
     return data_arr
 
 
-def apply_data_arr(target_dataset, data_arr, basename, key="PCA"):
+def apply_data_arr(target_dataset, data_arr, basename, subset, key="Means"):
     """
+    Add appropriately named SyncComponents from data_arr to target_dataset
+
     This is a sort of clunky approach to doing this.
 
     We generate a Data object from the data_arr that was returned,
     and then add the non-coordinate components of this Data object
     to the target dataset.
     """
-
-    data = Data(
-        **{f"{key}_{i}": k for i, k in enumerate(data_arr.T)}, label=f"{basename}_{key}"
-    )
-    for x in data.components:
-        if x not in data.coordinate_components:
-            new_comp_name = f"{basename}_{x}"
-            target_dataset.add_component(data.get_component(f"{x}"), new_comp_name)
-    return (
-        new_comp_name  # This just gets the last one, which is not quite correct for PCA
-    )
+    cids = []
+    if data_arr.ndim == 2:
+        for i, k in enumerate(data_arr.T):
+            component_name = f"{basename}_{key}_{i} (sync)"
+            cid = ComponentID(component_name)
+            comp = SyncComponent(k, subsets=[subset])
+            _ = target_dataset.add_component(comp, cid)
+            cids.append(cid)
+    else:
+        component_name = f"{basename}_{key} (sync)"
+        cid = ComponentID(component_name)
+        comp = SyncComponent(data_arr, subsets=[subset])
+        _ = target_dataset.add_component(comp, cid)
+        cids.append(cid)
+    return cids
 
 
 class GeneSummaryListener(HubListener):
@@ -153,13 +157,15 @@ class GeneSummaryListener(HubListener):
         The kind of summary performed: [Means, PCA, Module]
     data_with_Xarray : :class:`~.DataAnnData`
         The expression matrix (X) used to reference the target_dataset
-
+    comps : list
+        A list of the components to keep in sync
     """
 
-    def __init__(self, genesubset, basename, key, data_with_Xarray=None):
+    def __init__(self, genesubset, basename, key, data_with_Xarray=None, comps=[]):
         self.genesubset = genesubset
         self.basename = basename
         self.key = key
+        self.comps = comps
         if data_with_Xarray is not None:
             self.set_circular_refs(data_with_Xarray)
 
@@ -179,12 +185,12 @@ class GeneSummaryListener(HubListener):
         self.hub.subscribe(self, SubsetDeleteMessage, handler=self.delete_subset)
 
     def __gluestate__(self, context):
-
         return dict(
             genesubset=context.id(self.genesubset),
             basename=context.do(self.basename),
             key=context.do(self.key),
             data_with_Xarray=context.id(self.data_with_Xarray),
+            comps=context.id(self.comps),
         )
 
     @classmethod
@@ -194,6 +200,7 @@ class GeneSummaryListener(HubListener):
             genesubset=context.object(rec["genesubset"]),
             basename=context.object(rec["basename"]),
             key=context.object(rec["key"]),
+            comps=context.object(rec["comps"]),
         )
         yield result
         data_with_Xarray = context.object(rec["data_with_Xarray"])
@@ -207,6 +214,9 @@ class GeneSummaryListener(HubListener):
 
         TODO: If the subset is the same subset and has just been
         renamed then we need to update the component name
+
+        TODO: If the subset is no longer over a valid set of attributes
+              we should... what?
         """
         subset = message.subset
         if subset == self.genesubset:
@@ -214,25 +224,17 @@ class GeneSummaryListener(HubListener):
             new_data = do_calculation_over_gene_subset(
                 self.data_with_Xarray, self.genesubset, calculation=self.key
             )
-
-            if new_data is not None:
-                mapping = {
-                    f"{self.basename}_{self.key}_{i}": k
-                    for i, k in enumerate(new_data.T)
-                }
-                for (
-                    x
-                ) in (
-                    self.target_dataset.components
-                ):  # This is to get the right component ids
-                    xstr = f"{x.label}"
-                    if xstr in mapping.keys():
-                        mapping[x] = mapping.pop(xstr)
-                self.target_dataset.update_components(mapping)
+            mapping = {}
+            if new_data.ndim == 2:
+                for c, k in zip(self.comps, new_data.T):
+                    mapping[c] = k
+            else:
+                mapping[self.comps[0]] = new_data
+            self.target_dataset.update_components(mapping)
 
     def delete_subset(self, message):
         """
-        Remove the attributes from target_dataset
+        TODO: Remove the attributes from target_dataset
         """
         pass
 
@@ -240,14 +242,15 @@ class GeneSummaryListener(HubListener):
         pass
 
 
-class PCASubsetDialog(QtWidgets.QDialog):
+class SummarizeGeneSubsetDialog(QtWidgets.QDialog):
     def __init__(self, collect, default=None, parent=None):
+        super().__init__(parent=parent)
 
-        super(PCASubsetDialog, self).__init__(parent=parent)
+        self.state = SummarizeGeneSubsetState(collect)
 
-        self.state = PCASubsetState(collect)
-
-        self.ui = load_ui("pca_subset.ui", self, directory=os.path.dirname(__file__))
+        self.ui = load_ui(
+            "summarize_gene_subset.ui", self, directory=os.path.dirname(__file__)
+        )
         self._connections = autoconnect_callbacks_to_qt(self.state, self.ui)
 
         self._collect = collect
@@ -292,12 +295,13 @@ class PCASubsetDialog(QtWidgets.QDialog):
         data_arr = do_calculation_over_gene_subset(
             data_with_Xarray, genesubset, calculation=key
         )
-
+        new_comps = []
         if data_arr is not None:
-
-            new_comp_name = apply_data_arr(target_dataset, data_arr, basename, key=key)
+            new_comps = apply_data_arr(
+                target_dataset, data_arr, basename, genesubset, key=key
+            )
             gene_summary_listener = GeneSummaryListener(
-                genesubset, basename, key, data_with_Xarray
+                genesubset, basename, key, data_with_Xarray, new_comps
             )
             gene_summary_listener.register_to_hub()
             data_with_Xarray.listeners.append(gene_summary_listener)
@@ -305,7 +309,7 @@ class PCASubsetDialog(QtWidgets.QDialog):
         confirm = dialog(  # noqa: F841
             "Adding a new component",
             f"The component:\n"
-            f"{new_comp_name}\n"
+            f"{new_comps}\n"
             f"has been added to:\n"
             f"{target_dataset.label}\n"
             f"and will be automatically updated when {genesubset.label} is changed.",

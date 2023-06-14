@@ -47,13 +47,8 @@ from glue.core.component_id import ComponentID, PixelComponentID
 from glue.core.component_link import ComponentLink
 from glue.core.data import Data, Subset
 from glue.core.exceptions import IncompatibleAttribute
-from glue.core.state import (
-    GlueSerializeError,
-    _load_data_collection_4,
-    _save_data_collection_4,
-    loader,
-    saver,
-)
+from glue.core.state import (GlueSerializeError, _load_data_collection_4,
+                             _save_data_collection_4, loader, saver)
 from scipy.sparse import isspmatrix
 
 __all__ = ["DataAnnData", "DataAnnDataTranslator"]
@@ -67,7 +62,7 @@ class DataAnnData(Data):
     ----------
     Xdata
     listeners : list
-                Any :class:`~glue_genes.glue_single_cell.anndata_factory.AnnDataListener` associated with this object.
+                Any :class:`GeneSummaryListener` associated with this object.
     backed : bool
              True if the matrix is not loaded into memory but is accessed from the disk.
     sparse : bool
@@ -95,12 +90,6 @@ class DataAnnData(Data):
                 self.sparse = True
             elif type(Xdata) == anndata._core.sparse_dataset.SparseDataset:
                 self.sparse = True
-
-        # When we create this data object, we don't have a hub set up yet,
-        # so we can't init the SubsetListener at Data creation time. Instead,
-        # we add a Listener to the DataCollection object in a custom
-        # startup_action, and this adds a subset_listener to DataAnnData
-        # objects that are added to the data collection.
 
     @property
     def Xdata(self):
@@ -594,7 +583,7 @@ class DataAnnDataTranslator:
                 )
             else:
                 adata = anndata.AnnData(
-                    data_or_subset["Xarray"], obs=obs_data, var=var_data
+                    data_or_subset["Xarray"], obs=obs_data, var=var_data, uns=data_or_subset.meta.get('uns'),
                 )
             return adata
         else:

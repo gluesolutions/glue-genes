@@ -9,7 +9,7 @@ from glue.core.state_objects import State
 
 from .data import DataAnnData
 
-__all__ = ["DiffGeneExpState", "PCASubsetState", "EnrichpyState"]
+__all__ = ["DiffGeneExpState", "SummarizeGeneSubsetState", "EnrichpyState"]
 
 
 class EnrichpyState(State):
@@ -26,7 +26,6 @@ class EnrichpyState(State):
     gene_att = SelectionCallbackProperty()  # The attribute with gene labels in it
 
     def __init__(self, data_collection):
-
         super(EnrichpyState, self).__init__()
 
         self.data_collection = data_collection
@@ -70,7 +69,6 @@ class EnrichpyState(State):
 
 
 class DiffGeneExpState(State):
-
     data = SelectionCallbackProperty()
     subset1 = SelectionCallbackProperty()
     subset2 = SelectionCallbackProperty()
@@ -78,7 +76,6 @@ class DiffGeneExpState(State):
     num_genes = CallbackProperty(50)
 
     def __init__(self, data_collection):
-
         super(DiffGeneExpState, self).__init__()
 
         self.data_collection = data_collection
@@ -121,8 +118,7 @@ class DiffGeneExpState(State):
             pass
 
 
-class PCASubsetState(State):
-
+class SummarizeGeneSubsetState(State):
     data = SelectionCallbackProperty()
     genesubset = SelectionCallbackProperty()
     do_means = CallbackProperty(True)
@@ -130,7 +126,7 @@ class PCASubsetState(State):
     do_module = CallbackProperty(False)
 
     def __init__(self, data_collection):
-        super(PCASubsetState, self).__init__()
+        super().__init__()
         self.data_collection = data_collection
         self.data_helper = ManualDataComboHelper(
             self, "data", data_collection
