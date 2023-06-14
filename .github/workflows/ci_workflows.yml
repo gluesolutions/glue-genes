@@ -3,8 +3,8 @@ name: CI Tests
 on:
   push:
     branches:
-    - 0.9.x
     - main
+    - 1.1.x
     tags:
     - '*'
   pull_request:
@@ -37,18 +37,27 @@ jobs:
 
       envs: |
         # Standard tests
-        - linux: py38-test-pyqt514
         - linux: py39-test-pyqt515
         - linux: py39-test-pyside63
         - linux: py310-test-pyside64
         - linux: py310-test
 
         - macos: py38-test-pyqt514
-        - macos: py38-test-pyqt514
         - macos: py39-test-pyside63
         - macos: py310-test-pyside64
         - macos: py310-test
 
         - windows: py38-test-pyqt514
-        - windows: py38-test-pyqt514
+        - windows: py38-test-pyqt515
         - windows: py310-test
+
+  publish:
+    needs: tests
+    uses: OpenAstronomy/github-actions-workflows/.github/workflows/publish_pure_python.yml@v1
+    with:
+      # Setup PyQt5 deps and headless X server as per pyvista/setup-headless-display-action@v1
+      libraries: '^libxcb.*-dev libxkbcommon-x11-dev libgl1-mesa-glx libopenblas-dev libhdf5-dev xvfb'
+      test_extras: 'test,qt5'
+      test_command: Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 & sleep 3; DISPLAY=:99.0 pytest --pyargs glue_genes
+    secrets:
+      pypi_token: ${{ secrets.pypi_api_token }}

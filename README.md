@@ -23,23 +23,16 @@ In addition, glue genes provides:
 
 ### Install
 
-Due to some complicated binary dependencies, the recommended procedure for 
-installing this package is to use [conda](https://www.anaconda.com) and install into a new environment as follows:
+See [the glue genes documentation](https://glue-genes.readthedocs.io/en/latest/how-to/installation.html) for installation help.
 
-```
-conda create -n glue-genes python==3.9
-conda activate glue-genes
+We recommend installing into a new virtual environment. 
 
-conda install glue-core
-pip install glue-genes
-```
+`pip install glue-genes[qt6]`
 
 ### Usage
 
-The Scanpy differential gene expression plugin requires some custom actions to run at startup, which can be achieved by starting glue using this command:
-
-`glue --startup=setup_anndata`
-
+After installation, glue (with the glue genes plug-ins loaded) can be invoked at the terminal:
+`glue`
 
 
 ### Development
