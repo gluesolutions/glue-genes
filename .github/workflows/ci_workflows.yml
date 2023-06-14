@@ -58,6 +58,6 @@ jobs:
       # Setup PyQt5 deps and headless X server as per pyvista/setup-headless-display-action@v1
       libraries: '^libxcb.*-dev libxkbcommon-x11-dev libgl1-mesa-glx libopenblas-dev libhdf5-dev xvfb'
       test_extras: 'test,qt5'
-      test_command: Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 & sleep 3; DISPLAY=:99.0 pytest glue_genes
+      test_command: Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 & sleep 3; DISPLAY=:99.0 pytest --pyargs glue_genes 
     secrets:
       pypi_token: ${{ secrets.pypi_api_token }}
