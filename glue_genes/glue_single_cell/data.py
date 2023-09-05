@@ -47,8 +47,13 @@ from glue.core.component_id import ComponentID, PixelComponentID
 from glue.core.component_link import ComponentLink
 from glue.core.data import Data, Subset
 from glue.core.exceptions import IncompatibleAttribute
-from glue.core.state import (GlueSerializeError, _load_data_collection_4,
-                             _save_data_collection_4, loader, saver)
+from glue.core.state import (
+    GlueSerializeError,
+    _load_data_collection_4,
+    _save_data_collection_4,
+    loader,
+    saver,
+)
 from scipy.sparse import isspmatrix
 
 __all__ = ["DataAnnData", "DataAnnDataTranslator"]
@@ -88,7 +93,7 @@ class DataAnnData(Data):
             self.add_component(comp_to_add, label=component_id)
             if isspmatrix(Xdata):
                 self.sparse = True
-            elif type(Xdata) == anndata._core.sparse_dataset.SparseDataset:
+            elif isinstance(Xdata, anndata._core.sparse_dataset.SparseDataset):
                 self.sparse = True
 
     @property
@@ -125,7 +130,6 @@ class DataAnnData(Data):
         return subset_state.to_mask(self, view=view)
 
     def get_kind(self, cid):
-
         comp = self.get_component(cid)
 
         try:
@@ -583,7 +587,10 @@ class DataAnnDataTranslator:
                 )
             else:
                 adata = anndata.AnnData(
-                    data_or_subset["Xarray"], obs=obs_data, var=var_data, uns=data_or_subset.meta.get('uns'),
+                    data_or_subset["Xarray"],
+                    obs=obs_data,
+                    var=var_data,
+                    uns=data_or_subset.meta.get("uns"),
                 )
             return adata
         else:
