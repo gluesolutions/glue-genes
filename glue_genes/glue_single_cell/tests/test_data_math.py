@@ -50,8 +50,8 @@ def test_data_setup_sparse_backed(data_sparse_backed):
     assert len(d[0]._components) == 3
     assert d[0].sparse is True
     assert d[0].backed is True
-    assert (
-        type(d[0].Xdata) == anndata.AnnData
+    assert isinstance(
+        d[0].Xdata, anndata.AnnData
     )  # As a reference to the full AnnData object
 
 
@@ -60,7 +60,7 @@ def test_data_setup_sparse_inmemory(data_sparse_inmemory):
     assert len(d[0]._components) == 3
     assert d[0].sparse is True
     assert d[0].backed is False
-    assert type(d[0].Xdata) == anndata.AnnData
+    assert isinstance(d[0].Xdata, anndata.AnnData)
 
 
 def test_get_data_view_sparse_backed(data_sparse_backed):
