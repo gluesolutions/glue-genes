@@ -53,14 +53,22 @@ def get_gene_list_diff_exp(subset1, subset2, data, n_genes=50):
 
     adata = data.Xdata
     obsdata = data.meta["obs_data"]
-    conditions = [
-        (obsdata.get_mask(subset1.subset_state)),
-        (obsdata.get_mask(subset2.subset_state)),
-    ]
+    if subset2 is not None:
+        conditions = [
+            (obsdata.get_mask(subset1.subset_state)),
+            (obsdata.get_mask(subset2.subset_state)),
+        ]
 
-    choices = ["1", "2"]
+        choices = ["1", "2"]
 
-    adata.obs["glue_subsets"] = np.select(conditions, choices, default="0")
+        adata.obs["glue_subsets"] = np.select(conditions, choices, default="0")
+    else:  # Here we compare against the full dataset
+        conditions = [
+            (obsdata.get_mask(subset1.subset_state)),
+        ]
+        choices = ["1"]
+        adata.obs["glue_subsets"] = np.select(conditions, choices, default="2")
+
     adata_selected = adata[adata.obs["glue_subsets"] != "0", :]
     try:
         adata_selected = (
@@ -126,9 +134,12 @@ class DiffGeneExpDialog(QtWidgets.QDialog):
             self.state.data,
             n_genes=self.state.num_genes,
         )
-        new_name = (
-            f"DGE between {self.state.subset1.label} and {self.state.subset2.label}"
-        )
+        label1 = self.state.subset1.label
+        if self.state.subset2 is None:
+            label2 = "Rest"
+        else:
+            label2 = self.state.subset2.label
+        new_name = f"DEG between {label1} and {label2}"
         dge_data.label = new_name
         self.state.data_collection.append(dge_data)
 
@@ -154,9 +165,7 @@ class DiffGeneExpDialog(QtWidgets.QDialog):
         gene_state = CategorySubsetState(
             att=vardata.id[self.state.gene_att], categories=gene_codes
         )
-        new_name = (
-            f"DGE between {self.state.subset1.label} and {self.state.subset2.label}"
-        )
+        new_name = f"DEG between {label1} and {label2}"
 
         self.state.data_collection.new_subset_group(new_name, gene_state)
 
