@@ -228,7 +228,7 @@ class MultiResolutionData(Data):
         # This might only be getting the *first* view, and sometimes full_view could be integers?
 
         full_view = args[0]  # This should be the only thing in args
-        print(f"{full_view=}")
+        # print(f"{full_view=}")
         # view is t,z,x,y where t and z are optional
         if len(full_view) == 4:
             t = full_view[0]
