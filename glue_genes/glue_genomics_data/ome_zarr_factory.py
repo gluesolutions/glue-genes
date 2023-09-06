@@ -19,6 +19,17 @@ def is_ome_zarr(filename, **kwargs):
         return False
 
 
+def get_nontrivial_dimensions(im):
+    """
+    Get the number of nontrivial dimensions in an image.
+    """
+    nontrivial_dims = []
+    for i, dim in enumerate(im.shape):
+        if dim > 1:
+            nontrivial_dims.append(i)
+    return len(nontrivial_dims)
+
+
 @data_factory("OME-ZARR Loader", is_ome_zarr, priority=900)
 def read_ome_zarr(filename):
     """
@@ -43,13 +54,20 @@ def read_ome_zarr(filename):
     meta = image_node.metadata
     axes_types = [x["name"] for x in meta["axes"]]
     print(axes_types)
-    # A channel axis is treated differently than the other axes
     dask_data = image_node.data
     data_components = []
+
+    # A channel axis is treated differently than the other axes
+    # because we load channels as separate glue components
+    # We squeeze out trivial dimensions (length 1) but we
+    # need to keep track of how many this is so we know
+    # which dimensions have been scaled down.
+    non_trivial_dims = get_nontrivial_dimensions(dask_data[0])
 
     try:
         channel_index = axes_types.index("c")
         num_channels = dask_data[0].shape[channel_index]
+        non_trivial_dims -= 1
     except ValueError:
         channel_index = None
         num_channels = 1
@@ -62,22 +80,13 @@ def read_ome_zarr(filename):
                     ch: np.flipud(np.squeeze(dask_array[i, ...]))
                     for i, ch in enumerate(channel_names)
                 }
-                channel_dict = {
-                    ch: np.flipud(np.squeeze(dask_array[i, ...]))
-                    for i, ch in enumerate(channel_names)
-                }
-
             else:
                 channel_dict = {
                     f"ch{i}": np.flipud(np.squeeze(dask_array[i, ...]))
                     for i in range(num_channels)
                 }
-                channel_dict = {
-                    f"ch{i}": np.flipud(np.squeeze(dask_array[i, ...]))
-                    for i in range(num_channels)
-                }
-
             data_components.append(channel_dict)
+
     elif channel_index == 1:
         for dask_array in dask_data:
             channel_names = meta.get("name", None)
@@ -92,6 +101,21 @@ def read_ome_zarr(filename):
                     for i in range(num_channels)
                 }
             data_components.append(channel_dict)
+
+    elif channel_index == 2:
+        for dask_array in dask_data:
+            channel_names = meta.get("name", None)
+            if len(channel_names) == num_channels:
+                channel_dict = {
+                    ch: np.flipud(np.squeeze(dask_array[:, :, i, ...]))
+                    for i, ch in enumerate(channel_names)
+                }
+            else:
+                channel_dict = {
+                    f"ch{i}": np.flipud(np.squeeze(dask_array[:, :, i, ...]))
+                    for i in range(num_channels)
+                }
+            data_components.append(channel_dict)
     elif channel_index is None:
         for dask_array in dask_data:
             channel_dict = {}
@@ -100,13 +124,12 @@ def read_ome_zarr(filename):
     else:
         pass
 
-    # If we have no channels
     return MultiResolutionData(
         **data_components[0],
         all_resolutions=data_components,
         label=Path(filename).stem,
         reduced_dims=[
-            1,
-            2,
-        ],  # This is only correct it we have z,y,x after squeeze. TODO: Make this flexible
+            non_trivial_dims - 2,
+            non_trivial_dims - 1,
+        ],
     )

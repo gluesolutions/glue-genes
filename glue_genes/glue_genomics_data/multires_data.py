@@ -196,6 +196,7 @@ class MultiResolutionData(Data):
                     parent=self,
                     scale_factor=self.scale ** (i + 1),
                     reduced_dims=reduced_dims,
+                    label=f"Reduced resolution {self.scale**(i+1)}",
                 )
                 for i, x in enumerate(all_resolutions[1:])
             ]
@@ -227,6 +228,7 @@ class MultiResolutionData(Data):
         # This might only be getting the *first* view, and sometimes full_view could be integers?
 
         full_view = args[0]  # This should be the only thing in args
+        print(f"{full_view=}")
         # view is t,z,x,y where t and z are optional
         if len(full_view) == 4:
             t = full_view[0]
@@ -258,8 +260,8 @@ class MultiResolutionData(Data):
         else:
             yy = 0
 
-        print(f"{xx=}")
-        print(f"{yy=}")
+        # print(f"{xx=}")
+        # print(f"{yy=}")
         b = min(xx, yy)  # Use the highest resolution needed for either x or y
 
         if b == 0:
@@ -345,18 +347,15 @@ class MultiResolutionData(Data):
         kwargs["random_subset"] = None
 
         for reduced_data in self._reduced_res_data_sets[::-1]:
-            print(f"Trying {reduced_data}")
-            print(f"With scale factor {reduced_data.scale_factor}")
+            # print(f"Trying {reduced_data}")
+            # print(f"With scale factor {reduced_data.scale_factor}")
             if cid:
                 cid = reduced_data.convert_full_to_reduced_cid(cid)
             return reduced_data.compute_statistic(statistic, cid, **kwargs)
 
-    #    pass
-
     def compute_histogram(
         self, cids, weights=None, range=None, bins=None, log=None, subset_state=None
     ):
-        # def compute_histogram(self, *args, **kwargs):
         """
         We want to pass the compute_histogram calls to whatever reduced resolution dataset has
         sufficient number of points. I'm not aware of a particular heuristic here. We could just
@@ -368,8 +367,8 @@ class MultiResolutionData(Data):
         # if we don't have a good number of points within the
         # most populous bin
         for reduced_data in self._reduced_res_data_sets[::-1]:
-            print(f"Trying {reduced_data}")
-            print(f"With scale factor {reduced_data.scale_factor}")
+            # print(f"Trying {reduced_data}")
+            # print(f"With scale factor {reduced_data.scale_factor}")
 
             target_cids = []
             for cid in cids:
