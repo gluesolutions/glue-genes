@@ -92,17 +92,20 @@ class DiffGeneExpState(State):
         self.subset2_helper = ComboHelper(self, "subset2")
 
         def display_func_label(subset_group):
-            return subset_group.label
+            try:
+                return subset_group.label
+            except AttributeError:
+                return "Rest (all other observations)"
 
         self.add_callback("data", self._on_data_change)
         self._on_data_change()
 
         self.subset1_helper.choices = data_collection.subset_groups
-        self.subset2_helper.choices = data_collection.subset_groups
+        self.subset2_helper.choices = [None] + list(data_collection.subset_groups)
 
         try:
             self.subset1_helper.selection = data_collection.subset_groups[0]
-            self.subset2_helper.selection = data_collection.subset_groups[1]
+            self.subset2_helper.selection = None
         except IndexError:
             pass
 
