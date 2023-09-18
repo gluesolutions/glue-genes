@@ -2,7 +2,7 @@ from glue.app.qt import GlueApplication
 from glue.core import Data
 from glue.core.roi import RectangularROI
 from glue.core.state import GlueUnSerializer
-from glue.utils.qt import process_events
+from glue_qt.utils import process_events
 from numpy.testing import assert_equal
 
 from ..viewer import QTLViewer

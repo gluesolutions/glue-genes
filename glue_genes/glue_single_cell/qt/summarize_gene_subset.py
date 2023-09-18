@@ -16,7 +16,7 @@ from echo.qt import autoconnect_callbacks_to_qt
 from glue.core import HubListener
 from glue.core.exceptions import IncompatibleAttribute
 from glue.core.message import SubsetDeleteMessage, SubsetUpdateMessage
-from glue.utils.qt import load_ui
+from glue_qt.utils import load_ui
 from qtpy import QtWidgets
 from qtpy.QtWidgets import QMessageBox
 from glue_genes.glue_single_cell.component import SyncComponent

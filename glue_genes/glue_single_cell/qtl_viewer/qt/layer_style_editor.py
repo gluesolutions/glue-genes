@@ -2,7 +2,7 @@ import os
 
 import numpy as np
 from echo.qt import autoconnect_callbacks_to_qt, connect_value
-from glue.utils.qt import fix_tab_widget_fontsize, load_ui
+from glue_qt.utils import fix_tab_widget_fontsize, load_ui
 from qtpy import QtGui, QtWidgets
 from qtpy.QtCore import Qt
 

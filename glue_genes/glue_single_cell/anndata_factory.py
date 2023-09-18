@@ -9,7 +9,7 @@ from glue.core.link_helpers import JoinLink
 from glue.core.component import ExtendedComponent
 from glue.core.component_id import PixelComponentID
 from glue.core.data import RegionData
-from glue.utils.qt import set_cursor_cm
+from glue_qt.utils import set_cursor_cm
 from qtpy.QtCore import Qt
 from shapely.geometry import Point
 

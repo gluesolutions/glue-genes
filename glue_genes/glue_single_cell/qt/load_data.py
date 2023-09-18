@@ -2,7 +2,7 @@ import os
 
 import anndata as ad
 import h5py
-from glue.utils.qt import load_ui
+from glue_qt.utils import load_ui
 from psutil import virtual_memory
 from psutil._common import bytes2human
 from qtpy.QtCore import Qt
@@ -226,7 +226,7 @@ class LoadDataDialog(QDialog):
 
 if __name__ == "__main__":
 
-    from glue.utils.qt import get_qapp
+    from glue_qt.utils import get_qapp
 
     app = get_qapp()
 

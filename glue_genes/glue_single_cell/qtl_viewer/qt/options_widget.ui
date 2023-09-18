@@ -341,12 +341,12 @@
   <customwidget>
    <class>AxesEditorWidget</class>
    <extends>QWidget</extends>
-   <header>glue.viewers.matplotlib.qt.axes_editor</header>
+   <header>glue_qt.viewers.matplotlib.axes_editor</header>
   </customwidget>
   <customwidget>
    <class>LegendEditorWidget</class>
    <extends>QWidget</extends>
-   <header>glue.viewers.matplotlib.qt.legend_editor</header>
+   <header>glue_qt.viewers.matplotlib.legend_editor</header>
   </customwidget>
  </customwidgets>
  <resources/>

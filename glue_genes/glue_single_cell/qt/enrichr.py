@@ -7,7 +7,7 @@ import os
 
 import enrichrpy.enrichr
 from echo.qt import autoconnect_callbacks_to_qt
-from glue.utils.qt import load_ui
+from glue_qt.utils import load_ui
 from qtpy import QtWidgets
 
 from ..anndata_factory import df_to_data

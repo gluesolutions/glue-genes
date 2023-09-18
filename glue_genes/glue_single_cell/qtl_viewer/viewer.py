@@ -1,7 +1,7 @@
 from glue.core.roi_pretransforms import ProjectionMplTransform
 from glue.core.subset import RangeSubsetState, roi_to_subset_state
 from glue.utils import decorate_all_methods, defer_draw, mpl_to_datetime64
-from glue.viewers.matplotlib.qt.data_viewer import MatplotlibDataViewer
+from glue_qt.viewers.matplotlib.data_viewer import MatplotlibDataViewer
 from glue.viewers.scatter.viewer import MatplotlibScatterMixin
 
 from .layer_artist import QTLLayerArtist

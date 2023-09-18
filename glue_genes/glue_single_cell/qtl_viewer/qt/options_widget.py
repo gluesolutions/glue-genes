@@ -5,7 +5,7 @@ from echo.qt import autoconnect_callbacks_to_qt
 from glue.core.state_objects import CallbackProperty, State
 from glue.utils import nonpartial
 from glue.utils.decorators import avoid_circular
-from glue.utils.qt import fix_tab_widget_fontsize, load_ui
+from glue_qt.utils import fix_tab_widget_fontsize, load_ui
 from qtpy import QtWidgets
 
 __all__ = ["SliderState", "SliderLabelWidget", "QTLOptionsWidget"]
@@ -125,7 +125,7 @@ class QTLOptionsWidget(QtWidgets.QWidget):
 
 if __name__ == "__main__":
 
-    from glue.utils.qt import get_qapp
+    from glue_qt.utils import get_qapp
 
     app = get_qapp()
 
