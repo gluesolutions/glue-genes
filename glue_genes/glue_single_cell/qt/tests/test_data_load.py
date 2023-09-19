@@ -1,7 +1,7 @@
 import os
 
 import anndata as ad
-from glue.app.qt import GlueApplication
+from glue_qt.app import GlueApplication
 from glue.core import data_factories as df
 from glue.core.state import GlueUnSerializer
 from numpy.testing import assert_array_equal

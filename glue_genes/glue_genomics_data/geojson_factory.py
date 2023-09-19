@@ -45,7 +45,7 @@ def read_geojson(filename):
 
     geom_comp = ExtendedComponent(
         np.asarray(geometries),
-        parent_component_ids=[
+        center_comp_ids=[
             data.id["x"],
             data.id["y"],
         ],

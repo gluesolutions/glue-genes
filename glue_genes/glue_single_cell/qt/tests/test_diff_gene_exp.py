@@ -1,6 +1,6 @@
 import os
 
-from glue.app.qt import GlueApplication
+from glue_qt.app import GlueApplication
 from glue.core import data_factories as df
 
 from glue_genes.glue_single_cell.anndata_factory import read_anndata

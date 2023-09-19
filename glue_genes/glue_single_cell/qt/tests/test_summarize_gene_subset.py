@@ -18,7 +18,7 @@ import os
 from unittest.mock import patch
 
 import numpy as np
-from glue.app.qt import GlueApplication
+from glue_qt.app import GlueApplication
 from glue.core import Data
 from glue.core import data_factories as df
 from glue.core.data_collection import DataCollection

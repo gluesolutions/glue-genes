@@ -92,7 +92,7 @@ def read_spaceranger_directory(filename, **kwargs):
                 obs_data_new.add_component(obs.get_component(compid), compid.label)
         spot_comp = ExtendedComponent(
             spot_arr,
-            parent_component_ids=[
+            center_comp_ids=[
                 obs_data_new.id["spatial_0"],
                 obs_data_new.id["spatial_1"],
             ],

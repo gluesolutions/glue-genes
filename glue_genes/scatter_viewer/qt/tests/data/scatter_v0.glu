@@ -364,7 +364,7 @@
     "label": "World 0"
   },
   "__main__": {
-    "_type": "glue.app.qt.application.GlueApplication",
+    "_type": "glue_qt.app.application.GlueApplication",
     "data": "DataCollection",
     "plugins": [
       "glue.viewers.scatter"
