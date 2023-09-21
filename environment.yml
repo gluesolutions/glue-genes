@@ -3,7 +3,7 @@ channels:
   - conda-forge
 dependencies:
   - python=3.10
-  - glue-core-for-glue-genes
+  - glue-core
   - pytest
   - pip:
       - glue-genes@git+https://github.com/gluesolutions/glue-genes.git
