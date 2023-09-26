@@ -5,7 +5,7 @@ from glue.config import autolinker, data_factory
 from glue.core import data_factories as df
 from glue.core.component import ExtendedComponent
 from glue.core.component_id import PixelComponentID
-from glue.core.data import RegionData
+from glue.core.data_region import RegionData
 from glue.core.link_helpers import LinkSame
 from shapely.geometry import Point
 from squidpy.read import visium

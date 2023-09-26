@@ -15,7 +15,7 @@ to the size of the image (which would be necessary to do the transform).
 import json
 from shapely.geometry import shape
 import numpy as np
-from glue.core.data import RegionData
+from glue.core.data_region import RegionData
 from glue.core.component import ExtendedComponent
 from glue.config import data_factory
 
