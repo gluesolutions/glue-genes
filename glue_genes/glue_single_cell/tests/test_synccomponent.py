@@ -1,5 +1,7 @@
 from glue_genes.glue_single_cell.component import SyncComponent
 from glue.core.data import Data
+from glue.core import DataCollection
+from glue.core.state import GlueSerializer, GlueUnSerializer
 from glue.core.component_id import ComponentID
 import numpy as np
 from glue.config import colormaps
@@ -68,3 +70,22 @@ def test_synccomponent_cmap():
     assert comp.cmap_name == f"{sub1.label}_{sub2.label}_cmap"
     assert comp.preferred_cmap(0) == ColorConverter().to_rgba(sub1.style.color)
     assert comp.preferred_cmap(255) == ColorConverter().to_rgba(sub2.style.color)
+
+
+def roundtrip_sync_component(sync_comp):
+    gs = GlueSerializer(sync_comp)
+    out_str = gs.dumps()
+    obj = GlueUnSerializer.loads(out_str)
+    return obj.object('__main__')
+
+
+def test_save_restore(tmpdir):
+
+    cid = ComponentID("SyncComponent (sync)")
+    sub1 = data.new_subset()
+    sub2 = data.new_subset()
+    sub1.style.color == "#e31a1c"
+    sub2.style.color == "#1f78b4"
+    comp = SyncComponent(np.random.random((2, 3)), subsets=[sub1, sub2])
+    new_sync_comp = roundtrip_sync_component(comp)
+    assert new_sync_comp.preferred_cmap == comp.preferred_cmap

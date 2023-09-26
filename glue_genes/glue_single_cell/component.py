@@ -23,10 +23,18 @@ class SyncComponent(Component):
 
     def __init__(self, data, units=None, subsets=[], preferred_cmap=None):
         super().__init__(data, units=units)
+        self.subsets = subsets
         if preferred_cmap is not None:
             if isinstance(preferred_cmap, str):
-                self.preferred_cmap = mpl.cm.get_cmap(preferred_cmap)
-                self.cmap_name = preferred_cmap
+                try:
+                    self.preferred_cmap = mpl.colormaps.get_cmap(preferred_cmap)
+                    self.cmap_name = preferred_cmap
+                except ValueError:
+                    if len(subsets) > 0:
+                        self.cmap_name, self.preferred_cmap = self.get_cmap_from_subsets(subsets)
+                    else:
+                        self.preferred_cmap = None
+                        self.cmap_name = None
             elif isinstance(preferred_cmap, mpl.colors.Colormap):
                 self.preferred_cmap = preferred_cmap
                 self.cmap_name = preferred_cmap.name
@@ -53,3 +61,22 @@ class SyncComponent(Component):
             warnings.simplefilter("ignore")
             mpl.colormaps.register(cmap=my_cmap, force=True)  # Do we need this?
         return (cmap_name, my_cmap)
+
+    def __gluestate__(self, context):
+        if isinstance(self.preferred_cmap, str):
+            return dict(data=context.id(self._data),
+                        units=context.id(self._units),
+                        subsets=context.id(self.subsets),
+                        preferred_cmap=self.preferred_cmap)
+        else:
+            return dict(data=context.id(self._data),
+                        units=context.id(self._units),
+                        subsets=context.id(self.subsets),
+                        preferred_cmap=self.cmap_name)
+
+    @classmethod
+    def __setgluestate__(cls, rec, context):
+        return cls(context.object(rec['data']),
+                   units=context.object(rec['units']),
+                   subsets=context.object(rec['subsets']),
+                   preferred_cmap=rec['preferred_cmap'])
