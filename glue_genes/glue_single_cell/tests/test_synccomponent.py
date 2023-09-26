@@ -1,6 +1,5 @@
 from glue_genes.glue_single_cell.component import SyncComponent
 from glue.core.data import Data
-from glue.core import DataCollection
 from glue.core.state import GlueSerializer, GlueUnSerializer
 from glue.core.component_id import ComponentID
 import numpy as np
@@ -81,7 +80,8 @@ def roundtrip_sync_component(sync_comp):
 
 def test_save_restore(tmpdir):
 
-    cid = ComponentID("SyncComponent (sync)")
+    data = Data(label="Test Data")
+    _ = ComponentID("SyncComponent (sync)")
     sub1 = data.new_subset()
     sub2 = data.new_subset()
     sub1.style.color == "#e31a1c"
