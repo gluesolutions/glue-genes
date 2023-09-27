@@ -7,7 +7,7 @@ from .qt.summarize_gene_subset import SummarizeGeneSubsetDialog
 
 @menubar_plugin("Calculate Differential Gene Expression")
 def diff_gene_exp_plugin(session, data_collection):
-    DiffGeneExpDialog.create_subset(data_collection, default=None, parent=None)
+    DiffGeneExpDialog.calculate_deg(data_collection, default=None, parent=None)
     return
 
 
