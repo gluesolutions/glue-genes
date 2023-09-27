@@ -47,7 +47,7 @@ from glue.core.component_id import ComponentID, PixelComponentID
 from glue.core.component_link import ComponentLink
 from glue.core.data import Data, Subset
 from glue.core.exceptions import IncompatibleAttribute
-from glue.core.state import (
+from glue.core.state import (  # noqa F401
     GlueSerializeError,
     _load_data_collection_4,
     _save_data_collection_4,
@@ -467,7 +467,7 @@ def _load_anndata(rec, context):
         assert len(coord) == result.ndim * 2
         # Might black formatting break this?
         result._world_component_ids = coord[: len(coord) // 2]
-        result._pixel_component_ids = coord[len(coord) // 2 :]  # noqa E203
+        result._pixel_component_ids = coord[len(coord) // 2:]  # noqa E203
     else:
         assert len(coord) == result.ndim
         result._pixel_component_ids = coord
