@@ -72,17 +72,12 @@ class DiffGeneExpState(State):
     data = SelectionCallbackProperty()
     subset1 = SelectionCallbackProperty()
     subset2 = SelectionCallbackProperty()
-    gene_att = SelectionCallbackProperty()
-    num_genes = CallbackProperty(50)
 
     def __init__(self, data_collection):
         super(DiffGeneExpState, self).__init__()
 
         self.data_collection = data_collection
         self.data_helper = ManualDataComboHelper(self, "data", data_collection)
-        self.gene_att_helper = ComponentIDComboHelper(
-            self, "gene_att", categorical=True, numeric=True
-        )
 
         for data in self.data_collection:
             if isinstance(data, DataAnnData):
@@ -113,12 +108,7 @@ class DiffGeneExpState(State):
         self.subset2_helper.display = display_func_label
 
     def _on_data_change(self, *args, **kwargs):
-        try:
-            self.gene_att_helper.set_multiple_data(
-                [] if self.data is None else [self.data.meta["var_data"]]
-            )
-        except:  # noqa E722
-            pass
+        pass
 
 
 class SummarizeGeneSubsetState(State):

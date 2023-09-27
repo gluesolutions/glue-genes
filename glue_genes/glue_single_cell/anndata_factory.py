@@ -304,7 +304,7 @@ def translate_adata_to_DataAnnData(
 
         spot_comp = ExtendedComponent(
             spot_arr,
-            parent_component_ids=[
+            center_comp_ids=[
                 obs_data_new.id["spatial_0"],
                 obs_data_new.id["spatial_1"],
             ],

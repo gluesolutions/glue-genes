@@ -24,7 +24,7 @@ from glue.core.component_id import ComponentID
 
 from ..state import SummarizeGeneSubsetState
 
-__all__ = ["SummarizeGeneSubsetDialog", "GeneSummaryListener"]
+__all__ = ["do_calculation_over_gene_subset", "SummarizeGeneSubsetDialog", "GeneSummaryListener"]
 
 
 def dialog(title, text, icon):
