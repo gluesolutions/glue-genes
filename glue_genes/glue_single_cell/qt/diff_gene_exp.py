@@ -49,18 +49,25 @@ def get_gene_diff_exp(subset1, subset2, data):
     adata = data.Xdata
     obsdata = data.meta["obs_data"]
     if subset2 is not None:
-        conditions = [
-            (obsdata.get_mask(subset1.subset_state)),
-            (obsdata.get_mask(subset2.subset_state)),
-        ]
-
+        m1 = obsdata.get_mask(subset1.subset_state)
+        m2 = obsdata.get_mask(subset2.subset_state)
+        # Cannot do rank_gene_groups with less than 2 observations
+        if (np.sum(m1) < 2) or (np.sum(m2) < 2):
+            raise ValueError("Failed to compute differential gene expression."
+                             "Cannot do differential gene expression with less than 2 observations in each subset"
+                             f"Subset 1 has {np.sum(m1)} observations, Subset 2 has {np.sum(m2)} observations")
+        conditions = [m1, m2]
         choices = ["1", "2"]
 
         adata.obs["glue_subsets"] = np.select(conditions, choices, default="0")
     else:  # Here we compare against the full dataset
-        conditions = [
-            (obsdata.get_mask(subset1.subset_state)),
-        ]
+        m1 = obsdata.get_mask(subset1.subset_state)
+        # Cannot do rank_gene_groups with less than 2 observations
+        if (np.sum(m1) < 2):
+            raise ValueError("Failed to compute differential gene expression."
+                             "Cannot do differential gene expression with less than 2 observations in each subset"
+                             f"Subset 1 has {np.sum(m1)} observations")
+        conditions = [m1]
         choices = ["1"]
         adata.obs["glue_subsets"] = np.select(conditions, choices, default="2")
 
@@ -115,11 +122,18 @@ class DiffGeneExpDialog(QtWidgets.QDialog):
 
         (the above is technically for a different scanpy function, but the same problem occurs for rank_genes_groups)
         """
-        df = get_gene_diff_exp(
-            self.state.subset1,
-            self.state.subset2,
-            self.state.data
-        )
+        try:
+            df = get_gene_diff_exp(
+                self.state.subset1,
+                self.state.subset2,
+                self.state.data
+            )
+        except ValueError as e:
+            confirm = dialog(  # noqa: F841
+                "Failed to compute differential gene expression",
+                f"{e}",
+                "warn")
+
         label1 = self.state.subset1.label
         if self.state.subset2 is None:
             label2 = "Rest"
@@ -147,15 +161,14 @@ class DiffGeneExpDialog(QtWidgets.QDialog):
             dge_listener.register_to_hub()
             self.state.data.listeners.append(dge_listener)
 
-        confirm = dialog(  # noqa: F841
-            "Adding a new component",
-            f"The components:\n"
-            f"{comp1} and {comp2}\n"
-            f"have been added to:\n"
-            f"{vardata.label}\n"
-            f"and will be automatically updated when {message} is changed.",
-            "info",
-        )
+            confirm = dialog(  # noqa: F841
+                "Adding a new component",
+                f"The components:\n"
+                f"{comp1} and {comp2}\n"
+                f"have been added to:\n"
+                f"{vardata.label}\n"
+                f"and will be automatically updated when {message} is changed.",
+                "info")
 
     @classmethod
     def calculate_deg(cls, collect, default=None, parent=None):
@@ -189,6 +202,7 @@ class DifferentialGeneExpressionListener(HubListener):
         self.subset1 = subset1
         self.subset2 = subset2
         self.comps = comps
+        self.problem_subset = False
         if data_with_Xarray is not None:
             self.set_circular_refs(data_with_Xarray)
 
@@ -225,7 +239,19 @@ class DifferentialGeneExpressionListener(HubListener):
             subset2valid = True
 
         if (subset in self.subset1.subsets) or (subset2valid):
-            new_df = get_gene_diff_exp(self.subset1, self.subset2, self.data_with_Xarray)
+            try:
+                new_df = get_gene_diff_exp(self.subset1, self.subset2, self.data_with_Xarray)
+            except ValueError as e:
+                if not self.problem_subset:
+                    confirm = dialog(  # noqa: F841
+                        "Failed to update differential gene expression",
+                        f"{e}",
+                        "warn")
+                else:
+                    pass
+                self.problem_subset = True
+                return
+            self.problem_subset = False
             mapping = {}
             mapping[self.comps[0]] = new_df['scores'].values
             mapping[self.comps[1]] = new_df['pvals_adj'].values

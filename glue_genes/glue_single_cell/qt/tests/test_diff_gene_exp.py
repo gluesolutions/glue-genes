@@ -1,4 +1,5 @@
 import os
+import pytest
 
 from glue_qt.app import GlueApplication
 from glue.core import data_factories as df
@@ -38,6 +39,12 @@ class TestDiffGeneExp(object):
         self.subset2 = self.dc.new_subset_group(
             label="T cells", subset_state=self.obs_data.id["cell_type"] == "T"
         )
+        self.subset_single = self.dc.new_subset_group(
+            label="SinglePoint", subset_state=self.obs_data.id["Pixel Axis 0 [x]"] == 0
+        )
+        assert len(self.dd.meta['obs_data'].subsets[0]['cell_type']) == 15
+        assert len(self.dd.meta['obs_data'].subsets[1]['cell_type']) == 48
+        assert len(self.dd.meta['obs_data'].subsets[2]['cell_type']) == 1
 
     def test_diff_gene_exp(self):
         df = get_gene_diff_exp(
@@ -45,9 +52,22 @@ class TestDiffGeneExp(object):
         )
         assert len(df) == 2000
 
+        assert df["pvals_adj"].min() < 0.5
+        assert df["pvals_adj"].min() > 0.4
+
+        assert df["pvals_adj"].max() > 0.95
+
     def test_diff_gene_exp_versus_rest(self):
-        df = get_gene_diff_exp(self.subset1, None, self.dd)
+        df = get_gene_diff_exp(self.subset2, None, self.dd)
         assert len(df) == 2000
+        assert df["pvals_adj"].min() < 0.25
+        assert df["pvals_adj"].min() > 0.05
+
+        assert df["pvals_adj"].max() > 0.95
+
+    def test_diff_gene_exp_fails(self):
+        with pytest.raises(ValueError):
+            _ = get_gene_diff_exp(self.subset_single, None, self.dd)
 
 
 class TestDiffGeneExpBacked(TestDiffGeneExp):
