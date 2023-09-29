@@ -53,9 +53,9 @@ def get_gene_diff_exp(subset1, subset2, data):
         m2 = obsdata.get_mask(subset2.subset_state)
         # Cannot do rank_gene_groups with less than 2 observations
         if (np.sum(m1) < 2) or (np.sum(m2) < 2):
-            raise ValueError("Failed to compute differential gene expression."
-                             "Cannot do differential gene expression with less than 2 observations in each subset"
-                             f"Subset 1 has {np.sum(m1)} observations, Subset 2 has {np.sum(m2)} observations")
+            raise ValueError("Failed to compute differential gene expression. "
+                             "Cannot do differential gene expression with less than 2 observations in each subset. "
+                             f"Subset 1 has {np.sum(m1)} observations, Subset 2 has {np.sum(m2)} observations.")
         conditions = [m1, m2]
         choices = ["1", "2"]
 
@@ -64,9 +64,9 @@ def get_gene_diff_exp(subset1, subset2, data):
         m1 = obsdata.get_mask(subset1.subset_state)
         # Cannot do rank_gene_groups with less than 2 observations
         if (np.sum(m1) < 2):
-            raise ValueError("Failed to compute differential gene expression."
-                             "Cannot do differential gene expression with less than 2 observations in each subset"
-                             f"Subset 1 has {np.sum(m1)} observations")
+            raise ValueError("Failed to compute differential gene expression. "
+                             "Cannot do differential gene expression with less than 2 observations in each subset. "
+                             f"Subset 1 has {np.sum(m1)} observations.")
         conditions = [m1]
         choices = ["1"]
         adata.obs["glue_subsets"] = np.select(conditions, choices, default="2")
@@ -233,10 +233,10 @@ class DifferentialGeneExpressionListener(HubListener):
               we should... do what?
         """
         subset = message.subset
-        if self.subset2 is None:
-            subset2valid = False
-        elif subset in self.subset2.subsets:
+        if subset in self.subset2.subsets:
             subset2valid = True
+        else:
+            subset2valid = False
 
         if (subset in self.subset1.subsets) or (subset2valid):
             try:
