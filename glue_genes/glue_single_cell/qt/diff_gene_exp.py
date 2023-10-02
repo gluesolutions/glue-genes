@@ -3,12 +3,8 @@ A menubar plugin to compute differential gene expression for two subsets.
 
 This plugin is normally invoked with a GUI but the core logic can be
 invoked as `get_gene_diff_exp`.
-
-TODO: If the subset is over 1 or fewer datapoints then scanpy will crash, so we
-        should check for this and disallow this subset.
-TODO: Probably the logic here does not all work if subset2 is None/Rest
-
 """
+
 import os
 import numpy as np
 import scanpy as sc
@@ -21,7 +17,6 @@ from glue.core.message import SubsetDeleteMessage, SubsetUpdateMessage
 from glue.core import HubListener
 
 from qtpy import QtWidgets
-
 from glue_genes.glue_single_cell.component import SyncComponent
 from ..state import DiffGeneExpState
 from .summarize_gene_subset import dialog
@@ -45,7 +40,6 @@ def get_gene_diff_exp(subset1, subset2, data):
     data : :class:`~.DataAnnData`
         The gene expression (X) matrix connecting genes and cells.
     """
-
     adata = data.Xdata
     obsdata = data.meta["obs_data"]
     if subset2 is not None:
@@ -146,21 +140,21 @@ class DiffGeneExpDialog(QtWidgets.QDialog):
 
         if df is not None:
             vardata = self.state.data.meta["var_data"]
-            component_name = f"z-scores for {label1} vs {label2} (sync)"
-            cid1 = ComponentID(component_name)
+            component_name_1 = f"z-scores for {label1} vs {label2} (sync)"
+            cid1 = ComponentID(component_name_1)
             comp1 = SyncComponent(df['scores'].values, subsets=subsets)
             _ = vardata.add_component(comp1, cid1)
-            component_name = f"Adj p-vals for {label1} vs {label2} (sync)"
-            cid2 = ComponentID(component_name)
+            component_name_2 = f"Adj p-vals for {label1} vs {label2} (sync)"
+            cid2 = ComponentID(component_name_2)
             comp2 = SyncComponent(df['pvals_adj'].values, subsets=subsets)
             _ = vardata.add_component(comp2, cid2)
 
-            dge_listener = DifferentialGeneExpressionListener(self.state.data,
-                                                              self.state.subset1,
-                                                              self.state.subset2, comps=[cid1, cid2])
+            dge_listener = DifferentialGeneExpressionListener(self.state.subset1,
+                                                              self.state.subset2,
+                                                              data_with_Xarray=self.state.data,
+                                                              comps=[cid1, cid2])
             dge_listener.register_to_hub()
             self.state.data.listeners.append(dge_listener)
-
             confirm = dialog(  # noqa: F841
                 "Adding a new component",
                 f"The components:\n"
@@ -196,7 +190,7 @@ class DifferentialGeneExpressionListener(HubListener):
         The components to be kept up-to-date.
     """
 
-    def __init__(self, data_with_Xarray, subset1, subset2, comps=[]):
+    def __init__(self, subset1, subset2, data_with_Xarray=None, comps=[]):
         super().__init__()
         self.data = data_with_Xarray
         self.subset1 = subset1
@@ -226,19 +220,35 @@ class DifferentialGeneExpressionListener(HubListener):
         if the subset is the one we care about
         then we rerun the calculation.
 
-        TODO: If the subset is the same subset and has just been
-        renamed then we need to update the component name
+        If we are just renaming the subset, then we just update
+        the component names.
 
         TODO: If the subset is no longer over a valid set of attributes
-              we should... do what?
+              we should... catch this and do something sensible.
         """
+        # We only want to update this once. In general, changing
+        # the subsetgroup will send a message for each dataset
+        if message.sender.data is not self.data_with_Xarray:
+            return
+
         subset = message.subset
-        if subset in self.subset2.subsets:
-            subset2valid = True
-        else:
+        subset2valid = False
+        if self.subset2 is None:
             subset2valid = False
+        elif subset in self.subset2.subsets:
+            subset2valid = True
 
         if (subset in self.subset1.subsets) or (subset2valid):
+            if message.attribute == 'label':
+                label1 = self.subset1.label
+                if self.subset2 is None:
+                    label2 = "Rest"
+                else:
+                    label2 = self.subset2.label
+                self.comps[0].label = f"z-scores for {label1} vs {label2} (sync)"
+                self.comps[1].label = f"Adj p-vals for {label1} vs {label2} (sync)"
+                return
+
             try:
                 new_df = get_gene_diff_exp(self.subset1, self.subset2, self.data_with_Xarray)
             except ValueError as e:
@@ -260,9 +270,18 @@ class DifferentialGeneExpressionListener(HubListener):
 
     def delete_subset(self, message):
         """
-        TODO: Remove the attributes from target_dataset
+        Remove the sync components if we delete the subset
         """
-        pass
+        subset = message.subset
+        subset2valid = False
+        if self.subset2 is None:
+            subset2valid = False
+        elif subset in self.subset2.subsets:
+            subset2valid = True
+
+        if (subset in self.subset1.subsets) or (subset2valid):
+            self.target_dataset.remove_component(self.comps[0])
+            self.target_dataset.remove_component(self.comps[1])
 
     def receive_message(self, message):
         pass
