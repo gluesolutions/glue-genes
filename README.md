@@ -25,9 +25,13 @@ In addition, glue genes provides:
 
 See [the glue genes documentation](https://glue-genes.readthedocs.io/en/latest/how-to/installation.html) for installation help.
 
-We recommend installing into a new virtual environment. 
+We recommend installing into a new virtual environment. To install the current stable version use:
 
 `pip install glue-genes[qt6]`
+
+To install the latest development version we recommend the following procedure in a new virtual environment:
+
+`pip install glue-genes@git+https://git@github.com/gluesolutions/glue-genes.git`
 
 ### Usage
 
