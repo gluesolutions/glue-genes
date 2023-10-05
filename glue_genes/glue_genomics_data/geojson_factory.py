@@ -14,6 +14,7 @@ to the size of the image (which would be necessary to do the transform).
 
 import json
 from shapely.geometry import shape
+from shapely import area
 import numpy as np
 from glue.core.data_region import RegionData
 from glue.core.component import ExtendedComponent
@@ -33,9 +34,12 @@ def read_geojson(filename):
     properties = []
     center_x = []
     center_y = []
+    areas = []
     for feature in features["features"]:
         geom = shape(feature["geometry"])
-        rep_point = geom.point_on_surface()
+        rep_point = geom.representative_point()
+        calc_area = area(geom)
+        areas.append(calc_area)
         center_x.append(rep_point.x)
         center_y.append(rep_point.y)
         geometries.append(geom)
@@ -51,6 +55,7 @@ def read_geojson(filename):
         ],
     )
     data.add_component(geom_comp, label="regions")
+    data.add_component(areas, label="area")
 
     property_keys = {k for d in properties for k in d}
     for prop_key in property_keys:
