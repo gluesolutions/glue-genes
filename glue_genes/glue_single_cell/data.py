@@ -31,6 +31,9 @@ Scanpy - Single-Cell Analysis in Python
 https://scanpy.readthedocs.io/en/stable/
 """
 
+import scipy
+import json
+from scipy.sparse import csr_matrix
 import uuid
 from collections import OrderedDict
 from pathlib import Path
@@ -534,6 +537,21 @@ def _load_data_collection_5(rec, context):
             pass
 
     return result
+
+
+@loader(scipy.sparse._csr.csr_matrix)
+def _load_sparse(rec, context):
+    obj = json.loads(rec['sparse_mat'])
+    mat = csr_matrix((obj['data'], (obj['indices'], obj['indptr'])))
+    return mat
+
+
+@saver(scipy.sparse._csr.csr_matrix)
+def _save_sparse(obj, context):
+    json_str = json.dumps({"data": obj.data.tolist(),
+                           "indices": obj.nonzero()[0].tolist(),
+                           "indptr": obj.nonzero()[1].tolist()})
+    return {'sparse_mat': json_str}
 
 
 @data_translator(anndata.AnnData)

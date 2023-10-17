@@ -211,6 +211,13 @@ def translate_adata_to_DataAnnData(
     # We just store it in metadata so we can recreate
     # the AnnData object
     XData.meta["uns"] = adata.uns
+    # remove rank_genes_groups from uns
+    # rank_genes_groups produces a structured
+    # array of objects (not strings) that is
+    # really hard to sererialize.
+
+    if "rank_genes_groups" in XData.meta["uns"]:
+        del XData.meta["uns"]["rank_genes_groups"]
     list_of_data_objs.append(XData)
 
     # The var array is all components of the same length
