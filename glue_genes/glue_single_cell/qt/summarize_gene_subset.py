@@ -119,11 +119,21 @@ def apply_data_arr(target_dataset, data_arr, basename, subset, key="Means"):
     """
     Add appropriately named SyncComponents from data_arr to target_dataset
 
-    This is a sort of clunky approach to doing this.
+    If we are doing PCA we will have multiple components to add
 
-    We generate a Data object from the data_arr that was returned,
-    and then add the non-coordinate components of this Data object
-    to the target dataset.
+    Parameters
+    ----------
+    target_dataset : :class:`~.Data`
+        The dataset to add the components to
+    data_arr : :class:`numpy.ndarray`
+        The array of data to add, this will be a 1D array for Means and Module
+        and a 2D array for PCA
+    basename : str
+        The name of the subset
+    subset : :class:`glue.core.subset.Subset`
+        The subset that will be tracked by the SyncComponent
+    key : str
+        The type of calculation performed: [PCA, Module, Means]
     """
     cids = []
     if data_arr.ndim == 2:
@@ -166,6 +176,7 @@ class GeneSummaryListener(HubListener):
         self.basename = basename
         self.key = key
         self.comps = comps
+        self.problem_subset = False
         if data_with_Xarray is not None:
             self.set_circular_refs(data_with_Xarray)
 
@@ -183,6 +194,58 @@ class GeneSummaryListener(HubListener):
         #              handler=self.update_subset)
         self.hub.subscribe(self, SubsetUpdateMessage, handler=self.update_subset)
         self.hub.subscribe(self, SubsetDeleteMessage, handler=self.delete_subset)
+
+    def update_subset(self, message):
+        """
+        if the subset is the one we care about then we rerun the calculation.
+
+        If we are just renaming the subset, then we just update
+        the component names.
+
+        TODO: If the subset is no longer over a valid set of attributes
+              we should... what?
+        """
+        subset = message.subset
+        if subset == self.genesubset:
+            if message.attribute == "label":
+                if len(self.comps) == 1:
+                    self.comps[0].label = f"{subset.label}_{self.key} (sync)"
+                else:
+                    for i, c in enumerate(self.comps):
+                        c.label = f"{subset.label}_{self.key}_{i} (sync)"
+            # if subset.attributes == self.genesubset_attributes:
+                return
+            try:
+                new_data = do_calculation_over_gene_subset(
+                    self.data_with_Xarray, self.genesubset, calculation=self.key
+                )
+            except ValueError as e:
+                if not self.problem_subset:
+                    confirm = dialog(  # noqa: F841
+                        "Failed to update differential gene expression",
+                        f"{e}",
+                        "warn")
+                else:
+                    pass
+                self.problem_subset = True
+                return
+            self.problem_subset = False
+            mapping = {}
+            if new_data.ndim == 2:
+                for c, k in zip(self.comps, new_data.T):
+                    mapping[c] = k
+            else:
+                mapping[self.comps[0]] = new_data
+            self.target_dataset.update_components(mapping)
+
+    def delete_subset(self, message):
+        """
+        TODO: Remove the attributes from target_dataset
+        """
+        pass
+
+    def receive_message(self, message):
+        pass
 
     def __gluestate__(self, context):
         return dict(
@@ -206,40 +269,6 @@ class GeneSummaryListener(HubListener):
         data_with_Xarray = context.object(rec["data_with_Xarray"])
         result.set_circular_refs(data_with_Xarray)
         # result.register_to_hub()
-
-    def update_subset(self, message):
-        """
-        if the subset is the one we care about
-        then we rerun the calculation.
-
-        TODO: If the subset is the same subset and has just been
-        renamed then we need to update the component name
-
-        TODO: If the subset is no longer over a valid set of attributes
-              we should... what?
-        """
-        subset = message.subset
-        if subset == self.genesubset:
-            # if subset.attributes == self.genesubset_attributes:
-            new_data = do_calculation_over_gene_subset(
-                self.data_with_Xarray, self.genesubset, calculation=self.key
-            )
-            mapping = {}
-            if new_data.ndim == 2:
-                for c, k in zip(self.comps, new_data.T):
-                    mapping[c] = k
-            else:
-                mapping[self.comps[0]] = new_data
-            self.target_dataset.update_components(mapping)
-
-    def delete_subset(self, message):
-        """
-        TODO: Remove the attributes from target_dataset
-        """
-        pass
-
-    def receive_message(self, message):
-        pass
 
 
 class SummarizeGeneSubsetDialog(QtWidgets.QDialog):

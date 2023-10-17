@@ -217,8 +217,7 @@ class DifferentialGeneExpressionListener(HubListener):
 
     def update_subset(self, message):
         """
-        if the subset is the one we care about
-        then we rerun the calculation.
+        if the subset is the one we care about then we rerun the calculation.
 
         If we are just renaming the subset, then we just update
         the component names.
