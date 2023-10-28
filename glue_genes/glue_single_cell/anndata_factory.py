@@ -12,6 +12,7 @@ from glue.core.data_region import RegionData
 from glue_qt.utils import set_cursor_cm
 from qtpy.QtCore import Qt
 from shapely.geometry import Point
+from glue_heatmap.coords import HeatmapCoordinates
 
 from .data import DataAnnData
 from .qt.load_data import LoadDataDialog
@@ -172,12 +173,15 @@ def translate_adata_to_DataAnnData(
             adata, fraction=subsample_factor, copy=True, random_state=0
         )
 
+    # blank_names = [None for x in adata.obs_names]
+    coords = HeatmapCoordinates(adata.var_names, adata.obs_names, "genes", "obs")
+
     if backed:
         XData = DataAnnData(
-            Xarray=adata.X, full_anndata_obj=adata, backed=backed, label=f"{basename}_X"
+            Xarray=adata.X, full_anndata_obj=adata, backed=backed, label=f"{basename}_X", coords=coords
         )
     else:
-        XData = DataAnnData(Xarray=adata.X, backed=backed, label=f"{basename}_X")
+        XData = DataAnnData(Xarray=adata.X, backed=backed, label=f"{basename}_X", coords=coords)
 
     XData.meta["orig_filename"] = basename
 

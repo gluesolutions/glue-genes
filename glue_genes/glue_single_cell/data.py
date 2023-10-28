@@ -58,6 +58,8 @@ from glue.core.state import (  # noqa F401
     saver,
 )
 from scipy.sparse import isspmatrix
+import traceback
+from glue.core.joins import get_mask_with_key_joins
 
 __all__ = ["DataAnnData", "DataAnnDataTranslator"]
 
@@ -77,10 +79,8 @@ class DataAnnData(Data):
              True if the underlying matrix is sparse
     """
 
-    def __init__(
-        self, label="", full_anndata_obj=None, backed=False, coords=None, **kwargs
-    ):
-        super().__init__(label=label, coords=None)
+    def __init__(self, label="", full_anndata_obj=None, backed=False, coords=None, **kwargs):
+        super().__init__(label=label, coords=coords)
 
         self.listeners = []
 
@@ -117,11 +117,12 @@ class DataAnnData(Data):
         """
         Do not allow subset_states to propagate through X matrix.
 
-        This is a bit of a hack. Because we have join_on_keys on both
-        dimensions of the X array, :meth:`~glue.core.data.Data.get_mask` will normally
-        default to trying :func:`~glue.core.joins.get_mask_with_key_joins` . By not
-        allowing that we prevent subsets on obs/var arrays traveling
-        through the X array to completely cover var/obs arrays.
+        We wrap the call to get_mask_with_key_joins in a function
+        that raises IncompatibleAttribute if we are trying to call
+        this function recursively. This prevents subset_states
+        from propagating through the X matrix in the case where
+        we have joined both obs and var tables on the X matrix
+        by key joins. 
 
         Parameters
         ----------
@@ -129,8 +130,12 @@ class DataAnnData(Data):
             The subset state to use to compute the mask
         view : `slice`
             The 'view' on the mask - anything that is considered a valid
-            Numpy slice/index."""
-        return subset_state.to_mask(self, view=view)
+            Numpy slice/index.
+        """
+        try:
+            return subset_state.to_mask(self, view=view)
+        except IncompatibleAttribute:
+            return norecurse(get_mask_with_key_joins)(self, self._key_joins, subset_state, view=view)
 
     def get_kind(self, cid):
         comp = self.get_component(cid)
@@ -138,7 +143,7 @@ class DataAnnData(Data):
         try:
             dtype = comp.dtype  # noqa F841
         except AttributeError:  # This might happen on the X array
-            return "numeric"
+            return "numerical"
 
         if comp.datetime:
             return "datetime"
@@ -172,7 +177,11 @@ class DataAnnData(Data):
         """
 
         if not self.backed:
-            return super().get_data(cid, view=view)
+            rawdata = super().get_data(cid, view=view)
+            try:
+                return rawdata.todense()
+            except AttributeError:
+                return rawdata
 
         if isinstance(cid, ComponentLink):
             return cid.compute(self, view)
@@ -305,6 +314,17 @@ class DataAnnData(Data):
                     x + start, y, bins=bins, range=range, weights=w
                 )[0]
             return chunked_histogram
+
+
+def norecurse(f):
+    """
+    Decorator to raise an IncompatibleAttribute error if called recursively.
+    """
+    def func(*args, **kwargs):
+        if len([l[2] for l in traceback.extract_stack() if l[2] == f.__name__]) > 0:
+            raise IncompatibleAttribute
+        return f(*args, **kwargs)
+    return func
 
 
 @saver(DataAnnData, version=1)
