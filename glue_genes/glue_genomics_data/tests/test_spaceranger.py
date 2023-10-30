@@ -48,7 +48,6 @@ class TestSpacerangerData(object):
         filename = tmpdir.join("test_spaceranger_save_restore_session.glu").strpath
         self.session.application.save_session(filename)
         self.app.close()
-
         with open(filename, "r") as f:
             session = f.read()
 

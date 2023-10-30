@@ -122,7 +122,7 @@ class DataAnnData(Data):
         this function recursively. This prevents subset_states
         from propagating through the X matrix in the case where
         we have joined both obs and var tables on the X matrix
-        by key joins. 
+        by key joins.
 
         Parameters
         ----------
@@ -154,7 +154,7 @@ class DataAnnData(Data):
         else:
             raise TypeError("Unknown data kind")
 
-    def get_data(self, cid, view=None):
+    def get_data(self, cid, view=None, keep_sparse=False):
         """
         Get the data values for a given component.
 
@@ -178,10 +178,12 @@ class DataAnnData(Data):
 
         if not self.backed:
             rawdata = super().get_data(cid, view=view)
-            try:
-                return rawdata.todense()
-            except AttributeError:
+            if keep_sparse:
                 return rawdata
+            try:
+                return rawdata.toarray()
+            except AttributeError:
+                return rawdata.toarray()
 
         if isinstance(cid, ComponentLink):
             return cid.compute(self, view)
@@ -321,7 +323,7 @@ def norecurse(f):
     Decorator to raise an IncompatibleAttribute error if called recursively.
     """
     def func(*args, **kwargs):
-        if len([l[2] for l in traceback.extract_stack() if l[2] == f.__name__]) > 0:
+        if len([x[2] for x in traceback.extract_stack() if x[2] == f.__name__]) > 0:
             raise IncompatibleAttribute
         return f(*args, **kwargs)
     return func
@@ -460,6 +462,8 @@ def _load_anndata(rec, context):
 
     label = rec["label"]
     result = DataAnnData(label=label)
+    if 'coords' in rec:
+        result.coords = context.object(rec['coords'])
 
     # we manually rebuild pixel/world components, so
     # we override this function. This is pretty ugly
@@ -489,9 +493,11 @@ def _load_anndata(rec, context):
     if getattr(result, "coords") is not None:
         assert len(coord) == result.ndim * 2
         # Might black formatting break this?
-        result._world_component_ids = coord[: len(coord) // 2]
+        result._world_component_ids = coord[:len(coord) // 2]
         result._pixel_component_ids = coord[len(coord) // 2:]  # noqa E203
     else:
+        print(len(coord))
+        print(result.ndim)
         assert len(coord) == result.ndim
         result._pixel_component_ids = coord
 

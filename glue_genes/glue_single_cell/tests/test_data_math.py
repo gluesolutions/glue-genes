@@ -47,7 +47,7 @@ def data_sparse_inmemory(tmpdir):
 
 def test_data_setup_sparse_backed(data_sparse_backed):
     C, d = data_sparse_backed
-    assert len(d[0]._components) == 3
+    assert len(d[0]._components) == 5
     assert d[0].sparse is True
     assert d[0].backed is True
     assert isinstance(
@@ -57,7 +57,7 @@ def test_data_setup_sparse_backed(data_sparse_backed):
 
 def test_data_setup_sparse_inmemory(data_sparse_inmemory):
     C, d = data_sparse_inmemory
-    assert len(d[0]._components) == 3
+    assert len(d[0]._components) == 5
     assert d[0].sparse is True
     assert d[0].backed is False
     assert isinstance(d[0].Xdata, anndata.AnnData)
@@ -92,33 +92,24 @@ def test_get_data_view_sparse_inmemory(data_sparse_inmemory):
         np.s_[37:87, :],
     )
     for view in views:
-        for comp in d[0].components:
-            if comp in d[0]._pixel_component_ids:
-                pass
-            else:
-                comp_data = d[0].get_data(comp, view)
-                assert comp_data.size == C[view].size
-                assert_equal(comp_data.A, C[view].A)
+        for comp in d[0].main_components:
+            comp_data = d[0].get_data(comp, view, keep_sparse=True)
+            assert comp_data.size == C[view].size
+            assert_equal(comp_data.A, C[view].A)
 
 
 def test_get_data_sparse_backed(data_sparse_backed):
     C, d = data_sparse_backed
-    for comp in d[0].components:
+    for comp in d[0].main_components:
         comp_data = d[0].get_data(comp)
-        if comp in d[0]._pixel_component_ids:
-            pass
-        else:
-            assert len(comp_data) == C.size
+        assert len(comp_data) == C.size
 
 
 def test_get_data_sparse_inmemory(data_sparse_inmemory):
     C, d = data_sparse_inmemory
-    for comp in d[0].components:
-        comp_data = d[0].get_data(comp)
-        if comp in d[0]._pixel_component_ids:
-            pass
-        else:
-            assert comp_data.A.shape == C.A.shape
+    for comp in d[0].main_components:
+        comp_data = d[0].get_data(comp, keep_sparse=True)
+        assert comp_data.A.shape == C.A.shape
 
 
 def test_make_histogram_sparse_backed(data_sparse_backed):

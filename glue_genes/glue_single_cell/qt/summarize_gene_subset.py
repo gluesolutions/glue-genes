@@ -45,6 +45,17 @@ def do_calculation_over_gene_subset(data_with_Xarray, genesubset, calculation="M
     """
     Calculate a summary statistic for cells based on genesubset
 
+    Currently this code is a bit of a mess because the slicing we are
+    doing here implicitly? uses the new todense() cast on the X array
+    which causes all this fragile code originally deal with sparse
+    arrays to fail. Of course, in theory we would like to keep the
+    benefit of sparse arrays here. I think the call to get_data()
+    is inside the slice opperation? Or possibly in the to_index_list()
+    call? I am not sure. It might even be in our call to
+    data_with_Xarray.Xdata. But... I don't think so.
+
+
+
     Parameters
     ----------
     data_with_Xarray : :class:`~.DataAnnData`
@@ -66,9 +77,7 @@ def do_calculation_over_gene_subset(data_with_Xarray, genesubset, calculation="M
         return None
     # Slicing the adata object is probably not the fastest thing we can do
     if calculation == "PCA":
-        adata_sel = adata[
-            :, mask
-        ]  # This will fail if genesubset is not actually over genes
+        adata_sel = adata[:, mask]  # This will fail if genesubset is not actually over genes
         try:
             adata_sel = adata_sel.to_memory()
         except ValueError:
@@ -76,9 +85,7 @@ def do_calculation_over_gene_subset(data_with_Xarray, genesubset, calculation="M
         sc.pp.pca(adata_sel, n_comps=10)
         data_arr = adata_sel.obsm["X_pca"]
     elif calculation == "Module":
-        adata_sel = adata[
-            :, mask
-        ]  # This will fail if genesubset is not actually over genes
+        adata_sel = adata[:, mask]  # This will fail if genesubset is not actually over genes
         gene_list = list(adata_sel.var_names)
         try:
             # TODO/FIXME: This could crash glue if a really large file is loaded into memory
@@ -97,22 +104,20 @@ def do_calculation_over_gene_subset(data_with_Xarray, genesubset, calculation="M
 
     elif calculation == "Means":
         if raw:
-            adata_sel = adata.raw.X[
-                :, mask
-            ]  # This will fail if genesubset is not actually over genes
+            adata_sel = adata.raw.X[:, mask]  # This will fail if genesubset is not actually over genes
             if data_with_Xarray.sparse is True:
-                data_arr = (adata_sel.mean(axis=1).A1,)
+                data_arr = adata_sel.mean(axis=1)#.A1,)
             else:
                 data_arr = adata_sel.mean(axis=1)
 
         else:
             adata_sel = adata.X[:, mask]
             if data_with_Xarray.sparse is True:
-                data_arr = adata_sel.mean(axis=1).A1
+                data_arr = adata_sel.mean(axis=1)#.A1
             else:
                 data_arr = adata_sel.mean(axis=1)
 
-    return data_arr
+    return np.squeeze(np.asarray(data_arr))
 
 
 def apply_data_arr(target_dataset, data_arr, basename, subset, key="Means"):

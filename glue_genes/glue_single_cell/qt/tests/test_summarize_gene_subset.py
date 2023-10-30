@@ -183,7 +183,6 @@ class TestCellSummary(object):
 
         s = d1_var.new_subset()
         s.subset_state = d1_var.id["gene_stuff_0"] > 0
-
         data_arr = do_calculation_over_gene_subset(d1_adata, s, **kwargs)
         assert len(data_arr) == 100
 
