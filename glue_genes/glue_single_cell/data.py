@@ -183,7 +183,7 @@ class DataAnnData(Data):
             try:
                 return rawdata.toarray()
             except AttributeError:
-                return rawdata.toarray()
+                return rawdata
 
         if isinstance(cid, ComponentLink):
             return cid.compute(self, view)
