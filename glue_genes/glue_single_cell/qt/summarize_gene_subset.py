@@ -106,14 +106,14 @@ def do_calculation_over_gene_subset(data_with_Xarray, genesubset, calculation="M
         if raw:
             adata_sel = adata.raw.X[:, mask]  # This will fail if genesubset is not actually over genes
             if data_with_Xarray.sparse is True:
-                data_arr = adata_sel.mean(axis=1)#.A1,)
+                data_arr = adata_sel.mean(axis=1)  # .A1,)
             else:
                 data_arr = adata_sel.mean(axis=1)
 
         else:
             adata_sel = adata.X[:, mask]
             if data_with_Xarray.sparse is True:
-                data_arr = adata_sel.mean(axis=1)#.A1
+                data_arr = adata_sel.mean(axis=1)  # .A1
             else:
                 data_arr = adata_sel.mean(axis=1)
 

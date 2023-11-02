@@ -152,6 +152,17 @@ def read_anndata(
     )
 
 
+def convert_to_string_type(dd):
+    for k, v in dd.items():
+        if isinstance(v, dict):
+            convert_to_string_type(v)
+        elif isinstance(v, np.ndarray):
+            if v.dtype == object:
+                dd[k] = v.astype(str)
+        else:
+            dd[k] = v
+
+
 def translate_adata_to_DataAnnData(
     adata,
     subsample=False,
@@ -173,7 +184,6 @@ def translate_adata_to_DataAnnData(
             adata, fraction=subsample_factor, copy=True, random_state=0
         )
 
-    # blank_names = [None for x in adata.obs_names]
     coords = HeatmapCoordinates(adata.var_names, adata.obs_names, "genes", "obs")
 
     if backed:
@@ -187,9 +197,7 @@ def translate_adata_to_DataAnnData(
 
     if make_spatial_components:
         library_id = list(adata.uns["spatial"].keys())[0]
-        basename = (
-            library_id  # This is often a nicer name, but maybe this should be optional?
-        )
+        # basename = library_id # This is often a nicer name, but should be optional?
         # Want radius
         # We should not assume this much about the structure of spatial
         # but this is okay for now...
@@ -214,7 +222,9 @@ def translate_adata_to_DataAnnData(
     # uns is unstructured data on the AnnData object
     # We just store it in metadata so we can recreate
     # the AnnData object
+
     XData.meta["uns"] = adata.uns
+    convert_to_string_type(XData.meta["uns"])
     # remove rank_genes_groups from uns
     # rank_genes_groups produces a structured
     # array of objects (not strings) that is
