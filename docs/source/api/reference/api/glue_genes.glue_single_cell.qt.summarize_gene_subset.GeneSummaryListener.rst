@@ -1,7 +1,7 @@
-﻿glue\_genes.glue\_single\_cell.qt.pca\_subset.GeneSummaryListener
-=================================================================
+﻿glue\_genes.glue\_single\_cell.qt.summarize\_gene\_subset.GeneSummaryListener
+=============================================================================
 
-.. currentmodule:: glue_genes.glue_single_cell.qt.pca_subset
+.. currentmodule:: glue_genes.glue_single_cell.qt.summarize_gene_subset
 
 .. autoclass:: GeneSummaryListener
 
