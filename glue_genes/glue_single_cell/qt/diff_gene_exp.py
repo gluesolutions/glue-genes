@@ -135,7 +135,9 @@ class DiffGeneExpDialog(QtWidgets.QDialog):
             message = f"{label1}"
         else:
             label2 = self.state.subset2.label
-            subsets = [self.state.subset1, self.state.subset2]
+            # This looks backwards, but since the colorscale runs
+            # from negative to positive this will do the sensible thing
+            subsets = [self.state.subset2, self.state.subset1]
             message = f"{label1} or {label2}"
 
         if df is not None:
