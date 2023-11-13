@@ -111,7 +111,7 @@ This plug-in uses the `enrichrpy library <https://github.com/estorrs/enrichrpy>`
 Single Cell Analysis Plug-ins
 ===============================
 
-Scanpy Differential Gene Expression
+Differential Gene Expression
 ------------------------------------
 
 A basic guide to using this plug-in is :ref:`here<DGE Between Cell Subsets>`

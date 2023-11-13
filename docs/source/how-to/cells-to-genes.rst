@@ -47,7 +47,7 @@ Identify differentially expressed genes between subsets of cells
 
 .. note:: If you want to calculate differential gene expression for a subset of cells versus all the rest of the observations, just leave Subset 2 on the default value of "Rest (all other observations)". 
 
-#. Choose the **Scanpy Differential Gene Expression** menu item from the **Plugins** menubar item. In the dialog window that pops up, make sure to choose the X matrix (gene expression matrix) for these subsets of cells, identify the component that contains the gene names or IDs, and select the two subsets of cells as Subset 1 and Subset 2.
+#. Choose the **Calculate Differential Gene Expression** menu item from the **Plugins** menubar item. In the dialog window that pops up, make sure to choose the X matrix (gene expression matrix) for these subsets of cells, identify the component that contains the gene names or IDs, and select the two subsets of cells as Subset 1 and Subset 2.
 
 #. A dialog will tell you that two new components have been added to your genes dataset. These new components give the z-scores and adjusted p-values for the differential gene expression between the two subsets of cells. You can now either use these new components as linear color-scales in a visualization of the genes or plot these new components on one axis of another Viewer. As you update the subsets of cells, these new components will update to reflect the new differential gene expression.
 
@@ -55,7 +55,7 @@ Identify differentially expressed genes between subsets of cells
       :align: center
       :width: 66%
     
-      Choose the Scanpy Differential Gene Expression menubar item.
+      Choose the Calculate Differential Gene Expression menubar item.
 
    .. figure:: images/connect_dge_dialog.png
       :align: center
