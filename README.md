@@ -17,9 +17,9 @@ glue genes provides all the core features of glue:
 
 In addition, glue genes provides:
 
-* Data loaders for genomics data file formats such as .bed, .bigwig, .h5ad, and .loom
+* Data loaders for genomics data file formats, including multiresolution images and transcriptomics data.
 * Viewers including: 2D Heatmap, Small Multiples, QTL Viewer
-* Menubar plug-ins to facilitate analysis of single-cell transcriptomics data
+* Menubar plug-ins to facilitate analysis of single-cell and spatial transcriptomics data
 
 ### Install
 

@@ -58,10 +58,13 @@ We recommend installing into a dedicated virtual environment using `conda <https
     conda create -n glue-genes-env
     conda activate glue-genes-env
 
-    conda install -c conda-forge glue-core
-    pip install glue-genes
+    conda install glue-core
+
+Then, install the latest stable version of glue genes::
+
+    pip install glue-genes[qt6]
 
 This process uses conda to get some of the difficult-to-install dependencies
 for glue installed first. If you prefer not to use conda (or the alternative `mamba <https://mamba.readthedocs.io/en/latest/>`_) then please consult the core glue documentation for `alternative methods for installing glue <http://docs.glueviz.org/en/stable/installation/installation.html>`_, and afterwards simply::
 
-    pip install glue-genes
+    pip install glue-genes[qt6]
