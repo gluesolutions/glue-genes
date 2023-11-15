@@ -8,6 +8,7 @@ This User Guide explains the core features of glue genes. For more details on ho
 New Data Loaders
 *****************
 
+
 Single-Cell Data
 =================
 
@@ -19,10 +20,19 @@ glue genes supports loading single-cell type data via the `AnnData package <annd
    
       How the pieces of AnnData object map onto glue data objects
 
-Generally, the 2D X matrix is not used directly, but is used to connect the gene (var) and cell (obs) 1D data tables through the use of analysis plug-ins.
+The 2D X matrix can be visualized in a Heatmap Viewer, and is used to connect the gene (var) and cell (obs) 1D data tables through the use of analysis plug-ins.
 
-.. note::
-   If glue is started without the ``--startup=setup_anndata`` flag, then the Link Editor will not show the links between the _var, _obs, and _X data sets. These links will still be present, however.
+Spatial Transcriptomics Data
+=============================
+
+glue genes supports loading spatial transcriptomics data via the `Squidpy package <squidpy.readthedocs.io>`_. Currently this supports loading SpaceRanger output folders and will create 4 linked datasets -- the three datasets described above in the section on Single-Cell Data and the "Hi-res" image. 
+
+More complex and not-yet-supported spatial data sets can still be loaded via transforming the underlying data into an AnnData file, and loading that into glue genes alongside the underlying image data and gluing them together.
+
+Imaging Data (Tiff-like, OME-Zarr, OpenSlide)
+=============================================
+
+glue genes supports loading in image data using several libraries, including `Tifffile <https://github.com/cgohlke/tifffile/>`_, `OME-Zarr <https://ome-zarr.readthedocs.io/en/stable/>`_, and `OpenSlide <https://openslide.org>`_ (if the underlying OpenSlide library is installed). Where the underlying formats support it, these datasets are lazy-loaded as Dask arrays, providing for efficient viewing of datasets significantly larger than the available RAM. 
 
 
 BED and BigWig Data
@@ -52,7 +62,17 @@ If your dataset contains one or more LOD (logarithm of the odds) scores, then yo
 Heatmap Viewer
 ===============
 
-The Heatmap Viewer is an extra Viewer bundled by default with glue genes for the display and analysis of matrix-type data. The 2D Image viewer can also display matrix-type data, but the Heatmap Viewer displays labels for the elements of the matrix and provides subset definitions that are tailored for the kinds of categorical data shown in a heatmap.
+The Heatmap Viewer is an extra Viewer bundled by default with glue genes for the display and analysis of matrix-type data. The primary use for this viewer in glue genes is to visualize the gene expression matrix in a single-cell or spatial transcriptomics dataset.
+
+.. warning::
+      The Heatmap Viewer transforms the underlying matrix data (which may be sparse) into a dense 2D array; this can consume a very large amount of memory. Future work will reduce the memory overhead of this viewer.
+
+.. figure:: images/heatmap_viewer.png
+      :align: center
+      :width: 100%
+   
+      The Heatmap Viewer display the gene expression matrix for a spatial transcriptomics dataset.
+
 
 Small Multiples Viewer
 =======================
@@ -91,7 +111,7 @@ This plug-in uses the `enrichrpy library <https://github.com/estorrs/enrichrpy>`
 Single Cell Analysis Plug-ins
 ===============================
 
-Scanpy Differential Gene Expression
+Differential Gene Expression
 ------------------------------------
 
 A basic guide to using this plug-in is :ref:`here<DGE Between Cell Subsets>`

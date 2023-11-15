@@ -3,19 +3,17 @@
 How do I start glue genes?
 ####################################
 
-If you have install glue as a Python package you need to start it from a terminal by typing::
+If you have installed glue as a Python package you need to start it from a terminal by typing::
 
-    glue --startup=setup_anndata
+    glue
 
 .. note::
 
-   The very first time glue genes launches after installation (or an update) it can take quite a long time (a minute or more). Subsequent launches are fast.
-
-If you forget the ``--startup=setup_anndata``, glue genes will still run, but a few more advanced features related to loading and displaying single cell data will not work.
+   The first time glue genes launches after installation or an update it can take quite a long time (a minute or more). Subsequent launches are fast.
 
 If something does not seem to be working correctly with glue genes (typically some of data loaders or viewers you expect are not present) try launching glue genes with the ``-v`` flag::
 
-    glue -v --startup=setup_anndata
+    glue -v
 
 and checking the terminal output for error messages. 
 

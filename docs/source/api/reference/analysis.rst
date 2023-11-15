@@ -12,14 +12,15 @@ Differential Gene Expression
 .. autosummary::
    :toctree: api/
    
-   get_gene_list_diff_exp
+   get_gene_diff_exp
+   DifferentialGeneExpressionListener
 
 Gene Subset Summary
 ----------------------------
 
-.. currentmodule:: glue_genes.glue_single_cell.qt.pca_subset
+.. currentmodule:: glue_genes.glue_single_cell.qt.summarize_gene_subset
 
-.. automodule:: glue_genes.glue_single_cell.qt.pca_subset
+.. automodule:: glue_genes.glue_single_cell.qt.summarize_gene_subset
 
 .. autosummary::
    :toctree: api/

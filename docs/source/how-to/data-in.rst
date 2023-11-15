@@ -26,8 +26,19 @@ There are multiple ways to get data into glue genes. You can:
    
       Open a data set from the menubar
 
-
 3. Drag and drop files onto the main glue window.
+
+4. Import a folder/directory using **Import data** and **Import from directory** under the **File** menu.
+
+   .. figure:: images/import_from_directory.png
+      :align: center
+      :width: 75%
+   
+      Import a directory of files.
+
+Loading Zarr files, Spaceranger output folders, and other directory-based datasets
+**********************************************************************************
+Some datasets are represented on disk as a directory or folder of files; some examples include Zarr (.zarr) files and Spaceranger output folders. In these cases, you must either use the **Import from directory** option or drag-and-drop to load the data. 
 
 Most of the time, glue genes will correctly identify the type of file you are loading. If it does not, you can choose a specific file type/data loader from the drop-down menu in the loading dialog:
 
@@ -36,6 +47,7 @@ Most of the time, glue genes will correctly identify the type of file you are lo
       :width: 75%
    
       Choose a specific data loader if necessary.
+
 
 Options for loading single-cell data
 **************************************
