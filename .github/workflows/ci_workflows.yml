@@ -59,5 +59,6 @@ jobs:
       libraries: '^libxcb.*-dev libxkbcommon-x11-dev libgl1-mesa-glx libopenblas-dev libhdf5-dev xvfb'
       test_extras: 'test,qt5'
       test_command: Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 & sleep 3; DISPLAY=:99.0 pytest --pyargs glue_genes 
+      python-version: '3.10'
     secrets:
       pypi_token: ${{ secrets.pypi_api_token }}
