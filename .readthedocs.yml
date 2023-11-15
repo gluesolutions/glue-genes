@@ -17,5 +17,5 @@ formats: []
 
 sphinx:
   builder: html
-  configuration: doc/conf.py
+  configuration: docs/conf.py
   fail_on_warning: false
