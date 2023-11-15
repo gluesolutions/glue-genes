@@ -1,5 +1,27 @@
 # Changelog
 
+## v1.2.0 - 2023-11-15
+
+<!-- Release notes generated using configuration in .github/release.yml at main -->
+### What's Changed
+
+#### New Features
+
+- Support for loading and analyzing spatial transcriptomics data
+- Support for display regions on images
+
+#### Bug Fixes
+
+- Fix ome_zarr reader to work for any number of supported dims by @jfoster17 in https://github.com/gluesolutions/glue-genes/pull/48
+
+#### Other Changes
+
+- Add tifffile file reader by @jfoster17 in https://github.com/gluesolutions/glue-genes/pull/49
+- Allow DEG plugin to run versus rest (all other obs) by @jfoster17 in https://github.com/gluesolutions/glue-genes/pull/53
+- Change differential gene expression plugin to be live-updating by @jfoster17 in https://github.com/gluesolutions/glue-genes/pull/54
+
+**Full Changelog**: https://github.com/gluesolutions/glue-genes/compare/v1.1.0...v1.2.0
+
 ## v1.1.0 - 2023-06-14
 
 <!-- Release notes generated using configuration in .github/release.yml at main -->
