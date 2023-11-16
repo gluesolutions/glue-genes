@@ -6,11 +6,8 @@ Getting Started with glue genes
 Installation
 ================
 
-If you already have an existing Python setup on your machine and are comfortable with
-installing Python packages, we recommend that you install glue genes as a Python
-package following the instructions for :ref:`python-installation`. If you are not
-experienced with Python, you can follow the instructions to install the
-:ref:`standalone-applications`.
+You can install glue genes as a Python
+package following the instructions for :ref:`python-installation`.
 
 Brief Introduction to glue
 ============================
