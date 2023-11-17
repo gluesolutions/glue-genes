@@ -1,5 +1,15 @@
 # Changelog
 
+## v1.2.1 - 2023-11-17
+
+<!-- Release notes generated using configuration in .github/release.yml at main -->
+### What's Changed
+
+- Require glue-qt > 0.3 to get region display
+- Update documentation by @jfoster17 in https://github.com/gluesolutions/glue-genes/pull/56
+
+**Full Changelog**: https://github.com/gluesolutions/glue-genes/compare/v1.2.0...v1.2.1
+
 ## v1.2.0 - 2023-11-15
 
 <!-- Release notes generated using configuration in .github/release.yml at main -->
