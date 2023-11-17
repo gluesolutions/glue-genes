@@ -29,9 +29,15 @@ We recommend installing into a new virtual environment. To install the current s
 
 `pip install glue-genes[qt6]`
 
+or 
+
+`pip install glue-genes[qt5]`
+
+depending on which version of Qt you would like to use.
+
 To install the latest development version we recommend the following procedure in a new virtual environment:
 
-`pip install "glue-genes[qt6]@git+https://git@github.com/gluesolutions/glue-genes.git"``
+`pip install "glue-genes[qt6]@git+https://git@github.com/gluesolutions/glue-genes.git"`
 
 ### Usage
 
