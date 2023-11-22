@@ -1,5 +1,16 @@
 # Changelog
 
+## v1.2.2 - 2023-11-22
+
+<!-- Release notes generated using configuration in .github/release.yml at main -->
+### What's Changed
+
+#### New Features
+
+- Make DGE plugin more robust to changing or deleting subsets by @jfoster17 in https://github.com/gluesolutions/glue-genes/pull/58
+
+**Full Changelog**: https://github.com/gluesolutions/glue-genes/compare/v1.2.1...v1.2.2
+
 ## v1.2.1 - 2023-11-17
 
 <!-- Release notes generated using configuration in .github/release.yml at main -->
