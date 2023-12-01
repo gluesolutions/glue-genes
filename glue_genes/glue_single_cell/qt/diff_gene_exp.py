@@ -200,7 +200,7 @@ class DiffGeneExpDialog(QtWidgets.QDialog):
             dialog(  # noqa: F841
                 "Adding a new component",
                 f"The components:\n"
-                f"{comp1} and {comp2}\n"
+                f"'{cid1}' and '{cid2}'\n"
                 f"have been added to:\n"
                 f"{vardata.label}\n"
                 f"and will be automatically updated when {message} is changed.",
