@@ -54,13 +54,10 @@ def read_spaceranger_directory(filename, **kwargs):
     )
     hi_res_image = list(spatial_path.glob("*hires*"))
     if hi_res_image:
-        # print("Trying to read some image data")
-        # print(hi_res_image[0])
 
         image_data = df.load_data(hi_res_image[0])  # this duplicates the read from disk
 
         image_data.label = library_id + "_image"
-        # print(adata_objs)
 
         scale_fac = adata_obj.uns["spatial"][library_id]["scalefactors"]
         hi_res_scale_fac = scale_fac["tissue_hires_scalef"]
@@ -116,10 +113,6 @@ def spatialtrans_autolink(data_collection):
     """
     This is to set up automatic links between spatial
     transcriptomics datasets when importing data.
-
-    TODO: This is nicer than setting up a Listener with a custom
-    start-up action and we should probably do it for non-spatial
-    DataAnnData objects as well.
     """
 
     spatial_datasets = [
@@ -133,7 +126,6 @@ def spatialtrans_autolink(data_collection):
     existing = set()
     for link in data_collection.external_links:
         existing.add((link.data1, link.data2))
-    print(f"Existing links: {existing}")
 
     all_links = []
     for i1, data1 in enumerate(spatial_datasets):
