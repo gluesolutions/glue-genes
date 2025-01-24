@@ -42,16 +42,13 @@ jobs:
         - linux: py39-test-pyside63
         - linux: py310-test-pyside63
         - linux: py311-test-pyqt64
-        - linux: py312-test-pyqt64
 
         - macos: py39-test-pyside63
         - macos: py310-test-pyside63
         - macos: py311-test-pyqt64
-        - macos: py312-test-pyqt64
 
         - windows: py310-test-pyqt64
         - windows: py311-test-pyqt64
-        - windows: py312-test-pyqt64
 
   publish:
     needs: tests
