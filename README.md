@@ -27,13 +27,13 @@ See [the glue genes documentation](https://glue-genes.readthedocs.io/en/latest/h
 
 We recommend installing into a new virtual environment. To install the current stable version use:
 
-`pip install glue-genes[qt6]`
+`pip install "glue-genes[qt6]"`
 
 or 
 
-`pip install glue-genes[qt5]`
+`pip install "glue-genes[qt5]"`
 
-depending on which version of Qt you would like to use.
+depending on which version of Qt you would like to use (Qt6 is recommended).
 
 To install the latest development version we recommend the following procedure in a new virtual environment:
 
