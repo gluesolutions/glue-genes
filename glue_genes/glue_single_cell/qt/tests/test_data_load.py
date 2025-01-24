@@ -13,7 +13,7 @@ DATA = os.path.join(os.path.dirname(__file__), "data")
 
 class TestData(object):
     def get_data(self, try_backed=False):
-        original_anndata = ad.read(os.path.join(DATA, "test_data.h5ad"))
+        original_anndata = ad.read_h5ad(os.path.join(DATA, "test_data.h5ad"))
         # Calling self.app.load_data() here does NOT skip_dialog
         data = df.load_data(
             os.path.join(DATA, "test_data.h5ad"),
@@ -63,7 +63,7 @@ class TestData(object):
 
 class TestDataBacked(TestData):
     def get_data(self, try_backed=True):
-        original_anndata = ad.read(os.path.join(DATA, "test_data.h5ad"))
+        original_anndata = ad.read_h5ad(os.path.join(DATA, "test_data.h5ad"))
         # Calling self.app.load_data() here does NOT skip_dialog
         data = df.load_data(
             os.path.join(DATA, "test_data.h5ad"),
