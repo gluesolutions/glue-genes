@@ -77,7 +77,7 @@ class LoadDataDialog(QDialog):
         )
         self.skip_components = []
         self.subsample_factor = 1
-        trial_read = ad.read(filename, backed="r")
+        trial_read = ad.read_h5ad(filename, backed="r")
         nobs = trial_read.n_obs
         nvars = trial_read.n_vars
         filesize = os.path.getsize(filename)
