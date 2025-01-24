@@ -61,6 +61,14 @@ from scipy.sparse import isspmatrix
 import traceback
 from glue.core.joins import get_mask_with_key_joins
 
+try:
+    from anndata._core.sparse_dataset import SparseDataset
+except ImportError:
+    # anndata >= 0.10.0
+    from anndata._core.sparse_dataset import (
+        BaseCompressedSparseDataset as SparseDataset,
+    )
+
 __all__ = ["DataAnnData", "DataAnnDataTranslator"]
 
 
@@ -96,7 +104,7 @@ class DataAnnData(Data):
             self.add_component(comp_to_add, label=component_id)
             if isspmatrix(Xdata):
                 self.sparse = True
-            elif isinstance(Xdata, anndata._core.sparse_dataset.SparseDataset):
+            elif isinstance(Xdata, SparseDataset):
                 self.sparse = True
 
     @property

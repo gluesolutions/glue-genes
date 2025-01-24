@@ -95,7 +95,7 @@ def test_get_data_view_sparse_inmemory(data_sparse_inmemory):
         for comp in d[0].main_components:
             comp_data = d[0].get_data(comp, view, keep_sparse=True)
             assert comp_data.size == C[view].size
-            assert_equal(comp_data.A, C[view].A)
+            assert_equal(comp_data.toarray(), C[view].toarray())
 
 
 def test_get_data_sparse_backed(data_sparse_backed):
@@ -109,7 +109,7 @@ def test_get_data_sparse_inmemory(data_sparse_inmemory):
     C, d = data_sparse_inmemory
     for comp in d[0].main_components:
         comp_data = d[0].get_data(comp, keep_sparse=True)
-        assert comp_data.A.shape == C.A.shape
+        assert comp_data.toarray().shape == C.toarray().shape
 
 
 def test_make_histogram_sparse_backed(data_sparse_backed):

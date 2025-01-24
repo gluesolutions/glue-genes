@@ -183,7 +183,7 @@ def test_frb_with_multi_resolution_data():
         ),
         np.array(
             [
-                [-np.inf, -np.inf, -np.inf, -np.inf],
+                [np.nan, np.nan, np.nan, np.nan],
                 [64, 65, 66, 67],
                 [72, 73, 74, 75],
             ]
@@ -196,7 +196,7 @@ def test_frb_with_multi_resolution_data():
             target_data=data1,
             target_cid=data1.main_components[0],
         ),
-        np.array([[-np.inf]]),
+        np.array([[np.nan]]),
     )
 
 
@@ -217,7 +217,7 @@ def test_frb_with_sliced_multi_resolution_data():
         ),
         np.array(
             [
-                [-np.inf, -np.inf, -np.inf, -np.inf],
+                [np.nan, np.nan, np.nan, np.nan],
                 [64, 65, 66, 67],
                 [72, 73, 74, 75],
             ]
@@ -230,7 +230,7 @@ def test_frb_with_sliced_multi_resolution_data():
             target_data=data1,
             target_cid=data1.main_components[0],
         ),
-        np.array([[-np.inf]]),
+        np.array([[np.nan]]),
     )
 
 
@@ -246,9 +246,9 @@ def test_frb_with_dask():
         ),
         np.array(
             [
-                [-np.inf, -np.inf, -np.inf, -np.inf],
+                [np.nan, np.nan, np.nan, np.nan],
                 [1, 4, 7, 10],
-                [-np.inf, -np.inf, -np.inf, -np.inf],
+                [np.nan, np.nan, np.nan, np.nan],
             ]
         ),
     )
@@ -268,9 +268,9 @@ def test_frb_with_sliced_dask():
         ),
         np.array(
             [
-                [-np.inf, -np.inf, -np.inf, -np.inf],
+                [np.nan, np.nan, np.nan, np.nan],
                 [1, 4, 7, 10],
-                [-np.inf, -np.inf, -np.inf, -np.inf],
+                [np.nan, np.nan, np.nan, np.nan],
             ]
         ),
     )
