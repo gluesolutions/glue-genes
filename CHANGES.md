@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.2.3 - 2025-01-24
+
+Update to support recent dependency changes.
+
 ## v1.2.2 - 2023-11-22
 
 <!-- Release notes generated using configuration in .github/release.yml at main -->
